@@ -26,12 +26,9 @@ class CodeInterpreterSession:
         self.agent_executor: AgentExecutor = self._agent_executor()
         self.input_files: list[File] = []
         self.output_files: list[File] = []
-
-    async def _init(self) -> None:
+    
+    async def astart(self) -> None:
         await self.codebox.astart()
-
-    async def _close(self) -> None:
-        await self.codebox.astop()
 
     def _tools(self) -> list[StructuredTool]:
         return [
@@ -185,9 +182,12 @@ class CodeInterpreterSession:
                     "Please try again or restart the session."
                 )
 
+    async def astop(self) -> None:
+        await self.codebox.astop()
+    
     async def __aenter__(self) -> "CodeInterpreterSession":
-        await self._init()
+        await self.astart()
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback) -> None:
-        await self._close()
+        await self.astop()
