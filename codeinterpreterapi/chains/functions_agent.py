@@ -105,9 +105,11 @@ def _format_intermediate_steps(
         messages.extend(_convert_agent_action_to_messages(agent_action, observation))
 
     return messages
-    
 
-async def _parse_ai_message(message: BaseMessage, llm: BaseLanguageModel) -> Union[AgentAction, AgentFinish]:
+
+async def _parse_ai_message(
+    message: BaseMessage, llm: BaseLanguageModel
+) -> Union[AgentAction, AgentFinish]:
     """Parse an AI message."""
     if not isinstance(message, AIMessage):
         raise TypeError(f"Expected an AI message got {type(message)}")
@@ -117,7 +119,7 @@ async def _parse_ai_message(message: BaseMessage, llm: BaseLanguageModel) -> Uni
     if function_call:
         function_call = message.additional_kwargs["function_call"]
         function_name = function_call["name"]
-        try:    
+        try:
             _tool_input = json.loads(function_call["arguments"])
         except JSONDecodeError:
             if function_name == "python":
@@ -199,8 +201,9 @@ class OpenAIFunctionsAgent(BaseSingleActionAgent):
     def functions(self) -> List[dict]:
         return [dict(format_tool_to_openai_function(t)) for t in self.tools]
 
-    def plan(self): raise NotImplementedError
-    
+    def plan(self):
+        raise NotImplementedError
+
     async def aplan(
         self,
         intermediate_steps: List[Tuple[AgentAction, str]],
@@ -229,7 +232,7 @@ class OpenAIFunctionsAgent(BaseSingleActionAgent):
         )
         agent_decision = await _parse_ai_message(predicted_message, self.llm)
         return agent_decision
-    
+
     @classmethod
     def create_prompt(
         cls,

@@ -1,9 +1,9 @@
 from pydantic import BaseModel
 
 
-class CodeInput(BaseModel): 
+class CodeInput(BaseModel):
     code: str
-    
 
-class FileInput(BaseModel): 
+
+class FileInput(BaseModel):
     filename: str

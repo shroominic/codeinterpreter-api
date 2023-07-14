@@ -8,13 +8,14 @@ async def main():
         files = [
             File.from_path("examples/iris.csv"),
         ]
-        
+
         output = await session.generate_response(user_request, files=files)
         file = output.files[0]
-        
-        file.save("examples/iris.xlsx")     
+
+        file.save("examples/iris.xlsx")
 
 
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(main())

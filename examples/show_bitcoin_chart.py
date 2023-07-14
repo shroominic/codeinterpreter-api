@@ -6,9 +6,9 @@ async def main():
     async with CodeInterpreterSession() as session:
         currentdate = datetime.now().strftime("%Y-%m-%d")
         user_request = f"Plot the bitcoin chart of 2023 YTD (today is {currentdate})"
-        
+
         output = await session.generate_response(user_request)
-        
+
         file = output.files[0]
         file.show_image()
 
@@ -21,4 +21,5 @@ async def main():
 
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(main())

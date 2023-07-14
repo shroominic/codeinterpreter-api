@@ -11,7 +11,7 @@ class CodeCallbackHandler(AsyncIteratorCallbackHandler):
     def __init__(self, session: "CodeInterpreterSession"):
         self.session = session
         super().__init__()
-    
+
     async def on_agent_action(
         self,
         action: AgentAction,
