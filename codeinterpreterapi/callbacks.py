@@ -1,12 +1,14 @@
 from uuid import UUID
-from typing import Any, Optional, List
+from typing import Any, Optional, TYPE_CHECKING
 from langchain.schema import AgentAction
 from langchain.callbacks import AsyncIteratorCallbackHandler
-from codeinterpreterapi.session import CodeInterpreterSession
+
+if TYPE_CHECKING:
+    from codeinterpreterapi.session import CodeInterpreterSession
 
 
 class CodeCallbackHandler(AsyncIteratorCallbackHandler):
-    def __init__(self, session: CodeInterpreterSession):
+    def __init__(self, session: "CodeInterpreterSession"):
         self.session = session
         super().__init__()
     
