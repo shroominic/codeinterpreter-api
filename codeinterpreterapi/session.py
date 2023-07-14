@@ -174,3 +174,10 @@ class CodeInterpreterSession():
                     "Sorry, something went while generating your response."
                     "Please try again or restart the session."
                 )
+
+    async def __aenter__(self) -> "CodeInterpreterSession":
+        await self._init()
+        return self
+    
+    async def __aexit__(self, exc_type, exc_value, traceback) -> None:
+        await self._close()
