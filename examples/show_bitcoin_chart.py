@@ -1,0 +1,1 @@
+# TODO: ask the agent to plot the bitcoin chart of the last 7 days - show the output to the user with PIL.show()
