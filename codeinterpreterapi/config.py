@@ -9,10 +9,10 @@ class CodeInterpreterAPISettings(BaseSettings):
     """
     CodeInterpreter API Config
     """
-    CODEBOX_API_KEY: str = None
-    CODEBOX_VERBOSE: bool = False
+    VERBOSE: bool = False
     
-    OPENAI_API_KEY: str = ""
+    CODEBOX_API_KEY: str | None = None
+    OPENAI_API_KEY: str | None = None
     
 
 settings = CodeInterpreterAPISettings()
