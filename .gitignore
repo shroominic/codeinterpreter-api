@@ -128,6 +128,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.codebox
 
 # Spyder project settings
 .spyderproject
