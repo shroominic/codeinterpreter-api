@@ -12,7 +12,7 @@ async def main():
         output = await session.generate_response(user_request, files=files)
         file = output.files[0]
 
-        file.save("examples/assets/iris.xlsx")
+        file.save("examples/assets/Iris.xlsx")
 
 
 if __name__ == "__main__":
