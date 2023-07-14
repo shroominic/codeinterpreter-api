@@ -32,7 +32,7 @@ file.show_image()
 print("AI: ", output.content)
 
 # terminate the session
-await session.stop()
+await session.astop()
 
 ```
 ## Output
