@@ -152,11 +152,12 @@ class CodeInterpreterSession():
     
     async def generate_response(
         self, 
-        user_request: UserRequest, 
-        files: list[File], # list of "file_name" x "file_content"
+        user_msg: str, 
+        files: list[File] = [],
         detailed_error: bool = False,
     ) -> CodeInterpreterResponse:
         """ Generate a Code Interpreter response based on the user's input."""
+        user_request = UserRequest(content=user_msg, files=files)
         try:
             await self.input_handler(user_request)
             response = await self.agent_executor.arun(input=user_request.content)
