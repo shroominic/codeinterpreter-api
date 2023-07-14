@@ -105,7 +105,7 @@ class CodeInterpreterSession():
             filename = f"image-{uuid.uuid4()}.png"
             file_buffer = BytesIO(base64.b64decode(output.content))
             file_buffer.name = filename
-            # self.output_files.append(discord.File(path_like_file, filename)) TODO: add to output_files
+            self.output_files.append(File(name=filename, content=file_buffer.read()))
             return f"Image {filename} got send to the user."
 
         elif output.type == "error": 
