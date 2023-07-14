@@ -18,23 +18,32 @@ from codeinterpreterapi import CodeInterpreterSession
 
 # start a session
 session = CodeInterpreterSession()
-await session.astart()
 
-# generate a response based on user input
-output = await session.generate_response(
-    "Plot the bitcoin chart of 2023 YTD"
-)
-# show output image in default image viewer
-file = output.files[0]
-file.show_image()
+async def main():
+    await session.astart()
 
-# show output text
-print("AI: ", output.content)
+    # generate a response based on user input
+    output = await session.generate_response(
+        "Plot the bitcoin chart of 2023 YTD"
+    )
+    # show output image in default image viewer
+    file = output.files[0]
+    file.show_image()
 
-# terminate the session
-await session.stop()
+    # show output text
+    print("AI: ", output.content)
+
+    # terminate the session
+    await session.astop()
+    
+
+if __name__ == "__main__":
+    import asyncio
+
+    asyncio.run(main())
 
 ```
+
 ## Output
 
 ![Bitcoin YTD](https://github.com/shroominic/codeinterpreter-api/blob/main/examples/assets/bitcoin_chart.png?raw=true)
