@@ -9,9 +9,9 @@ from langchain.prompts.chat import MessagesPlaceholder
 from langchain.agents import AgentExecutor, BaseSingleActionAgent
 from langchain.memory import ConversationBufferMemory
 
-from codeinterpreterapi.schemas import CodeInterpreterResponse, CodeInput, File, UserRequest # type: ignore
+from codeinterpreterapi.schema import CodeInterpreterResponse, CodeInput, File, UserRequest # type: ignore
 from codeinterpreterapi.config import settings
-from codeinterpreterapi.functions_agent import OpenAIFunctionsAgent
+from codeinterpreterapi.chains.functions_agent import OpenAIFunctionsAgent
 from codeinterpreterapi.prompts import code_interpreter_system_message
 from codeinterpreterapi.callbacks import CodeCallbackHandler
 from codeinterpreterapi.chains.modifications_check import get_file_modifications
