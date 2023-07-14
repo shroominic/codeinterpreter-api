@@ -109,7 +109,10 @@ class CodeInterpreterSession():
             return f"Image {filename} got send to the user."
 
         elif output.type == "error": 
-            # TODO: check if package install is required
+            if "ModuleNotFoundError" in output.content:
+                if package := re.search(r"ModuleNotFoundError: No module named '(.*)'", output.content):
+                    await self.codebox.ainstall(package.group(1))
+                    return f"{package.group(1)} was missing but got installed now. Please try again."
             # TODO: preanalyze error to optimize next code generation
             print("Error:", output.content)
         
