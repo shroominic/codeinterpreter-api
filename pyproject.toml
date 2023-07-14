@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "codeinterpreterapi"
+version = "0.0.1"
+description = "CodeInterpreterAPI is a Python Interface for the ChatGPT CodeInterpreter."
+authors = ["Shroominic <pleurae-berets.0u@icloud.com>"]
+readme = "README.md"
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+python-dotenv = "^1.0.0"
+langchain = "^0.0.232"
+codeboxapi = "^0.0.5"
+
+[tool.poetry.extras]
+image_support = ["Pillow"]
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.4.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
