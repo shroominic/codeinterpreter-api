@@ -37,8 +37,7 @@ await session.stop()
 ```
 ## Output
 
-![Bitcoin YTD](https://raw.githubusercontent.com/shroominic/codeinterpreterapi/main/examples/bitcoin_chart.png)
-
+![Bitcoin YTD](https://github.com/shroominic/codeinterpreter-api/blob/main/examples/bitcoin_chart.png?raw=true)
 
 ## Production
 

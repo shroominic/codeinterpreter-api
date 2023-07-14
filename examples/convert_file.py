@@ -6,13 +6,13 @@ async def main():
     async with CodeInterpreterSession() as session:
         user_request = "Convert this dataset to excel."
         files = [
-            File.from_path("examples/iris.csv"),
+            File.from_path("examples/assets/iris.csv"),
         ]
 
         output = await session.generate_response(user_request, files=files)
         file = output.files[0]
 
-        file.save("examples/iris.xlsx")
+        file.save("examples/assets/iris.xlsx")
 
 
 if __name__ == "__main__":
