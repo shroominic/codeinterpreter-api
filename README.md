@@ -1,2 +1,2 @@
 # codeinterpreter-api
-Run LLM Code Interpreter Agents with using isolated CodeBox environments.
+Run LLM Code Interpreter Agents using isolated CodeBox environments.
