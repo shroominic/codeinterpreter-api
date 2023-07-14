@@ -22,7 +22,7 @@ await session.astart()
 
 # generate a response based on user input
 output = await session.generate_response(
-    f"Plot the bitcoin chart of 2023 YTD"
+    "Plot the bitcoin chart of 2023 YTD"
 )
 # show output image in default image viewer
 file = output.files[0]
@@ -35,6 +35,10 @@ print("AI: ", output.content)
 await session.stop()
 
 ```
+## Output
+
+![Bitcoin YTD](https://raw.githubusercontent.com/shroominic/codeinterpreterapi/main/examples/bitcoin_chart.png)
+
 
 ## Production
 
