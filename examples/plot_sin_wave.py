@@ -1,0 +1,1 @@
+# TODO: ask the agent to plot a sin wave and check if an image in the output and show it to the user with PIL.show()
