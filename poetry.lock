@@ -550,20 +550,20 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
 name = "codeboxapi"
-version = "0.0.6"
+version = "0.0.7"
 description = "CodeBox is the simplest cloud infrastructure for your LLM Apps and Services."
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "codeboxapi-0.0.6-py3-none-any.whl", hash = "sha256:2786c771f0b45c73465b38dbdd45f97428e815bf07799640b18c4636e622cac9"},
-    {file = "codeboxapi-0.0.6.tar.gz", hash = "sha256:86e60e48f77ad55d4a9980f13e2df14800786c2807a095d6c516d94e59e9d2c6"},
+    {file = "codeboxapi-0.0.7-py3-none-any.whl", hash = "sha256:7fed196f753838b25ed3c978c9d0f679a6e1a07b52611e8544efbfc72c3fcc21"},
+    {file = "codeboxapi-0.0.7.tar.gz", hash = "sha256:65628f18c1168d3db6984b1fc318cb3b8b5835c533a7edacfe6182bf7e7c1ee9"},
 ]
 
 [package.dependencies]
 aiohttp = ">=3.8.4,<4.0.0"
 jupyter-kernel-gateway = ">=2.5.2,<3.0.0"
 python-dotenv = ">=1.0.0,<2.0.0"
-requests = ">=2.31.0,<3.0.0"
+requests = ">=2.27.1,<3.0.0"
 websockets = ">=11.0.3,<12.0.0"
 
 [[package]]
@@ -2210,17 +2210,16 @@ files = [
 
 [[package]]
 name = "pywinpty"
-version = "2.0.10"
+version = "2.0.11"
 description = "Pseudo terminal support for Windows from Python."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "pywinpty-2.0.10-cp310-none-win_amd64.whl", hash = "sha256:4c7d06ad10f6e92bc850a467f26d98f4f30e73d2fe5926536308c6ae0566bc16"},
-    {file = "pywinpty-2.0.10-cp311-none-win_amd64.whl", hash = "sha256:7ffbd66310b83e42028fc9df7746118978d94fba8c1ebf15a7c1275fdd80b28a"},
-    {file = "pywinpty-2.0.10-cp37-none-win_amd64.whl", hash = "sha256:38cb924f2778b5751ef91a75febd114776b3af0ae411bc667be45dd84fc881d3"},
-    {file = "pywinpty-2.0.10-cp38-none-win_amd64.whl", hash = "sha256:902d79444b29ad1833b8d5c3c9aabdfd428f4f068504430df18074007c8c0de8"},
-    {file = "pywinpty-2.0.10-cp39-none-win_amd64.whl", hash = "sha256:3c46aef80dd50979aff93de199e4a00a8ee033ba7a03cadf0a91fed45f0c39d7"},
-    {file = "pywinpty-2.0.10.tar.gz", hash = "sha256:cdbb5694cf8c7242c2ecfaca35c545d31fa5d5814c3d67a4e628f803f680ebea"},
+    {file = "pywinpty-2.0.11-cp310-none-win_amd64.whl", hash = "sha256:452f10ac9ff8ab9151aa8cea9e491a9612a12250b1899278c6a56bc184afb47f"},
+    {file = "pywinpty-2.0.11-cp311-none-win_amd64.whl", hash = "sha256:6701867d42aec1239bc0fedf49a336570eb60eb886e81763db77ea2b6c533cc3"},
+    {file = "pywinpty-2.0.11-cp38-none-win_amd64.whl", hash = "sha256:0ffd287751ad871141dc9724de70ea21f7fc2ff1af50861e0d232cf70739d8c4"},
+    {file = "pywinpty-2.0.11-cp39-none-win_amd64.whl", hash = "sha256:e4e7f023c28ca7aa8e1313e53ba80a4d10171fe27857b7e02f99882dfe3e8638"},
+    {file = "pywinpty-2.0.11.tar.gz", hash = "sha256:e244cffe29a894876e2cd251306efd0d8d64abd5ada0a46150a4a71c0b9ad5c5"},
 ]
 
 [[package]]
@@ -3089,4 +3088,4 @@ image-support = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "4d2984ce581f7f40879484b02aa3a8a0b26bf3a2cf4c4ed526a2f5657bc8c1f1"
+content-hash = "518d019b954f34ce86ecac1c0441668cee629ce9b6b60ee82b7e05c2fad234e3"
