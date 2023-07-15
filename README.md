@@ -16,10 +16,10 @@ pip install codeinterpreterapi
 ```python
 from codeinterpreterapi import CodeInterpreterSession
 
-# start a session
-session = CodeInterpreterSession()
 
 async def main():
+    # start a session
+    session = CodeInterpreterSession()
     await session.astart()
 
     # generate a response based on user input
