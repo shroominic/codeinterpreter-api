@@ -59,7 +59,7 @@ class File(BaseModel):
         # Display the image
         try:
             # Try to get the IPython shell if available.
-            shell = get_ipython().__class__.__name__
+            shell = get_ipython().__class__.__name__  # type: ignore
 
             # If the shell is ZMQInteractiveShell, it means we're in a Jupyter notebook or similar.
             if shell == 'ZMQInteractiveShell':
