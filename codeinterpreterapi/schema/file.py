@@ -52,8 +52,27 @@ class File(BaseModel):
         img_io = BytesIO(self.content)
         img = Image.open(img_io)
 
+        # Convert image to RGB if it's not
+        if img.mode not in ('RGB', 'L'):  # L is for greyscale images
+            img = img.convert('RGB')
+
         # Display the image
-        img.show()
+        try:
+            # Try to get the IPython shell if available.
+            shell = get_ipython().__class__.__name__
+
+            # If the shell is ZMQInteractiveShell, it means we're in a Jupyter notebook or similar.
+            if shell == 'ZMQInteractiveShell':
+                from IPython.display import display
+                display(img)
+            else:
+                # We're not in a Jupyter notebook.
+                img.show()
+        except NameError:
+            # We're probably not in an IPython environment, use PIL's show.
+            img.show()
+
+
 
     def __str__(self):
         return self.name
