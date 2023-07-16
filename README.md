@@ -11,7 +11,7 @@ You can run everything local except the LLM using your own OpenAI API Key.
 - Internet access and auto Python package installation
 - Input `text + files` -> Receive `text + files`
 - Conversation Memory: respond based on previous inputs
-- Run everything local except the OpenAI API (OpenOrca or others coming soon)
+- Run everything local except the OpenAI API (OpenOrca or others maybe soon)
 - Use CodeBox API for easy scaling in production (coming soon)
 
 ## Installation
@@ -24,12 +24,14 @@ pip install codeinterpreterapi
 
 ## Usage
 
+Make sure to set the `OPENAI_API_KEY` environment variable (or use a `.env` file)
+
 ```python
 from codeinterpreterapi import CodeInterpreterSession
 
 
 async def main():
-    # start a session
+    # create a session
     session = CodeInterpreterSession()
     await session.astart()
 
@@ -37,28 +39,63 @@ async def main():
     output = await session.generate_response(
         "Plot the bitcoin chart of 2023 YTD"
     )
-    # show output image in default image viewer
-    file = output.files[0]
-    file.show_image()
 
-    # show output text
-    print("AI: ", output.content)
+    # ouput the response (text + image)
+    print("AI: ", response.content)
+    for file in response.files:
+        file.show_image()
 
     # terminate the session
     await session.astop()
     
 
 if __name__ == "__main__":
-    import asyncio, os
-    os.environ["OPENAI_API_KEY"] = "sk-*********"  # or .env file
-
+    import asyncio
+    # run the async function
     asyncio.run(main())
 
 ```
 
-## Output
+### Chart Output
 
 ![Bitcoin YTD](https://github.com/shroominic/codeinterpreter-api/blob/main/examples/assets/bitcoin_chart.png?raw=true)
+
+## Dataset Analysis
+
+```python
+from codeinterpreterapi import CodeInterpreterSession
+from codeinterpreterapi.schema import File
+
+
+async def main():
+    # context manager for auto start/stop of the session
+    async with CodeInterpreterSession() as session:
+        # define the user request
+        user_request = "Analyze this dataset and plot something interesting about it."
+        files = [
+            File.from_path("examples/assets/iris.csv"),
+        ]
+        
+        # generate the response
+        response = await session.generate_response(
+            user_request, files=files
+        )
+
+        # output to the user
+        print("AI: ", response.content)
+        for file in response.files:
+            file.show_image()
+
+
+if __name__ == "__main__":
+    import asyncio
+
+    asyncio.run(main())
+```
+
+### Iris Output
+
+![Iris Dataset Analysis](https://github.com/shroominic/codeinterpreter-api/blob/main/examples/assets/iris_analysis.png?raw=true)
 
 ## Production
 
