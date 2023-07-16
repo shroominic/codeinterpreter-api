@@ -3,9 +3,19 @@
 A LangChain implementation of the ChatGPT Code Interpreter.
 Using CodeBoxes as backend for sandboxed python code execution.
 [CodeBox](https://github.com/shroominic/codebox-api/tree/main) is the simplest cloud infrastructure for your LLM Apps.
-You can run everything local using your own OpenAI API Key.
+You can run everything local except the LLM using your own OpenAI API Key.
+
+## Features
+
+- Dataset Analysis, Stock Charting, Image Manipulation, ....
+- Internet access and auto Python package installation
+- Input `text + files` -> Receive `text + files`
+- Run everything local except the OpenAI API (OpenOrca or others coming soon)
+- Use CodeBox API for easy scaling in production (coming soon)
 
 ## Installation
+
+Get your OpenAI API Key [here](https://platform.openai.com/account/api-keys) and install the package.
 
 ```bash
 pip install codeinterpreterapi
@@ -38,7 +48,8 @@ async def main():
     
 
 if __name__ == "__main__":
-    import asyncio
+    import asyncio, os
+    os.environ["OPENAI_API_KEY"] = "sk-*********"  # or .env file
 
     asyncio.run(main())
 
@@ -51,8 +62,8 @@ if __name__ == "__main__":
 ## Production
 
 In case you want to deploy to production you can use the CodeBox API for easy scaling.
-Please contact me if you want to use the CodeBox API in production.
-Its currently in early development and not everything is automated yet.
+
+Please contact me if you interested in this, because it's still in early development.
 
 ## Contributing
 
@@ -73,6 +84,5 @@ Thanks!
 
 ## Contact
 
-You can contact me at [pleurae-berets.0u@icloud.com](mailto:pleurae-berets.0u@icloud.com)
-Sorry for the weird email address but I don't want to get spammed so I can deactivate it if necessary.
-But you can also contact me on [Twitter](https://twitter.com/shroominic) or [Discord](https://gptassistant.app/community).
+You can contact me at [contact@shroominic.com](mailto:contact@shroominic.com).
+But I prefer to use [Twitter](https://twitter.com/shroominic) or [Discord](https://gptassistant.app/community) DMs.
