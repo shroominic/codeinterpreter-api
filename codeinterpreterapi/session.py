@@ -9,7 +9,7 @@ from langchain.prompts.chat import MessagesPlaceholder
 from langchain.agents import AgentExecutor, BaseSingleActionAgent
 from langchain.memory import ConversationBufferMemory
 
-from codeinterpreterapi.schema import CodeInterpreterResponse, CodeInput, File, UserRequest  # type: ignore
+from codeinterpreterapi.schema import CodeInterpreterResponse, CodeInput, File, UserRequest
 from codeinterpreterapi.config import settings
 from codeinterpreterapi.chains.functions_agent import OpenAIFunctionsAgent
 from codeinterpreterapi.prompts import code_interpreter_system_message
@@ -39,7 +39,7 @@ class CodeInterpreterSession:
                 # TODO: current files as context to the agent
                 "Input a string of code to a python interpreter (jupyter kernel). "
                 "Variables are preserved between runs. ",
-                func=self.codebox.run,
+                func=self.run_handler,
                 coroutine=self.arun_handler,
                 args_schema=CodeInput,
             ),
@@ -91,7 +91,6 @@ class CodeInterpreterSession:
 
     async def arun_handler(self, code: str):
         """Run code in container and send the output to the user"""
-        # TODO: upload files
         output: CodeBoxOutput = await self.codebox.arun(code)
 
         if not isinstance(output.content, str):
@@ -111,8 +110,10 @@ class CodeInterpreterSession:
                 ):
                     await self.codebox.ainstall(package.group(1))
                     return f"{package.group(1)} was missing but got installed now. Please try again."
-            # TODO: preanalyze error to optimize next code generation
-            print("Error:", output.content)
+            else: pass
+                # TODO: preanalyze error to optimize next code generation
+            if settings.VERBOSE:
+                print("Error:", output.content)
 
         elif modifications := await get_file_modifications(code, self.llm):
             for filename in modifications:
