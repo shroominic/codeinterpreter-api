@@ -70,7 +70,7 @@ Please contact me if you interested in this, because it's still in early develop
 There are some TODOs left in the code
 so if you want to contribute feel free to do so.
 You can also suggest new features. Code refactoring is also welcome.
-Just open an issue pull request and I will review it.
+Just open an issue or pull request and I will review it.
 
 Also please submit any bugs you find as an issue
 with a minimal code example or screenshot.
