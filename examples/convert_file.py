@@ -9,10 +9,12 @@ async def main():
             File.from_path("examples/assets/iris.csv"),
         ]
 
-        output = await session.generate_response(user_request, files=files)
-        file = output.files[0]
+        response = await session.generate_response(user_request, files)
 
-        file.save("examples/assets/Iris.xlsx")
+        print("AI: ", response.content)
+        for file in response.files:
+            if file.name == "iris.xlsx":
+                file.save("examples/assets/iris.xlsx")
 
 
 if __name__ == "__main__":
