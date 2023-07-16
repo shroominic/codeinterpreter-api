@@ -3,12 +3,13 @@ from codeinterpreterapi import CodeInterpreterSession
 
 async def main():
     async with CodeInterpreterSession() as session:
-        user_request = "Plot a sin wave and show it to me."
+        response = await session.generate_response(
+            "Plot a sin wave and show it to me."
+        )
 
-        output = await session.generate_response(user_request)
-
-        file = output.files[0]
-        file.show_image()
+        print("AI: ", response.content)
+        for file in response.files:
+            file.show_image()
 
 
 if __name__ == "__main__":
