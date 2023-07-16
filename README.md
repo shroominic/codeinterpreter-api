@@ -10,6 +10,7 @@ You can run everything local except the LLM using your own OpenAI API Key.
 - Dataset Analysis, Stock Charting, Image Manipulation, ....
 - Internet access and auto Python package installation
 - Input `text + files` -> Receive `text + files`
+- Conversation Memory: respond based on previous inputs
 - Run everything local except the OpenAI API (OpenOrca or others coming soon)
 - Use CodeBox API for easy scaling in production (coming soon)
 
