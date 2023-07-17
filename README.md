@@ -121,3 +121,19 @@ Thanks!
 
 You can contact me at [contact@shroominic.com](mailto:contact@shroominic.com).
 But I prefer to use [Twitter](https://twitter.com/shroominic) or [Discord](https://gptassistant.app/community) DMs.
+
+## Support this project
+
+If you want to help this project with a donation you can [click here](https://ko-fi.com/shroominic).
+Thanks this helps alot! ❤️
+
+## Star History
+
+<a href="https://star-history.com/#shroominic/codeinterpreter-api&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=shroominic/codeinterpreter-api&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=shroominic/codeinterpreter-api&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=shroominic/codeinterpreter-api&type=Date" />
+  </picture>
+</a>
+
