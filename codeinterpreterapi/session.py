@@ -1,5 +1,6 @@
 import uuid, base64, re
 from io import BytesIO
+from typing import Optional
 from codeboxapi import CodeBox  # type: ignore
 from codeboxapi.schema import CodeBoxOutput  # type: ignore
 from langchain.tools import StructuredTool
@@ -45,7 +46,7 @@ class CodeInterpreterSession:
             ),
         ]
 
-    def _llm(self, model: str | None, openai_api_key: str | None) -> BaseChatModel:
+    def _llm(self, model: Optional[str] = None, openai_api_key: Optional[str] = None) -> BaseChatModel:
         if model is None:
             model = "gpt-4"
 

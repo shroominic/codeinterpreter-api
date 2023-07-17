@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import List, Optional
 
 from langchain.base_language import BaseLanguageModel
 from langchain.chat_models.openai import ChatOpenAI
@@ -12,7 +12,7 @@ async def get_file_modifications(
     code: str,
     llm: BaseLanguageModel,
     retry: int = 2,
-) -> List[str] | None:
+) -> Optional[List[str]]:
     if retry < 1:
         return None
     messages = determine_modifications_prompt.format_prompt(code=code).to_messages()
