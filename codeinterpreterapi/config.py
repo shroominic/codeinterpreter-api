@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from typing import Optional
 
 # .env file
-load_dotenv()
+load_dotenv(dotenv_path="./.env")
 
 
 class CodeInterpreterAPISettings(BaseSettings):
