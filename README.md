@@ -62,8 +62,7 @@ Bitcoin YTD Chart Output
 ## Dataset Analysis
 
 ```python
-from codeinterpreterapi import CodeInterpreterSession
-from codeinterpreterapi.schema import File
+from codeinterpreterapi import CodeInterpreterSession, File
 
 
 async def main():
