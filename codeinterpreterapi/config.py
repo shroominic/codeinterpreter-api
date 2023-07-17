@@ -2,7 +2,7 @@ from pydantic import BaseSettings
 from dotenv import load_dotenv
 
 # .env file
-load_dotenv()
+load_dotenv(dotenv_path="./.env")
 
 
 class CodeInterpreterAPISettings(BaseSettings):
