@@ -1,51 +1,11 @@
 import json
-from json import JSONDecodeError
 from typing import List
 
 from langchain.base_language import BaseLanguageModel
 from langchain.chat_models.openai import ChatOpenAI
-from langchain.prompts.chat import (
-    ChatPromptTemplate,
-    HumanMessagePromptTemplate,
-)
-from langchain.schema import (
-    AIMessage,
-    OutputParserException,
-    SystemMessage,
-)
+from langchain.schema import AIMessage, OutputParserException
 
-
-prompt = ChatPromptTemplate(
-    input_variables=["code"],
-    messages=[
-        SystemMessage(
-            content="The user will input some code and you will need to determine if the code makes any changes to the file system. \n"
-            "With changes it means creating new files or modifying exsisting ones.\n"
-            "Answer with a function call `determine_modifications` and list them inside.\n"
-            "If the code does not make any changes to the file system, still answer with the function call but return an empty list.\n",
-        ),
-        HumanMessagePromptTemplate.from_template("{code}"),
-    ],
-)
-
-functions = [
-    {
-        "name": "determine_modifications",
-        "description": "Based on code of the user determine if the code makes any changes to the file system. \n"
-        "With changes it means creating new files or modifying exsisting ones.\n",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "modifications": {
-                    "type": "array",
-                    "items": {"type": "string"},
-                    "description": "The filenames that are modified by the code.",
-                },
-            },
-            "required": ["modifications"],
-        },
-    }
-]
+from codeinterpreterapi.prompts import determine_modifications_function, determine_modifications_prompt
 
 
 async def get_file_modifications(
@@ -55,8 +15,8 @@ async def get_file_modifications(
 ) -> List[str] | None:
     if retry < 1:
         return None
-    messages = prompt.format_prompt(code=code).to_messages()
-    message = await llm.apredict_messages(messages, functions=functions)
+    messages = determine_modifications_prompt.format_prompt(code=code).to_messages()
+    message = await llm.apredict_messages(messages, functions=[determine_modifications_function])
 
     if not isinstance(message, AIMessage):
         raise OutputParserException("Expected an AIMessage")
@@ -71,7 +31,7 @@ async def get_file_modifications(
 
 
 async def test():
-    llm = ChatOpenAI(model="gpt-3.5-turbo-0613")  # type: ignore
+    llm = ChatOpenAI(model="gpt-3.5")  # type: ignore
 
     code = """
     import matplotlib.pyplot as plt
@@ -87,17 +47,12 @@ async def test():
     plt.show()
     """
 
-    code2 = "import pandas as pd\n\n# Read the Excel file\ndata = pd.read_excel('Iris.xlsx')\n\n# Convert the data to CSV\ndata.to_csv('Iris.csv', index=False)"
-
-    modifications = await get_file_modifications(code2, llm)
-
-    print(modifications)
+    print(await get_file_modifications(code, llm))
 
 
 if __name__ == "__main__":
     import asyncio
     from dotenv import load_dotenv
-
     load_dotenv()
 
     asyncio.run(test())

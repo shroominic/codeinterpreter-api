@@ -1,39 +1,15 @@
 from langchain.base_language import BaseLanguageModel
 from langchain.chat_models.openai import ChatOpenAI
-from langchain.prompts.chat import (
-    ChatPromptTemplate,
-    HumanMessagePromptTemplate,
-)
-from langchain.schema import (
-    AIMessage,
-    OutputParserException,
-    SystemMessage,
-    HumanMessage,
-)
+from langchain.schema import AIMessage, OutputParserException
 
-
-prompt = ChatPromptTemplate(
-    input_variables=["input_response"],
-    messages=[
-        SystemMessage(
-            content="The user will send you a response and you need to remove the download link from it.\n"
-            "Reformat the remaining message so no whitespace or half sentences are still there.\n"
-            "If the response does not contain a download link, return the response as is.\n"
-        ),
-        HumanMessage(
-            content="The dataset has been successfully converted to CSV format. You can download the converted file [here](sandbox:/Iris.csv)."
-        ),
-        AIMessage(content="The dataset has been successfully converted to CSV format."),
-        HumanMessagePromptTemplate.from_template("{input_response}"),
-    ],
-)
+from codeinterpreterapi.prompts import remove_dl_link_prompt
 
 
 async def remove_download_link(
     input_response: str,
     llm: BaseLanguageModel,
 ) -> str:
-    messages = prompt.format_prompt(input_response=input_response).to_messages()
+    messages = remove_dl_link_prompt.format_prompt(input_response=input_response).to_messages()
     message = await llm.apredict_messages(messages)
 
     if not isinstance(message, AIMessage):
@@ -47,15 +23,12 @@ async def test():
 
     example = "I have created the plot to your dataset.\n\nLink to the file [here](sandbox:/plot.png)."
 
-    modifications = await remove_download_link(example, llm)
-
-    print(modifications)
+    print(await remove_download_link(example, llm))
 
 
 if __name__ == "__main__":
     import asyncio
-    import dotenv
-
-    dotenv.load_dotenv()
+    from dotenv import load_dotenv
+    load_dotenv()
 
     asyncio.run(test())
