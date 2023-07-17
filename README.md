@@ -62,8 +62,8 @@ Bitcoin YTD Chart Output
 ## Dataset Analysis
 
 ```python
-from codeinterpreterapi import CodeInterpreterSession, File
-
+from codeinterpreterapi import CodeInterpreterSession
+from codeinterpreterapi.schema import File
 
 async def main():
     # context manager for auto start/stop of the session
