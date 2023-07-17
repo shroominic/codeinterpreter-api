@@ -183,6 +183,9 @@ class CodeInterpreterSession:
                     "Please try again or restart the session."
                 )
 
+    async def is_running(self) -> bool:
+        return await self.codebox.astatus() == "running"
+    
     async def astop(self) -> None:
         await self.codebox.astop()
     
