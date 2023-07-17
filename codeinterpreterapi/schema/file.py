@@ -14,7 +14,7 @@ class File(BaseModel):
 
     @classmethod
     async def afrom_path(cls, path: str):
-        await asyncio.to_thread(cls.from_path, path)
+        return await asyncio.to_thread(cls.from_path, path)
 
     @classmethod
     def from_url(cls, url: str):
