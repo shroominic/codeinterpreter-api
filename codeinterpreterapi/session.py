@@ -20,14 +20,14 @@ from codeinterpreterapi.chains.remove_download_link import remove_download_link
 
 
 class CodeInterpreterSession:
-    def __init__(self, model=None, openai_api_key=None, verbose=None) -> None:
+    def __init__(self, model=None, openai_api_key=settings.OPENAI_API_KEY, verbose=settings.VERBOSE) -> None:
         self.codebox = CodeBox()
+        self.verbose = verbose
         self.tools: list[StructuredTool] = self._tools()
         self.llm: BaseChatModel = self._llm(model, openai_api_key)
         self.agent_executor: AgentExecutor = self._agent_executor()
         self.input_files: list[File] = []
         self.output_files: list[File] = []
-        self.verbose = verbose if verbose is not None else settings.VERBOSE
 
     async def astart(self) -> None:
         await self.codebox.astart()
@@ -52,10 +52,9 @@ class CodeInterpreterSession:
             model = "gpt-4"
 
         if openai_api_key is None:
-            if settings.OPENAI_API_KEY is None:
-                raise ValueError("OpenAI API key missing.")
-            else:
-                openai_api_key = settings.OPENAI_API_KEY
+            raise ValueError(
+                "OpenAI API key missing. Set OPENAI_API_KEY env variable or pass `openai_api_key` to session."
+            )
 
         return ChatOpenAI(
             temperature=0.03,
