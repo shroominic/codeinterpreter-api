@@ -39,8 +39,8 @@ class CodeInterpreterSession:
                 # TODO: current files as context to the agent
                 "Input a string of code to a python interpreter (jupyter kernel). "
                 "Variables are preserved between runs. ",
-                func=self.run_handler,
-                coroutine=self.arun_handler,
+                func=self._run_handler,
+                coroutine=self._arun_handler,
                 args_schema=CodeInput,
             ),
         ]
@@ -86,10 +86,10 @@ class CodeInterpreterSession:
         if settings.VERBOSE:
             print(code)
 
-    def run_handler(self, code: str):
+    def _run_handler(self, code: str):
         raise NotImplementedError("Use arun_handler for now.")
 
-    async def arun_handler(self, code: str):
+    async def _arun_handler(self, code: str):
         """Run code in container and send the output to the user"""
         output: CodeBoxOutput = await self.codebox.arun(code)
 
@@ -130,7 +130,7 @@ class CodeInterpreterSession:
 
         return output.content
 
-    async def input_handler(self, request: UserRequest):
+    async def _input_handler(self, request: UserRequest):
         if not request.files:
             return
         if not request.content:
@@ -144,7 +144,7 @@ class CodeInterpreterSession:
             await self.codebox.aupload(file.name, file.content)
         request.content += "**File(s) are now available in the cwd. **\n"
 
-    async def output_handler(self, final_response: str) -> CodeInterpreterResponse:
+    async def _output_handler(self, final_response: str) -> CodeInterpreterResponse:
         """Embed images in the response"""
         for file in self.output_files:
             if str(file.name) in final_response:
@@ -165,9 +165,9 @@ class CodeInterpreterSession:
         """Generate a Code Interpreter response based on the user's input."""
         user_request = UserRequest(content=user_msg, files=files)
         try:
-            await self.input_handler(user_request)
+            await self._input_handler(user_request)
             response = await self.agent_executor.arun(input=user_request.content)
-            return await self.output_handler(response)
+            return await self._output_handler(response)
         except Exception as e:
             if settings.VERBOSE:
                 import traceback
