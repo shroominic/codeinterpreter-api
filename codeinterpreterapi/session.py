@@ -3,7 +3,7 @@ from io import BytesIO
 from typing import Optional
 from codeboxapi import CodeBox  # type: ignore
 from codeboxapi.schema import CodeBoxOutput  # type: ignore
-from langchain.tools import StructuredTool
+from langchain.tools import StructuredTool, BaseTool
 from langchain.chat_models import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 from langchain.prompts.chat import MessagesPlaceholder
@@ -20,10 +20,16 @@ from codeinterpreterapi.chains.remove_download_link import remove_download_link
 
 
 class CodeInterpreterSession:
-    def __init__(self, model=None, openai_api_key=settings.OPENAI_API_KEY, verbose=settings.VERBOSE) -> None:
+    def __init__(
+        self,
+        model=None,
+        openai_api_key=settings.OPENAI_API_KEY,
+        verbose=settings.VERBOSE,
+        tools: list[BaseTool] = None
+    ) -> None:
         self.codebox = CodeBox()
         self.verbose = verbose
-        self.tools: list[StructuredTool] = self._tools()
+        self.tools: list[BaseTool] = self._tools(tools)
         self.llm: BaseChatModel = self._llm(model, openai_api_key)
         self.agent_executor: AgentExecutor = self._agent_executor()
         self.input_files: list[File] = []
@@ -32,8 +38,9 @@ class CodeInterpreterSession:
     async def astart(self) -> None:
         await self.codebox.astart()
 
-    def _tools(self) -> list[StructuredTool]:
-        return [
+    def _tools(self, additional_tools: list[BaseTool] = None) -> list[BaseTool]:
+        additional_tools = additional_tools or []
+        return additional_tools + [
             StructuredTool(
                 name="python",
                 description=
