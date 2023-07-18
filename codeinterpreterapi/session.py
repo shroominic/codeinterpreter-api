@@ -12,6 +12,7 @@ from langchain.memory import ConversationBufferMemory
 
 from codeinterpreterapi.schema import CodeInterpreterResponse, CodeInput, File, UserRequest
 from codeinterpreterapi.config import settings
+from codeinterpreterapi.utils import CodeCallbackHandler
 from codeinterpreterapi.chains.functions_agent import OpenAIFunctionsAgent
 from codeinterpreterapi.prompts import code_interpreter_system_message
 from codeinterpreterapi.callbacks import CodeCallbackHandler
