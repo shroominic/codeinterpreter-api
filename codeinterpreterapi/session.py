@@ -7,7 +7,7 @@ from langchain.tools import StructuredTool
 from langchain.chat_models import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 from langchain.prompts.chat import MessagesPlaceholder
-from langchain.agents import AgentExecutor, BaseSingleActionAgent
+from langchain.agents import AgentExecutor, BaseSingleActionAgent, ConversationalChatAgent
 from langchain.memory import ConversationBufferMemory
 
 from codeinterpreterapi.config import settings
@@ -19,10 +19,10 @@ from codeinterpreterapi.schema import CodeInterpreterResponse, CodeInput, File, 
 
 
 class CodeInterpreterSession:
-    def __init__(self, model=None, openai_api_key=None) -> None:
+    def __init__(self, llm: Optional[BaseChatModel], **kwargs) -> None:
         self.codebox = CodeBox()
         self.tools: list[StructuredTool] = self._tools()
-        self.llm: BaseChatModel = self._llm(model, openai_api_key)
+        self.llm: BaseChatModel = llm or self._openai_llm(**kwargs)
         self.agent_executor: AgentExecutor = self._agent_executor()
         self.input_files: list[File] = []
         self.output_files: list[File] = []
@@ -45,10 +45,7 @@ class CodeInterpreterSession:
             ),
         ]
 
-    def _llm(self, model: Optional[str] = None, openai_api_key: Optional[str] = None) -> BaseChatModel:
-        if model is None:
-            model = "gpt-4"
-
+    def _openai_llm(self, model: str = "gpt-4", openai_api_key: Optional[str] = None) -> BaseChatModel:
         if openai_api_key is None:
             if settings.OPENAI_API_KEY is None:
                 raise ValueError("OpenAI API key missing.")
@@ -64,21 +61,31 @@ class CodeInterpreterSession:
         )  # type: ignore
 
     def _agent(self) -> BaseSingleActionAgent:
+        return ConversationalChatAgent.from_llm_and_tools(
+            llm=self.llm,
+            tools=self.tools,
+            system_message=code_interpreter_system_message,
+
+        )
+    
+    def _functions_agent(self) -> BaseSingleActionAgent:
         return OpenAIFunctionsAgent.from_llm_and_tools(
             llm=self.llm,
             tools=self.tools,
             system_message=code_interpreter_system_message,
-            extra_prompt_messages=[MessagesPlaceholder(variable_name="memory")],
+            extra_prompt_messages=[MessagesPlaceholder(variable_name="chat_history")],
         )
 
     def _agent_executor(self) -> AgentExecutor:
         return AgentExecutor.from_agent_and_tools(
-            agent=self._agent(),
+            agent=self._functions_agent() 
+                if isinstance(self.llm, ChatOpenAI) 
+                else self._agent(),
             callbacks=[CodeCallbackHandler(self)],
             max_iterations=9,
             tools=self.tools,
             verbose=settings.VERBOSE,
-            memory=ConversationBufferMemory(memory_key="memory", return_messages=True),
+            memory=ConversationBufferMemory(memory_key="chat_history", return_messages=True),
         )
 
     async def show_code(self, code: str) -> None:
