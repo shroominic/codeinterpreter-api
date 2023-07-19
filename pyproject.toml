@@ -7,11 +7,12 @@ readme = "README.md"
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.9,<3.9.7 || >3.9.7,<4.0"
 python-dotenv = "^1.0.0"
 openai = "^0.27.8"
 langchain = "^0.0.232"
 codeboxapi = "^0.0.8"
+streamlit = "^1.24.1"
 
 [tool.poetry.extras]
 image_support = ["Pillow"]

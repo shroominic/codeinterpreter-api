@@ -38,7 +38,7 @@ class File(BaseModel):
     async def asave(self, path: str):
         await asyncio.to_thread(self.save, path)
 
-    def show_image(self):
+    def get_image(self):
         try:
             from PIL import Image  # type: ignore
         except ImportError:
@@ -55,6 +55,11 @@ class File(BaseModel):
         # Convert image to RGB if it's not
         if img.mode not in ('RGB', 'L'):  # L is for greyscale images
             img = img.convert('RGB')
+
+        return img
+
+    def show_image(self):
+        img = self.get_image()
 
         # Display the image
         try:
