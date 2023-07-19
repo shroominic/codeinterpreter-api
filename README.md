@@ -40,7 +40,7 @@ async def main():
         "Plot the bitcoin chart of 2023 YTD"
     )
 
-    # ouput the response (text + image)
+    # output the response (text + image)
     print("AI: ", response.content)
     for file in response.files:
         file.show_image()
