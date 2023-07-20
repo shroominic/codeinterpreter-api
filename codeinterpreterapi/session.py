@@ -167,13 +167,10 @@ class CodeInterpreterSession:
     async def generate_response(
         self,
         user_msg: str,
-        files: Optional[list[File]] = None,
+        files: Optional[list[File]] = [],
         detailed_error: Optional[bool] = False,
     ) -> CodeInterpreterResponse:
         """Generate a Code Interpreter response based on the user's input."""
-        if files is None:
-            files = []
-
         user_request = UserRequest(content=user_msg, files=files)
         try:
             await self.input_handler(user_request)
