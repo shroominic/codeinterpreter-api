@@ -36,7 +36,7 @@ async def main():
     await session.astart()
 
     # generate a response based on user input
-    output = await session.generate_response(
+    response = await session.generate_response(
         "Plot the bitcoin chart of 2023 YTD"
     )
 
