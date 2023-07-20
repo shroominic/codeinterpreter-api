@@ -13,7 +13,7 @@ st.sidebar.markdown("[Github Repo](https://github.com/shroominic/codeinterpreter
 
 
 # This will create a textbox where you can input text
-input_text = st.text_input("Write your prompt")
+input_text = st.text_area("Write your prompt")
 uploaded_files = st.file_uploader("Choose a CSV file", accept_multiple_files=True,
                                   type=".csv")
 
