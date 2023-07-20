@@ -2,13 +2,16 @@ from codeinterpreterapi import CodeInterpreterSession
 import streamlit as st
 
 
-async def get_images(prompt: str):
+async def get_images(prompt: str, files: list = None):
+    if files is None:
+        files = []
     with st.chat_message("user"):
         st.write(prompt)
     with st.spinner():
         async with CodeInterpreterSession(model='gpt-3.5-turbo') as session:
             response = await session.generate_response(
-                prompt
+                prompt,
+                files=files
             )
 
             with st.chat_message("assistant"):

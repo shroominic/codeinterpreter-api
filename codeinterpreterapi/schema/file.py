@@ -7,6 +7,10 @@ class File(BaseModel):
     content: bytes
 
     @classmethod
+    def from_bytes(cls, name: str, content: bytes):
+        return cls(name=name, content=content)
+
+    @classmethod
     def from_path(cls, path: str):
         with open(path, "rb") as f:
             path = path.split("/")[-1]
