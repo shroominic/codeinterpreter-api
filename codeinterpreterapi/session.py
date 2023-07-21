@@ -3,7 +3,7 @@ from io import BytesIO
 from typing import Optional
 from codeboxapi import CodeBox  # type: ignore
 from codeboxapi.schema import CodeBoxOutput  # type: ignore
-from langchain.tools import StructuredTool
+from langchain.tools import StructuredTool, BaseTool
 from langchain.chat_models import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 from langchain.prompts.chat import MessagesPlaceholder
@@ -19,19 +19,25 @@ from codeinterpreterapi.schema import CodeInterpreterResponse, CodeInput, File, 
 
 
 class CodeInterpreterSession:
-    def __init__(self, llm: Optional[BaseChatModel], **kwargs) -> None:
+    def __init__(
+        self, 
+        llm: Optional[BaseChatModel], 
+        additional_tools: list[BaseTool], 
+        **kwargs
+    ) -> None:
         self.codebox = CodeBox()
-        self.tools: list[StructuredTool] = self._tools()
+        self.verbose = kwargs.get("verbose", settings.VERBOSE)
+        self.tools: list[BaseTool] = self._tools(additional_tools)
         self.llm: BaseChatModel = llm or self._openai_llm(**kwargs)
         self.agent_executor: AgentExecutor = self._agent_executor()
         self.input_files: list[File] = []
         self.output_files: list[File] = []
-    
+
     async def astart(self) -> None:
         await self.codebox.astart()
 
-    def _tools(self) -> list[StructuredTool]:
-        return [
+    def _tools(self, additional_tools: list[BaseTool] = []) -> list[BaseTool]:
+        return additional_tools + [
             StructuredTool(
                 name="python",
                 description=
@@ -47,10 +53,9 @@ class CodeInterpreterSession:
 
     def _openai_llm(self, model: str = "gpt-4", openai_api_key: Optional[str] = None) -> BaseChatModel:
         if openai_api_key is None:
-            if settings.OPENAI_API_KEY is None:
-                raise ValueError("OpenAI API key missing.")
-            else:
-                openai_api_key = settings.OPENAI_API_KEY
+            raise ValueError(
+                "OpenAI API key missing. Set OPENAI_API_KEY env variable or pass `openai_api_key` to session."
+            )
 
         return ChatOpenAI(
             temperature=0.03,
@@ -64,8 +69,8 @@ class CodeInterpreterSession:
         return ConversationalChatAgent.from_llm_and_tools(
             llm=self.llm,
             tools=self.tools,
-            system_message=code_interpreter_system_message,
-
+            system_message=code_interpreter_system_message.content,
+            # TODO: insert chat history as context
         )
     
     def _functions_agent(self) -> BaseSingleActionAgent:
@@ -84,13 +89,13 @@ class CodeInterpreterSession:
             callbacks=[CodeCallbackHandler(self)],
             max_iterations=9,
             tools=self.tools,
-            verbose=settings.VERBOSE,
+            verbose=self.verbose,
             memory=ConversationBufferMemory(memory_key="chat_history", return_messages=True),
         )
 
     async def show_code(self, code: str) -> None:
         """Callback function to show code to the user."""
-        if settings.VERBOSE:
+        if self.verbose:
             print(code)
 
     def _run_handler(self, code: str):
@@ -119,7 +124,7 @@ class CodeInterpreterSession:
                     return f"{package.group(1)} was missing but got installed now. Please try again."
             else: pass
                 # TODO: preanalyze error to optimize next code generation
-            if settings.VERBOSE:
+            if self.verbose:
                 print("Error:", output.content)
 
         elif modifications := await get_file_modifications(code, self.llm):
@@ -176,7 +181,7 @@ class CodeInterpreterSession:
             response = await self.agent_executor.arun(input=user_request.content)
             return await self._output_handler(response)
         except Exception as e:
-            if settings.VERBOSE:
+            if self.verbose:
                 import traceback
 
                 traceback.print_exc()
@@ -192,10 +197,10 @@ class CodeInterpreterSession:
 
     async def is_running(self) -> bool:
         return await self.codebox.astatus() == "running"
-    
+
     async def astop(self) -> None:
         await self.codebox.astop()
-    
+
     async def __aenter__(self) -> "CodeInterpreterSession":
         await self.astart()
         return self
