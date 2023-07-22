@@ -112,6 +112,14 @@ This helps me a lot in improving the code.
 
 Thanks!
 
+## Streamlit WebApp
+
+To start the web application created with streamlit:
+
+```bash
+streamlit run frontend/app.py
+```
+
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
