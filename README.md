@@ -36,7 +36,7 @@ async def main():
     await session.astart()
 
     # generate a response based on user input
-    output = await session.generate_response(
+    response = await session.generate_response(
         "Plot the bitcoin chart of 2023 YTD"
     )
 
@@ -47,7 +47,7 @@ async def main():
 
     # terminate the session
     await session.astop()
-    
+
 
 if __name__ == "__main__":
     import asyncio
@@ -73,7 +73,7 @@ async def main():
         files = [
             File.from_path("examples/assets/iris.csv"),
         ]
-        
+
         # generate the response
         response = await session.generate_response(
             user_request, files=files
@@ -96,20 +96,19 @@ Iris Dataset Analysis Output
 
 ## Production
 
-In case you want to deploy to production you can use the CodeBox API for easy scaling.
+In case you want to deploy to production, you can utilize the CodeBox API for seamless scalability.
 
-Please contact me if you interested in this, because it's still in early development.
+Please contact me if you are interested in this, as it is still in the early stages of development.
 
 ## Contributing
 
-There are some TODOs left in the code
-so if you want to contribute feel free to do so.
+There are some remaining TODOs in the code.
+So, if you want to contribute, feel free to do so.
 You can also suggest new features. Code refactoring is also welcome.
 Just open an issue or pull request and I will review it.
 
-Also please submit any bugs you find as an issue
-with a minimal code example or screenshot.
-This helps me a lot to improve the code.
+Please also submit any bugs you find as an issue with a minimal code example or screenshot.
+This helps me a lot in improving the code.
 
 Thanks!
 
@@ -124,8 +123,8 @@ But I prefer to use [Twitter](https://twitter.com/shroominic) or [Discord](https
 
 ## Support this project
 
-If you want to help this project with a donation you can [click here](https://ko-fi.com/shroominic).
-Thanks this helps alot! ❤️
+If you would like to help this project with a donation, you can [click here](https://ko-fi.com/shroominic).
+Thanks, this helps a lot! ❤️
 
 ## Star History
 
@@ -136,4 +135,3 @@ Thanks this helps alot! ❤️
     <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=shroominic/codeinterpreter-api&type=Date" />
   </picture>
 </a>
-
