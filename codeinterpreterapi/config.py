@@ -14,7 +14,7 @@ class CodeInterpreterAPISettings(BaseSettings):
     VERBOSE: bool = False
 
     CODEBOX_API_KEY: Optional[str] = None
-    OPENAI_API_KEY: Optional[str] = None
+    OPENAI_API_KEY: Optional[str] = "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"
 
 
 settings = CodeInterpreterAPISettings()
