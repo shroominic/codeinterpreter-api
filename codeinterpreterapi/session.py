@@ -1,3 +1,4 @@
+import os
 import uuid, base64, re
 from io import BytesIO
 from typing import Optional
@@ -9,24 +10,45 @@ from langchain.chat_models.base import BaseChatModel
 from langchain.prompts.chat import MessagesPlaceholder
 from langchain.agents import AgentExecutor, BaseSingleActionAgent
 from langchain.memory import ConversationBufferMemory
-
-from codeinterpreterapi.schema import CodeInterpreterResponse, CodeInput, File, UserRequest
+from langchain.memory.chat_message_histories import (
+    FileChatMessageHistory,
+    RedisChatMessageHistory,
+)
+from codeinterpreterapi.schema import (
+    CodeInterpreterResponse,
+    CodeInput,
+    File,
+    UserRequest,
+)
 from codeinterpreterapi.config import settings
 from codeinterpreterapi.chains.functions_agent import OpenAIFunctionsAgent
 from codeinterpreterapi.prompts import code_interpreter_system_message
 from codeinterpreterapi.callbacks import CodeCallbackHandler
 from codeinterpreterapi.chains.modifications_check import get_file_modifications
 from codeinterpreterapi.chains.remove_download_link import remove_download_link
+import uuid
 
 
 class CodeInterpreterSession:
     def __init__(
         self,
+        session_id=None,
         model=None,
         openai_api_key=settings.OPENAI_API_KEY,
         verbose=settings.VERBOSE,
-        tools: list[BaseTool] = None
+        tools: list[BaseTool] = None,
+        history_storage=os.environ['STORAGE_TYPE'],
     ) -> None:
+        if not session_id:
+            self.session_id = str(uuid.uuid4())
+        else:
+            self.session_id = session_id
+        self.history_storage = history_storage
+        if self.session_storage == 'file' and not os.path.exists(
+            os.environ['SESSION_FOLDER_STORAGE']
+        ):
+            os.mkdir(os.environ['SESSION_FOLDER_STORAGE'])
+
         self.codebox = CodeBox()
         self.verbose = verbose
         self.tools: list[BaseTool] = self._tools(tools)
@@ -54,7 +76,9 @@ class CodeInterpreterSession:
             ),
         ]
 
-    def _llm(self, model: Optional[str] = None, openai_api_key: Optional[str] = None) -> BaseChatModel:
+    def _llm(
+        self, model: Optional[str] = None, openai_api_key: Optional[str] = None
+    ) -> BaseChatModel:
         if model is None:
             model = "gpt-4"
 
@@ -80,13 +104,25 @@ class CodeInterpreterSession:
         )
 
     def _agent_executor(self) -> AgentExecutor:
+        if self.history_storage == "file":
+            history = FileChatMessageHistory(
+                f"{os.environ['SESSION_FOLDER_STORAGE']}/{self.session_id}.json"
+            )
+        elif self.history_storage == "redis":
+            history = RedisChatMessageHistory(
+                session_id=self.session_id,
+                url=f"redis://{os.environ['RD_HOST']}:{os.environ['RD_PORT']}",
+            )
+
         return AgentExecutor.from_agent_and_tools(
             agent=self._agent(),
             callbacks=[CodeCallbackHandler(self)],
             max_iterations=9,
             tools=self.tools,
             verbose=self.verbose,
-            memory=ConversationBufferMemory(memory_key="memory", return_messages=True),
+            memory=ConversationBufferMemory(
+                memory_key="memory", return_messages=True, chat_memory=history
+            ),
         )
 
     async def show_code(self, code: str) -> None:
@@ -118,8 +154,9 @@ class CodeInterpreterSession:
                 ):
                     await self.codebox.ainstall(package.group(1))
                     return f"{package.group(1)} was missing but got installed now. Please try again."
-            else: pass
-                # TODO: preanalyze error to optimize next code generation
+            else:
+                pass
+            # TODO: preanalyze error to optimize next code generation
             if self.verbose:
                 print("Error:", output.content)
 
