@@ -7,10 +7,10 @@ from langchain.schema import AIMessage, OutputParserException
 
 from codeinterpreterapi.prompts import determine_modifications_function, determine_modifications_prompt
 
-
+# openai functions based
 async def get_file_modifications(
     code: str,
-    llm: BaseLanguageModel,
+    llm: ChatOpenAI,
     retry: int = 2,
 ) -> Optional[List[str]]:
     if retry < 1:
@@ -28,6 +28,17 @@ async def get_file_modifications(
     else:
         function_call = json.loads(function_call["arguments"])
         return function_call["modifications"]
+
+
+async def get_file_modifications_normal(
+    code: str,
+    llm: BaseLanguageModel,
+    retry: int = 2,
+) -> Optional[List[str]]:
+    if retry < 1:
+        return None
+    return None
+    
 
 
 async def test():
