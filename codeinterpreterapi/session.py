@@ -25,7 +25,7 @@ class CodeInterpreterSession:
         model=None,
         openai_api_key=settings.OPENAI_API_KEY,
         verbose=settings.VERBOSE,
-        tools: list[BaseTool] = None
+        tools: list[BaseTool] = [],
     ) -> None:
         self.codebox = CodeBox()
         self.verbose = verbose
@@ -38,7 +38,7 @@ class CodeInterpreterSession:
     async def astart(self) -> None:
         await self.codebox.astart()
 
-    def _tools(self, additional_tools: list[BaseTool] = None) -> list[BaseTool]:
+    def _tools(self, additional_tools: list[BaseTool] = []) -> list[BaseTool]:
         additional_tools = additional_tools or []
         return additional_tools + [
             StructuredTool(
