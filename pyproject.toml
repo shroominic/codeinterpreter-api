@@ -15,7 +15,7 @@ codeboxapi = "^0.0.9"
 
 [tool.poetry.extras]
 image_support = ["Pillow"]
-streamlit_support = ["streamlit^1.24.1"]
+streamlit_support = ["streamlit"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.4.0"
