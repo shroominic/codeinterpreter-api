@@ -22,7 +22,7 @@ from codeinterpreterapi.chains.remove_download_link import remove_download_link
 class CodeInterpreterSession:
     def __init__(
         self,
-        model=None,
+        model="gpt-4",
         openai_api_key=settings.OPENAI_API_KEY,
         verbose=settings.VERBOSE,
         tools: list[BaseTool] = [],
@@ -38,8 +38,10 @@ class CodeInterpreterSession:
     async def astart(self) -> None:
         await self.codebox.astart()
 
-    def _tools(self, additional_tools: list[BaseTool] = []) -> list[BaseTool]:
-        additional_tools = additional_tools or []
+    def _tools(
+        self, 
+        additional_tools: list[BaseTool]
+    ) -> list[BaseTool]:
         return additional_tools + [
             StructuredTool(
                 name="python",
@@ -54,10 +56,11 @@ class CodeInterpreterSession:
             ),
         ]
 
-    def _llm(self, model: Optional[str] = None, openai_api_key: Optional[str] = None) -> BaseChatModel:
-        if model is None:
-            model = "gpt-4"
-
+    def _llm(
+        self, 
+        model: str, 
+        openai_api_key: Optional[str] = None
+    ) -> BaseChatModel:
         if openai_api_key is None:
             raise ValueError(
                 "OpenAI API key missing. Set OPENAI_API_KEY env variable or pass `openai_api_key` to session."
