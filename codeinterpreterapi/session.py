@@ -1,5 +1,6 @@
-import uuid, base64, re
+import uuid, base64, re, traceback
 from io import BytesIO
+from os import getenv
 from typing import Optional
 from codeboxapi import CodeBox  # type: ignore
 from codeboxapi.schema import CodeBoxOutput  # type: ignore
@@ -22,7 +23,7 @@ class CodeInterpreterSession:
     def __init__(
         self, 
         llm: Optional[BaseChatModel], 
-        additional_tools: list[BaseTool], 
+        additional_tools: list[BaseTool] = [], 
         **kwargs
     ) -> None:
         self.codebox = CodeBox()
@@ -36,7 +37,10 @@ class CodeInterpreterSession:
     async def astart(self) -> None:
         await self.codebox.astart()
 
-    def _tools(self, additional_tools: list[BaseTool] = []) -> list[BaseTool]:
+    def _tools(
+        self, 
+        additional_tools: list[BaseTool]
+    ) -> list[BaseTool]:
         return additional_tools + [
             StructuredTool(
                 name="python",
@@ -51,7 +55,16 @@ class CodeInterpreterSession:
             ),
         ]
 
-    def _openai_llm(self, model: str = "gpt-4", openai_api_key: Optional[str] = None) -> BaseChatModel:
+    def _openai_llm(
+        self, 
+        model: str = "gpt-4", 
+        openai_api_key: Optional[str] = None,
+    ) -> BaseChatModel:
+        openai_api_key = (
+            openai_api_key 
+            or settings.OPENAI_API_KEY 
+            or getenv("OPENAI_API_KEY", None)
+        )
         if openai_api_key is None:
             raise ValueError(
                 "OpenAI API key missing. Set OPENAI_API_KEY env variable or pass `openai_api_key` to session."
@@ -70,7 +83,6 @@ class CodeInterpreterSession:
             llm=self.llm,
             tools=self.tools,
             system_message=code_interpreter_system_message.content,
-            # TODO: insert chat history as context
         )
     
     def _functions_agent(self) -> BaseSingleActionAgent:
@@ -164,7 +176,11 @@ class CodeInterpreterSession:
                 final_response = re.sub(rf"\n\n!\[.*\]\(.*\)", "", final_response)
 
         if self.output_files and re.search(rf"\n\[.*\]\(.*\)", final_response):
-            final_response = await remove_download_link(final_response, self.llm)
+            try:
+                final_response = await remove_download_link(final_response, self.llm)
+            except Exception as e:
+                if self.verbose:
+                    print("Error while removing download links:", e)
 
         return CodeInterpreterResponse(content=final_response, files=self.output_files)
 
@@ -182,8 +198,6 @@ class CodeInterpreterSession:
             return await self._output_handler(response)
         except Exception as e:
             if self.verbose:
-                import traceback
-
                 traceback.print_exc()
             if detailed_error:
                 return CodeInterpreterResponse(
