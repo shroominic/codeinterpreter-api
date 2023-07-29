@@ -17,6 +17,11 @@ class CodeInterpreterResponse(AIMessage):
     # final_code: str = ""  TODO: implement
     # final_output: str = ""  TODO: implement
 
+    def show(self):
+        print("AI: ", self.content)
+        for file in self.files:
+            file.show_image()
+    
     def __str__(self):
         return self.content
 
