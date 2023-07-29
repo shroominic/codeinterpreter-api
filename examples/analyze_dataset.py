@@ -1,9 +1,11 @@
 from codeinterpreterapi import CodeInterpreterSession, File
+from langchain.chat_models.anthropic import ChatAnthropic
 
 
 async def main():
+    llm = ChatAnthropic(model="claude-2")
     # context manager for start/stop of the session
-    async with CodeInterpreterSession() as session:
+    async with CodeInterpreterSession(llm=llm) as session:
         # define the user request
         user_request = "Analyze this dataset and plot something interesting about it."
         files = [
