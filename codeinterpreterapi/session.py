@@ -34,6 +34,9 @@ class CodeInterpreterSession:
         self.input_files: list[File] = []
         self.output_files: list[File] = []
 
+    def start(self) -> None:
+        self.codebox.start()
+    
     async def astart(self) -> None:
         await self.codebox.astart()
 
@@ -48,6 +51,8 @@ class CodeInterpreterSession:
                 # TODO: variables as context to the agent
                 # TODO: current files as context to the agent
                 "Input a string of code to a python interpreter (jupyter kernel). "
+                "Write the entire code in a single string. This string can "
+                "be really long, so you can use the `;` character to split lines. "
                 "Variables are preserved between runs. ",
                 func=self._run_handler,
                 coroutine=self._arun_handler,

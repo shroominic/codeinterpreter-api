@@ -5,6 +5,8 @@ from typing import Union
 from langchain.agents import AgentOutputParser
 from langchain.output_parsers.json import parse_json_markdown
 from langchain.schema import AgentAction, AgentFinish, OutputParserException
+from langchain.chat_models.base import BaseChatModel
+from codeinterpreterapi.chains import extract_python_code
 
 
 class CodeAgentOutputParser(AgentOutputParser):
@@ -37,7 +39,7 @@ class CodeChatAgentOutputParser(AgentOutputParser):
         from langchain.agents.conversational_chat.prompt import FORMAT_INSTRUCTIONS
         return FORMAT_INSTRUCTIONS
 
-    def parse(self, text: str) -> Union[AgentAction, AgentFinish]:
+    def parse(self, text: str, llm: BaseChatModel) -> Union[AgentAction, AgentFinish]:
         try:
             response = parse_json_markdown(text)
             action, action_input = response["action"], response["action_input"]
@@ -46,7 +48,16 @@ class CodeChatAgentOutputParser(AgentOutputParser):
             else:
                 return AgentAction(action, action_input, text)
         except Exception as e:
-            raise OutputParserException(f"Could not parse LLM output: {text}") from e
+            if '"action": "python"' in text:
+                # extract python code from text with prompt
+                text = extract_python_code(text, llm=llm)
+                match = re.search(r"```python\n(.*?)```", text)
+                if match:
+                    code = match.group(1).replace("\\n", "; ")
+                    return AgentAction("python", code, text)
+
+            raise OutputParserException(f"Could not parse LLM output: `{text}`")
+                
 
     @property
     def _type(self) -> str:
