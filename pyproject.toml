@@ -2,7 +2,7 @@
 name = "codeinterpreterapi"
 version = "0.0.8"
 description = "CodeInterpreterAPI is an unofficial and open source python interface for the ChatGPT CodeInterpreter."
-authors = ["Shroominic <pleurae-berets.0u@icloud.com>"]
+authors = ["Shroominic <contact@shroominic.com>"]
 readme = "README.md"
 license = "MIT"
 
