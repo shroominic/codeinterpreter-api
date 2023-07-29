@@ -8,11 +8,11 @@ from langchain.tools import StructuredTool, BaseTool
 from langchain.chat_models import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 from langchain.prompts.chat import MessagesPlaceholder
-from langchain.agents import AgentExecutor, BaseSingleActionAgent, ConversationalChatAgent
+from langchain.agents import AgentExecutor, BaseSingleActionAgent, ConversationalChatAgent, ConversationalAgent
 from langchain.memory import ConversationBufferMemory
 
 from codeinterpreterapi.config import settings
-from codeinterpreterapi.utils import CodeCallbackHandler
+from codeinterpreterapi.utils import CodeCallbackHandler, CodeAgentOutputParser, CodeChatAgentOutputParser
 from codeinterpreterapi.chains.functions_agent import OpenAIFunctionsAgent
 from codeinterpreterapi.prompts import code_interpreter_system_message
 from codeinterpreterapi.chains import get_file_modifications, remove_download_link
@@ -22,7 +22,7 @@ from codeinterpreterapi.schema import CodeInterpreterResponse, CodeInput, File, 
 class CodeInterpreterSession:
     def __init__(
         self, 
-        llm: Optional[BaseChatModel], 
+        llm: Optional[BaseChatModel] = None, 
         additional_tools: list[BaseTool] = [], 
         **kwargs
     ) -> None:
@@ -79,10 +79,19 @@ class CodeInterpreterSession:
         )  # type: ignore
 
     def _agent(self) -> BaseSingleActionAgent:
+        return ConversationalAgent.from_llm_and_tools(
+            llm=self.llm,
+            tools=self.tools,
+            prefix=code_interpreter_system_message.content,
+            output_parser=CodeAgentOutputParser(),
+        )
+    
+    def _chat_agent(self) -> BaseSingleActionAgent:
         return ConversationalChatAgent.from_llm_and_tools(
             llm=self.llm,
             tools=self.tools,
             system_message=code_interpreter_system_message.content,
+            output_parser=CodeChatAgentOutputParser(),
         )
     
     def _functions_agent(self) -> BaseSingleActionAgent:
@@ -95,8 +104,10 @@ class CodeInterpreterSession:
 
     def _agent_executor(self) -> AgentExecutor:
         return AgentExecutor.from_agent_and_tools(
-            agent=self._functions_agent() 
-                if isinstance(self.llm, ChatOpenAI) 
+            agent=self._functions_agent()
+                if isinstance(self.llm, ChatOpenAI)
+                else self._chat_agent()
+                if isinstance(self.llm, BaseChatModel)
                 else self._agent(),
             callbacks=[CodeCallbackHandler(self)],
             max_iterations=9,
