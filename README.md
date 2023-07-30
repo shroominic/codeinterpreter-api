@@ -127,7 +127,7 @@ streamlit run frontend/app.py
 ## Contact
 
 You can contact me at [contact@shroominic.com](mailto:contact@shroominic.com).
-But I prefer to use [Twitter](https://twitter.com/shroominic) or [Discord](https://gptassistant.app/community) DMs.
+But I prefer to use [Twitter](https://twitter.com/shroominic) or [Discord](https://discord.gg/QYzBtq37) DMs.
 
 ## Support this project
 
