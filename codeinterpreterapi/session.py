@@ -5,15 +5,16 @@ from typing import Optional
 from codeboxapi import CodeBox  # type: ignore
 from codeboxapi.schema import CodeBoxOutput  # type: ignore
 from langchain.tools import StructuredTool, BaseTool
-from langchain.chat_models import ChatOpenAI
+from langchain.chat_models import ChatOpenAI, ChatAnthropic
 from langchain.chat_models.base import BaseChatModel
+from langchain.schema.language_model import BaseLanguageModel
 from langchain.prompts.chat import MessagesPlaceholder
 from langchain.agents import AgentExecutor, BaseSingleActionAgent, ConversationalChatAgent, ConversationalAgent
 from langchain.memory import ConversationBufferMemory
 
 from codeinterpreterapi.config import settings
 from codeinterpreterapi.utils import CodeCallbackHandler, CodeAgentOutputParser, CodeChatAgentOutputParser
-from codeinterpreterapi.chains.functions_agent import OpenAIFunctionsAgent
+from codeinterpreterapi.agents.functions_agent import OpenAIFunctionsAgent
 from codeinterpreterapi.prompts import code_interpreter_system_message
 from codeinterpreterapi.chains import get_file_modifications, remove_download_link
 from codeinterpreterapi.schema import CodeInterpreterResponse, CodeInput, File, UserRequest
@@ -22,14 +23,14 @@ from codeinterpreterapi.schema import CodeInterpreterResponse, CodeInput, File, 
 class CodeInterpreterSession:
     def __init__(
         self, 
-        llm: Optional[BaseChatModel] = None, 
+        llm: Optional[BaseLanguageModel] = None, 
         additional_tools: list[BaseTool] = [], 
         **kwargs
     ) -> None:
         self.codebox = CodeBox()
         self.verbose = kwargs.get("verbose", settings.VERBOSE)
         self.tools: list[BaseTool] = self._tools(additional_tools)
-        self.llm: BaseChatModel = llm or self._openai_llm(**kwargs)
+        self.llm: BaseLanguageModel = llm or self._choose_llm(**kwargs)
         self.agent_executor: AgentExecutor = self._agent_executor()
         self.input_files: list[File] = []
         self.output_files: list[File] = []
@@ -60,60 +61,61 @@ class CodeInterpreterSession:
             ),
         ]
 
-    def _openai_llm(
-        self, 
-        model: str = "gpt-4", 
+    def _choose_llm(
+        self,
+        model: str = "gpt-4",
         openai_api_key: Optional[str] = None,
+        **kwargs
     ) -> BaseChatModel:
-        openai_api_key = (
-            openai_api_key 
-            or settings.OPENAI_API_KEY 
-            or getenv("OPENAI_API_KEY", None)
-        )
-        if openai_api_key is None:
-            raise ValueError(
-                "OpenAI API key missing. Set OPENAI_API_KEY env variable or pass `openai_api_key` to session."
+        if "gpt" in model:
+            openai_api_key = (
+                openai_api_key 
+                or settings.OPENAI_API_KEY 
+                or getenv("OPENAI_API_KEY", None)
             )
+            if openai_api_key is None:
+                raise ValueError(
+                    "OpenAI API key missing. Set OPENAI_API_KEY env variable or pass `openai_api_key` to session."
+                )
+            return ChatOpenAI(
+                temperature=0.03,
+                model=model,
+                openai_api_key=openai_api_key,
+                max_retries=3,
+                request_timeout=60 * 3,
+            )  # type: ignore
+        elif "claude" in model:
+            return ChatAnthropic(model=model)
+        else:
+            raise ValueError(f"Unknown model: {model} (expected gpt or claude model)")
 
-        return ChatOpenAI(
-            temperature=0.03,
-            model=model,
-            openai_api_key=openai_api_key,
-            max_retries=3,
-            request_timeout=60 * 3,
-        )  # type: ignore
-
-    def _agent(self) -> BaseSingleActionAgent:
-        return ConversationalAgent.from_llm_and_tools(
-            llm=self.llm,
-            tools=self.tools,
-            prefix=code_interpreter_system_message.content,
-            output_parser=CodeAgentOutputParser(),
-        )
-    
-    def _chat_agent(self) -> BaseSingleActionAgent:
-        return ConversationalChatAgent.from_llm_and_tools(
-            llm=self.llm,
-            tools=self.tools,
-            system_message=code_interpreter_system_message.content,
-            output_parser=CodeChatAgentOutputParser(),
-        )
-    
-    def _functions_agent(self) -> BaseSingleActionAgent:
-        return OpenAIFunctionsAgent.from_llm_and_tools(
-            llm=self.llm,
-            tools=self.tools,
-            system_message=code_interpreter_system_message,
-            extra_prompt_messages=[MessagesPlaceholder(variable_name="chat_history")],
+    def _choose_agent(self) -> BaseSingleActionAgent:
+        return (
+            OpenAIFunctionsAgent.from_llm_and_tools(
+                llm=self.llm,
+                tools=self.tools,
+                system_message=code_interpreter_system_message,
+                extra_prompt_messages=[MessagesPlaceholder(variable_name="chat_history")],
+            )
+            if isinstance(self.llm, ChatOpenAI)
+            else ConversationalChatAgent.from_llm_and_tools(
+                llm=self.llm,
+                tools=self.tools,
+                system_message=code_interpreter_system_message.content,
+                output_parser=CodeChatAgentOutputParser(),
+            )
+            if isinstance(self.llm, BaseChatModel)
+            else ConversationalAgent.from_llm_and_tools(
+                llm=self.llm,
+                tools=self.tools,
+                prefix=code_interpreter_system_message.content,
+                output_parser=CodeAgentOutputParser(),
+            )
         )
 
     def _agent_executor(self) -> AgentExecutor:
         return AgentExecutor.from_agent_and_tools(
-            agent=self._functions_agent()
-                if isinstance(self.llm, ChatOpenAI)
-                else self._chat_agent()
-                if isinstance(self.llm, BaseChatModel)
-                else self._agent(),
+            agent=self._choose_agent(),
             callbacks=[CodeCallbackHandler(self)],
             max_iterations=9,
             tools=self.tools,
@@ -131,6 +133,7 @@ class CodeInterpreterSession:
 
     async def _arun_handler(self, code: str):
         """Run code in container and send the output to the user"""
+        print("Running code in container...", code)
         output: CodeBoxOutput = await self.codebox.arun(code)
 
         if not isinstance(output.content, str):
@@ -150,8 +153,9 @@ class CodeInterpreterSession:
                 ):
                     await self.codebox.ainstall(package.group(1))
                     return f"{package.group(1)} was missing but got installed now. Please try again."
-            else: pass
+            else: 
                 # TODO: preanalyze error to optimize next code generation
+                pass
             if self.verbose:
                 print("Error:", output.content)
 
