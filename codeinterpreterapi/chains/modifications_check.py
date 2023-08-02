@@ -3,8 +3,6 @@ from typing import List, Optional
 
 from langchain.base_language import BaseLanguageModel
 from langchain.chat_models.anthropic import ChatAnthropic
-from langchain.chat_models.openai import ChatOpenAI
-from langchain.schema import AIMessage, OutputParserException
 
 from codeinterpreterapi.prompts import determine_modifications_prompt
 

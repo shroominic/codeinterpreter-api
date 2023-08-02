@@ -6,7 +6,6 @@ from langchain/agents/openai_functions_agent/base.py.
 Credits go to the original authors :)
 """
 
-
 import json
 from dataclasses import dataclass
 from json import JSONDecodeError
@@ -30,7 +29,6 @@ from langchain.schema import (
     BaseMessage,
     BasePromptTemplate,
     FunctionMessage,
-    HumanMessage,
     OutputParserException,
     SystemMessage,
 )

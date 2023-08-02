@@ -56,7 +56,7 @@ class CodeChatAgentOutputParser(AgentOutputParser):
                 return AgentFinish({"output": action_input}, text)
             else:
                 return AgentAction(action, action_input, text)
-        except Exception as e:
+        except Exception:
             if '"action": "python"' in text:
                 # extract python code from text with prompt
                 text = extract_python_code(text, llm=llm) or ""

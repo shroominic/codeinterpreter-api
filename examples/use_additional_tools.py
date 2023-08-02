@@ -6,10 +6,9 @@ and plot it for you
 """
 import csv
 import io
-from datetime import datetime
 from typing import Any
 
-from langchain.tools import BaseTool, tool
+from langchain.tools import BaseTool
 
 from codeinterpreterapi import CodeInterpreterSession
 
@@ -35,7 +34,7 @@ class ExampleKnowledgeBaseTool(BaseTool):
 async def main():
     async with CodeInterpreterSession(tools=[ExampleKnowledgeBaseTool()]) as session:
         response = await session.generate_response(
-            f"Plot chart of company employee salaries"
+            "Plot chart of company employee salaries"
         )
 
         print("AI: ", response.content)

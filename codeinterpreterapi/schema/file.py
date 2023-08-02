@@ -44,7 +44,9 @@ class File(BaseModel):
             from PIL import Image  # type: ignore
         except ImportError:
             print(
-                "Please install it with `pip install codeinterpreterapi[image_support]` to display images."
+                "Please install it with "
+                "`pip install 'codeinterpreterapi[image_support]'`"
+                " to display images."
             )
             exit(1)
 
@@ -67,7 +69,8 @@ class File(BaseModel):
             # Try to get the IPython shell if available.
             shell = get_ipython().__class__.__name__  # type: ignore
 
-            # If the shell is ZMQInteractiveShell, it means we're in a Jupyter notebook or similar.
+            # If the shell is ZMQInteractiveShell,
+            # it means we're in a Jupyter notebook or similar.
             if shell == "ZMQInteractiveShell":
                 from IPython.display import display  # type: ignore
 

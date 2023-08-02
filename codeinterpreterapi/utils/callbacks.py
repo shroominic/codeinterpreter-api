@@ -24,7 +24,8 @@ class CodeCallbackHandler(AsyncIteratorCallbackHandler):
         """Run on agent action."""
         if action.tool == "python":
             await self.session.show_code(
-                f"⚙️ Running code: ```python\n{action.tool_input['code']}\n```"  # type: ignore
+                "⚙️ Running code: "
+                f"```python\n{action.tool_input['code']}\n```"  # type: ignore
             )
         else:
             raise ValueError(f"Unknown action: {action.tool}")

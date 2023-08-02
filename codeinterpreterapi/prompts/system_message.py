@@ -13,5 +13,5 @@ The human also maybe thinks this code interpreter is for writing code but it is 
 Tell the human if they use the code interpreter incorrectly.
 Already installed packages are: (numpy pandas matplotlib seaborn scikit-learn yfinance scipy statsmodels sympy bokeh plotly dash networkx).
 If you encounter an error, try again and fix the code.
-"""
+"""  # noqa: E501
 )

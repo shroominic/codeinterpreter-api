@@ -57,7 +57,7 @@ class CodeInterpreterSession:
         self.codebox.start()
 
     async def astart(self) -> None:
-        if type(self.codebox) != CodeBox:
+        if type(self.codebox) is not CodeBox:
             # check if jupyter-kernel-gateway is installed
             import pkg_resources  # type: ignore
 
@@ -65,7 +65,8 @@ class CodeInterpreterSession:
                 pkg_resources.get_distribution("jupyter-kernel-gateway")
             except pkg_resources.DistributionNotFound:
                 print(
-                    "Make sure 'jupyter-kernel-gateway' is installed when using without a CODEBOX_API_KEY.\n"
+                    "Make sure 'jupyter-kernel-gateway' is installed "
+                    "when using without a CODEBOX_API_KEY.\n"
                     "You can install it with 'pip install jupyter-kernel-gateway'."
                 )
                 exit(1)
@@ -75,10 +76,7 @@ class CodeInterpreterSession:
         return additional_tools + [
             StructuredTool(
                 name="python",
-                description=
-                # TODO: variables as context to the agent
-                # TODO: current files as context to the agent
-                "Input a string of code to a python interpreter (jupyter kernel). "
+                description="Input a string of code to a ipython interpreter. "
                 "Write the entire code in a single string. This string can "
                 "be really long, so you can use the `;` character to split lines. "
                 "Variables are preserved between runs. ",
@@ -99,7 +97,8 @@ class CodeInterpreterSession:
             )
             if openai_api_key is None:
                 raise ValueError(
-                    "OpenAI API key missing. Set OPENAI_API_KEY env variable or pass `openai_api_key` to session."
+                    "OpenAI API key missing. Set OPENAI_API_KEY env variable "
+                    "or pass `openai_api_key` to session."
                 )
             return ChatOpenAI(
                 temperature=0.03,
@@ -180,7 +179,10 @@ class CodeInterpreterSession:
                     r"ModuleNotFoundError: No module named '(.*)'", output.content
                 ):
                     await self.codebox.ainstall(package.group(1))
-                    return f"{package.group(1)} was missing but got installed now. Please try again."
+                    return (
+                        f"{package.group(1)} was missing but "
+                        "got installed now. Please try again."
+                    )
             else:
                 # TODO: preanalyze error to optimize next code generation
                 pass
@@ -203,6 +205,8 @@ class CodeInterpreterSession:
         return output.content
 
     async def _input_handler(self, request: UserRequest):
+        # TODO: variables as context to the agent
+        # TODO: current files as context to the agent
         if not request.files:
             return
         if not request.content:
@@ -221,9 +225,9 @@ class CodeInterpreterSession:
         for file in self.output_files:
             if str(file.name) in final_response:
                 # rm ![Any](file.name) from the response
-                final_response = re.sub(rf"\n\n!\[.*\]\(.*\)", "", final_response)
+                final_response = re.sub(r"\n\n!\[.*\]\(.*\)", "", final_response)
 
-        if self.output_files and re.search(rf"\n\[.*\]\(.*\)", final_response):
+        if self.output_files and re.search(r"\n\[.*\]\(.*\)", final_response):
             try:
                 final_response = await remove_download_link(final_response, self.llm)
             except Exception as e:
@@ -249,7 +253,8 @@ class CodeInterpreterSession:
                 traceback.print_exc()
             if detailed_error:
                 return CodeInterpreterResponse(
-                    content=f"Error in CodeInterpreterSession: {e.__class__.__name__}  - {e}"
+                    content="Error in CodeInterpreterSession: "
+                    f"{e.__class__.__name__}  - {e}"
                 )
             else:
                 return CodeInterpreterResponse(

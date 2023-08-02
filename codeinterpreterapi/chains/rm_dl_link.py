@@ -23,8 +23,10 @@ async def remove_download_link(
 async def test():
     llm = ChatOpenAI(model="gpt-3.5-turbo-0613")  # type: ignore
 
-    example = "I have created the plot to your dataset.\n\nLink to the file [here](sandbox:/plot.png)."
-
+    example = (
+        "I have created the plot to your dataset.\n\n"
+        "Link to the file [here](sandbox:/plot.png)."
+    )
     print(await remove_download_link(example, llm))
 
 
