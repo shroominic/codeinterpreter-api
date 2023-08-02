@@ -68,7 +68,7 @@ class File(BaseModel):
 
             # If the shell is ZMQInteractiveShell, it means we're in a Jupyter notebook or similar.
             if shell == 'ZMQInteractiveShell':
-                from IPython.display import display
+                from IPython.display import display  # type: ignore
                 display(img)
             else:
                 # We're not in a Jupyter notebook.

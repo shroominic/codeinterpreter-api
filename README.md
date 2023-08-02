@@ -19,8 +19,11 @@ You can run everything local except the LLM using your own OpenAI API Key.
 Get your OpenAI API Key [here](https://platform.openai.com/account/api-keys) and install the package.
 
 ```bash
-pip install codeinterpreterapi
+pip install "codeinterpreterapi[all]"
 ```
+
+Everything for local experiments are installed with the `all` extra.
+For deployments, you can use `pip install codeinterpreterapi` instead which does not install the additional dependencies.
 
 ## Usage
 

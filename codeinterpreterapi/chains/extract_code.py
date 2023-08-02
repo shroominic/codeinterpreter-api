@@ -6,29 +6,15 @@ from langchain.chat_models.openai import ChatOpenAI
 from langchain.chat_models.anthropic import ChatAnthropic
 from langchain.schema import AIMessage, OutputParserException
 
-from codeinterpreterapi.prompts import determine_modifications_prompt
+# from codeinterpreterapi.prompts import extract_code_prompt
 
 
-async def get_file_modifications(
-    code: str,
+async def extract_python_code(
+    text: str,
     llm: BaseLanguageModel,
     retry: int = 2,
-) -> Optional[List[str]]:
-    if retry < 1:
-        return None
-
-    prompt = determine_modifications_prompt.format(code=code)
-
-    result = await llm.apredict(prompt, stop="```")
-
-    
-    try:
-        result = json.loads(result)
-    except json.JSONDecodeError:
-        result = ""
-    if not result or not isinstance(result, dict) or "modifications" not in result:
-        return await get_file_modifications(code, llm, retry=retry - 1)
-    return result["modifications"]
+) -> Optional[str]:
+    pass
     
 
 async def test():
@@ -49,7 +35,7 @@ async def test():
         plt.show()
         """
     
-    print(await get_file_modifications(code, llm))
+    print(await extract_python_code(code, llm))
     
 
 if __name__ == "__main__":
