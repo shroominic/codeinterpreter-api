@@ -43,7 +43,12 @@ class CodeChatAgentOutputParser(AgentOutputParser):
 
         return FORMAT_INSTRUCTIONS
 
-    def parse(self, text: str, llm: BaseChatModel) -> Union[AgentAction, AgentFinish]:
+    def parse(self, text: str) -> Union[AgentAction, AgentFinish]:
+        raise NotImplementedError
+
+    async def aparse(
+        self, text: str, llm: BaseChatModel
+    ) -> Union[AgentAction, AgentFinish]:
         try:
             response = parse_json_markdown(text)
             action, action_input = response["action"], response["action_input"]
@@ -54,12 +59,11 @@ class CodeChatAgentOutputParser(AgentOutputParser):
         except Exception as e:
             if '"action": "python"' in text:
                 # extract python code from text with prompt
-                text = extract_python_code(text, llm=llm)
+                text = extract_python_code(text, llm=llm) or ""
                 match = re.search(r"```python\n(.*?)```", text)
                 if match:
                     code = match.group(1).replace("\\n", "; ")
                     return AgentAction("python", code, text)
-
             raise OutputParserException(f"Could not parse LLM output: `{text}`")
 
     @property

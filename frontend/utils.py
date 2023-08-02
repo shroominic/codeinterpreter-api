@@ -1,8 +1,9 @@
 import os
 import shutil
 import tempfile
+from typing import Optional
 
-import streamlit as st
+import streamlit as st  # type: ignore
 
 from codeinterpreterapi import CodeInterpreterSession
 
@@ -15,7 +16,7 @@ def create_temp_folder() -> str:
     return temp_folder
 
 
-async def get_images(prompt: str, files: list = None):
+async def get_images(prompt: str, files: Optional[list] = None):
     if files is None:
         files = []
     with st.chat_message("user"):

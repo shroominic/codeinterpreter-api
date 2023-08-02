@@ -9,11 +9,12 @@ from langchain.schema import AIMessage, OutputParserException
 # from codeinterpreterapi.prompts import extract_code_prompt
 
 
-async def extract_python_code(
+# TODO: make async
+def extract_python_code(
     text: str,
     llm: BaseLanguageModel,
     retry: int = 2,
-) -> Optional[str]:
+):
     pass
 
 
@@ -34,7 +35,7 @@ async def test():
         plt.show()
         """
 
-    print(await extract_python_code(code, llm))
+    print(extract_python_code(code, llm))
 
 
 if __name__ == "__main__":
