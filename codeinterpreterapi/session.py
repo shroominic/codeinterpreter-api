@@ -13,10 +13,10 @@ from langchain.agents import AgentExecutor, BaseSingleActionAgent, Conversationa
 from langchain.memory import ConversationBufferMemory
 
 from codeinterpreterapi.config import settings
-from codeinterpreterapi.utils import CodeCallbackHandler, CodeAgentOutputParser, CodeChatAgentOutputParser
-from codeinterpreterapi.agents.functions_agent import OpenAIFunctionsAgent
+from codeinterpreterapi.agents import OpenAIFunctionsAgent
 from codeinterpreterapi.prompts import code_interpreter_system_message
 from codeinterpreterapi.chains import get_file_modifications, remove_download_link
+from codeinterpreterapi.utils import CodeCallbackHandler, CodeAgentOutputParser, CodeChatAgentOutputParser
 from codeinterpreterapi.schema import CodeInterpreterResponse, CodeInput, File, UserRequest
 
 
