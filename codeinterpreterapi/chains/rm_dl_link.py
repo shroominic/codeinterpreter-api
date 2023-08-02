@@ -9,7 +9,9 @@ async def remove_download_link(
     input_response: str,
     llm: BaseLanguageModel,
 ) -> str:
-    messages = remove_dl_link_prompt.format_prompt(input_response=input_response).to_messages()
+    messages = remove_dl_link_prompt.format_prompt(
+        input_response=input_response
+    ).to_messages()
     message = await llm.apredict_messages(messages)
 
     if not isinstance(message, AIMessage):
@@ -28,7 +30,9 @@ async def test():
 
 if __name__ == "__main__":
     import asyncio
+
     from dotenv import load_dotenv
+
     load_dotenv()
 
     asyncio.run(test())

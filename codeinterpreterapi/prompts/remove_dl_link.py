@@ -1,13 +1,5 @@
-from langchain.prompts.chat import (
-    ChatPromptTemplate,
-    HumanMessagePromptTemplate,
-)
-from langchain.schema import (
-    AIMessage,
-    SystemMessage,
-    HumanMessage,
-)
-
+from langchain.prompts.chat import ChatPromptTemplate, HumanMessagePromptTemplate
+from langchain.schema import AIMessage, HumanMessage, SystemMessage
 
 remove_dl_link_prompt = ChatPromptTemplate(
     input_variables=["input_response"],

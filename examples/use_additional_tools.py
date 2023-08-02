@@ -9,7 +9,7 @@ import io
 from datetime import datetime
 from typing import Any
 
-from langchain.tools import tool, BaseTool
+from langchain.tools import BaseTool, tool
 
 from codeinterpreterapi import CodeInterpreterSession
 
@@ -24,11 +24,11 @@ class ExampleKnowledgeBaseTool(BaseTool):
     async def _arun(self, *args, **kwargs: Any) -> Any:
         f = io.StringIO()
         writer = csv.writer(f)
-        writer.writerow(['month', 'employee', 'salary'])
-        writer.writerow(['march 2022', 'Jan', '1200'])
-        writer.writerow(['march 2022', 'Ola', '1500'])
-        writer.writerow(['april 2022', 'Jan', '1800'])
-        writer.writerow(['april 2022', 'Ola', '2000'])
+        writer.writerow(["month", "employee", "salary"])
+        writer.writerow(["march 2022", "Jan", "1200"])
+        writer.writerow(["march 2022", "Ola", "1500"])
+        writer.writerow(["april 2022", "Jan", "1800"])
+        writer.writerow(["april 2022", "Ola", "2000"])
         return f.getvalue()
 
 

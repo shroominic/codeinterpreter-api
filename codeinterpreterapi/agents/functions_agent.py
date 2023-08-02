@@ -1,7 +1,7 @@
 """
 Module implements an agent that uses OpenAI's APIs function enabled API.
 
-This file is a modified version of the original file 
+This file is a modified version of the original file
 from langchain/agents/openai_functions_agent/base.py.
 Credits go to the original authors :)
 """
@@ -12,14 +12,11 @@ from dataclasses import dataclass
 from json import JSONDecodeError
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
-from pydantic import root_validator
-
 from langchain.agents import BaseSingleActionAgent
 from langchain.base_language import BaseLanguageModel
 from langchain.callbacks.base import BaseCallbackManager
 from langchain.callbacks.manager import Callbacks
 from langchain.chat_models.openai import ChatOpenAI
-from langchain.schema import BasePromptTemplate
 from langchain.prompts.chat import (
     BaseMessagePromptTemplate,
     ChatPromptTemplate,
@@ -31,13 +28,15 @@ from langchain.schema import (
     AgentFinish,
     AIMessage,
     BaseMessage,
+    BasePromptTemplate,
     FunctionMessage,
-    OutputParserException,
     HumanMessage,
+    OutputParserException,
     SystemMessage,
 )
 from langchain.tools import BaseTool
 from langchain.tools.convert_to_openai import format_tool_to_openai_function
+from pydantic import root_validator
 
 
 @dataclass

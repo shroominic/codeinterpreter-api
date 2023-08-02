@@ -1,7 +1,8 @@
+from typing import TYPE_CHECKING, Any, Optional
 from uuid import UUID
-from typing import Any, Optional, TYPE_CHECKING
-from langchain.schema import AgentAction
+
 from langchain.callbacks import AsyncIteratorCallbackHandler
+from langchain.schema import AgentAction
 
 if TYPE_CHECKING:
     from codeinterpreterapi.session import CodeInterpreterSession

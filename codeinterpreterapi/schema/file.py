@@ -1,4 +1,5 @@
 import asyncio
+
 from pydantic import BaseModel
 
 
@@ -53,8 +54,8 @@ class File(BaseModel):
         img = Image.open(img_io)
 
         # Convert image to RGB if it's not
-        if img.mode not in ('RGB', 'L'):  # L is for greyscale images
-            img = img.convert('RGB')
+        if img.mode not in ("RGB", "L"):  # L is for greyscale images
+            img = img.convert("RGB")
 
         return img
 
@@ -67,8 +68,9 @@ class File(BaseModel):
             shell = get_ipython().__class__.__name__  # type: ignore
 
             # If the shell is ZMQInteractiveShell, it means we're in a Jupyter notebook or similar.
-            if shell == 'ZMQInteractiveShell':
+            if shell == "ZMQInteractiveShell":
                 from IPython.display import display  # type: ignore
+
                 display(img)
             else:
                 # We're not in a Jupyter notebook.
@@ -76,8 +78,6 @@ class File(BaseModel):
         except NameError:
             # We're probably not in an IPython environment, use PIL's show.
             img.show()
-
-
 
     def __str__(self):
         return self.name
