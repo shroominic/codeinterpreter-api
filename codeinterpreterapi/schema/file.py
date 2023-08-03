@@ -70,6 +70,7 @@ class File(BaseModel):
             # If the shell is in a Jupyter notebook or similar.
             if shell == "ZMQInteractiveShell" or shell == "Shell":
                 from IPython.display import display  # type: ignore
+
                 display(img)
             else:
                 img.show()
