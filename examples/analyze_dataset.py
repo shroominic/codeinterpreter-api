@@ -14,9 +14,7 @@ async def main():
         response = await session.generate_response(user_request, files=files)
 
         # output the response (text + image)
-        print("AI: ", response.content)
-        for file in response.files:
-            file.show_image()
+        response.show()
 
 
 if __name__ == "__main__":

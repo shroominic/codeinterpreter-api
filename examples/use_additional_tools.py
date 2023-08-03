@@ -37,9 +37,7 @@ async def main():
             "Plot chart of company employee salaries"
         )
 
-        print("AI: ", response.content)
-        for file in response.files:
-            file.show_image()
+        response.show()
 
 
 if __name__ == "__main__":
