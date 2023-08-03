@@ -57,19 +57,6 @@ class CodeInterpreterSession:
         self.codebox.start()
 
     async def astart(self) -> None:
-        if type(self.codebox) is not CodeBox:
-            # check if jupyter-kernel-gateway is installed
-            import pkg_resources  # type: ignore
-
-            try:
-                pkg_resources.get_distribution("jupyter-kernel-gateway")
-            except pkg_resources.DistributionNotFound:
-                print(
-                    "Make sure 'jupyter-kernel-gateway' is installed "
-                    "when using without a CODEBOX_API_KEY.\n"
-                    "You can install it with 'pip install jupyter-kernel-gateway'."
-                )
-                exit(1)
         await self.codebox.astart()
 
     def _tools(self, additional_tools: list[BaseTool]) -> list[BaseTool]:
