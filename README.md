@@ -22,11 +22,6 @@ Get your OpenAI API Key [here](https://platform.openai.com/account/api-keys) and
 pip install codeinterpreterapi
 ```
 
-### Using docker
-```bash
-docker-compose up --build
-```
-
 ## Usage
 
 Make sure to set the `OPENAI_API_KEY` environment variable (or use a `.env` file)
