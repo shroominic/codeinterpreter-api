@@ -1,4 +1,5 @@
-from langchain.schema import HumanMessage, AIMessage  # type: ignore
+from langchain.schema import AIMessage, HumanMessage  # type: ignore
+
 from .file import File
 
 
@@ -16,6 +17,11 @@ class CodeInterpreterResponse(AIMessage):
     files: list[File] = []
     # final_code: str = ""  TODO: implement
     # final_output: str = ""  TODO: implement
+
+    def show(self):
+        print("AI: ", self.content)
+        for file in self.files:
+            file.show_image()
 
     def __str__(self):
         return self.content

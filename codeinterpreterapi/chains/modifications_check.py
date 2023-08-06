@@ -2,10 +2,9 @@ import json
 from typing import List, Optional
 
 from langchain.base_language import BaseLanguageModel
-from langchain.chat_models.openai import ChatOpenAI
-from langchain.schema import AIMessage, OutputParserException
+from langchain.chat_models.anthropic import ChatAnthropic
 
-from codeinterpreterapi.prompts import determine_modifications_function, determine_modifications_prompt
+from codeinterpreterapi.prompts import determine_modifications_prompt
 
 
 async def get_file_modifications(
@@ -15,44 +14,45 @@ async def get_file_modifications(
 ) -> Optional[List[str]]:
     if retry < 1:
         return None
-    messages = determine_modifications_prompt.format_prompt(code=code).to_messages()
-    message = await llm.apredict_messages(messages, functions=[determine_modifications_function])
 
-    if not isinstance(message, AIMessage):
-        raise OutputParserException("Expected an AIMessage")
+    prompt = determine_modifications_prompt.format(code=code)
 
-    function_call = message.additional_kwargs.get("function_call", None)
+    result = await llm.apredict(prompt, stop="```")
 
-    if function_call is None:
+    try:
+        result = json.loads(result)
+    except json.JSONDecodeError:
+        result = ""
+    if not result or not isinstance(result, dict) or "modifications" not in result:
         return await get_file_modifications(code, llm, retry=retry - 1)
-    else:
-        function_call = json.loads(function_call["arguments"])
-        return function_call["modifications"]
+    return result["modifications"]
 
 
 async def test():
-    llm = ChatOpenAI(model="gpt-3.5")  # type: ignore
+    llm = ChatAnthropic(model="claude-1.3")  # type: ignore
 
     code = """
-    import matplotlib.pyplot as plt
+        import matplotlib.pyplot as plt
 
-    x = list(range(1, 11))
-    y = [29, 39, 23, 32, 4, 43, 43, 23, 43, 77]
+        x = list(range(1, 11))
+        y = [29, 39, 23, 32, 4, 43, 43, 23, 43, 77]
 
-    plt.plot(x, y, marker='o')
-    plt.xlabel('Index')
-    plt.ylabel('Value')
-    plt.title('Data Plot')
+        plt.plot(x, y, marker='o')
+        plt.xlabel('Index')
+        plt.ylabel('Value')
+        plt.title('Data Plot')
 
-    plt.show()
-    """
+        plt.show()
+        """
 
     print(await get_file_modifications(code, llm))
 
 
 if __name__ == "__main__":
     import asyncio
-    from dotenv import load_dotenv
-    load_dotenv()
+
+    import dotenv
+
+    dotenv.load_dotenv()
 
     asyncio.run(test())

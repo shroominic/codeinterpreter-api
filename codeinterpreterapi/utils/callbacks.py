@@ -1,7 +1,8 @@
+from typing import TYPE_CHECKING, Any, Optional
 from uuid import UUID
-from typing import Any, Optional, TYPE_CHECKING
-from langchain.schema import AgentAction
+
 from langchain.callbacks import AsyncIteratorCallbackHandler
+from langchain.schema import AgentAction
 
 if TYPE_CHECKING:
     from codeinterpreterapi.session import CodeInterpreterSession
@@ -23,7 +24,8 @@ class CodeCallbackHandler(AsyncIteratorCallbackHandler):
         """Run on agent action."""
         if action.tool == "python":
             await self.session.show_code(
-                f"⚙️ Running code: ```python\n{action.tool_input['code']}\n```"  # type: ignore
+                "⚙️ Running code: "
+                f"```python\n{action.tool_input['code']}\n```"  # type: ignore
             )
         else:
             raise ValueError(f"Unknown action: {action.tool}")

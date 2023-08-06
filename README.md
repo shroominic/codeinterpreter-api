@@ -19,8 +19,11 @@ You can run everything local except the LLM using your own OpenAI API Key.
 Get your OpenAI API Key [here](https://platform.openai.com/account/api-keys) and install the package.
 
 ```bash
-pip install codeinterpreterapi
+pip install "codeinterpreterapi[all]"
 ```
+
+Everything for local experiments are installed with the `all` extra.
+For deployments, you can use `pip install codeinterpreterapi` instead which does not install the additional dependencies.
 
 ## Usage
 
@@ -56,7 +59,7 @@ if __name__ == "__main__":
 
 ```
 
-![Bitcoin YTD](https://github.com/shroominic/codeinterpreter-api/blob/main/examples/assets/bitcoin_chart.png?raw=true)  
+![Bitcoin YTD](https://github.com/shroominic/codeinterpreter-api/blob/main/examples/assets/bitcoin_chart.png?raw=true)
 Bitcoin YTD Chart Output
 
 ## Dataset Analysis
@@ -91,7 +94,7 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-![Iris Dataset Analysis](https://github.com/shroominic/codeinterpreter-api/blob/main/examples/assets/iris_analysis.png?raw=true)  
+![Iris Dataset Analysis](https://github.com/shroominic/codeinterpreter-api/blob/main/examples/assets/iris_analysis.png?raw=true)
 Iris Dataset Analysis Output
 
 ## Production
@@ -127,7 +130,7 @@ streamlit run frontend/app.py
 ## Contact
 
 You can contact me at [contact@shroominic.com](mailto:contact@shroominic.com).
-But I prefer to use [Twitter](https://twitter.com/shroominic) or [Discord](https://gptassistant.app/community) DMs.
+But I prefer to use [Twitter](https://twitter.com/shroominic) or [Discord](https://discord.gg/QYzBtq37) DMs.
 
 ## Support this project
 
