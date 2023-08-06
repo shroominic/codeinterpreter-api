@@ -1,4 +1,5 @@
 import asyncio
+
 from pydantic import BaseModel
 
 
@@ -43,7 +44,9 @@ class File(BaseModel):
             from PIL import Image  # type: ignore
         except ImportError:
             print(
-                "Please install it with `pip install codeinterpreterapi[image_support]` to display images."
+                "Please install it with "
+                "`pip install 'codeinterpreterapi[image_support]'`"
+                " to display images."
             )
             exit(1)
 
@@ -53,31 +56,26 @@ class File(BaseModel):
         img = Image.open(img_io)
 
         # Convert image to RGB if it's not
-        if img.mode not in ('RGB', 'L'):  # L is for greyscale images
-            img = img.convert('RGB')
+        if img.mode not in ("RGB", "L"):  # L is for greyscale images
+            img = img.convert("RGB")
 
         return img
 
     def show_image(self):
         img = self.get_image()
-
         # Display the image
         try:
             # Try to get the IPython shell if available.
             shell = get_ipython().__class__.__name__  # type: ignore
-
-            # If the shell is ZMQInteractiveShell, it means we're in a Jupyter notebook or similar.
-            if shell == 'ZMQInteractiveShell':
+            # If the shell is in a Jupyter notebook or similar.
+            if shell == "ZMQInteractiveShell" or shell == "Shell":
                 from IPython.display import display  # type: ignore
+
                 display(img)
             else:
-                # We're not in a Jupyter notebook.
                 img.show()
         except NameError:
-            # We're probably not in an IPython environment, use PIL's show.
             img.show()
-
-
 
     def __str__(self):
         return self.name

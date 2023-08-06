@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
 ```
 
-![Bitcoin YTD](https://github.com/shroominic/codeinterpreter-api/blob/main/examples/assets/bitcoin_chart.png?raw=true)  
+![Bitcoin YTD](https://github.com/shroominic/codeinterpreter-api/blob/main/examples/assets/bitcoin_chart.png?raw=true)
 Bitcoin YTD Chart Output
 
 ## Dataset Analysis
@@ -110,7 +110,7 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-![Iris Dataset Analysis](https://github.com/shroominic/codeinterpreter-api/blob/main/examples/assets/iris_analysis.png?raw=true)  
+![Iris Dataset Analysis](https://github.com/shroominic/codeinterpreter-api/blob/main/examples/assets/iris_analysis.png?raw=true)
 Iris Dataset Analysis Output
 
 ## Production

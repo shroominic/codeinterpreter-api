@@ -1,11 +1,13 @@
 from __future__ import annotations
+
 import re
 from typing import Union
 
 from langchain.agents import AgentOutputParser
+from langchain.chat_models.base import BaseChatModel
 from langchain.output_parsers.json import parse_json_markdown
 from langchain.schema import AgentAction, AgentFinish, OutputParserException
-from langchain.chat_models.base import BaseChatModel
+
 from codeinterpreterapi.chains import extract_python_code
 
 
@@ -14,6 +16,7 @@ class CodeAgentOutputParser(AgentOutputParser):
 
     def get_format_instructions(self) -> str:
         from langchain.agents.conversational.prompt import FORMAT_INSTRUCTIONS
+
         return FORMAT_INSTRUCTIONS
 
     def parse(self, text: str) -> Union[AgentAction, AgentFinish]:
@@ -32,14 +35,20 @@ class CodeAgentOutputParser(AgentOutputParser):
     @property
     def _type(self) -> str:
         return "conversational"
-    
-    
+
+
 class CodeChatAgentOutputParser(AgentOutputParser):
     def get_format_instructions(self) -> str:
         from langchain.agents.conversational_chat.prompt import FORMAT_INSTRUCTIONS
+
         return FORMAT_INSTRUCTIONS
 
-    def parse(self, text: str, llm: BaseChatModel) -> Union[AgentAction, AgentFinish]:
+    def parse(self, text: str) -> Union[AgentAction, AgentFinish]:
+        raise NotImplementedError
+
+    async def aparse(
+        self, text: str, llm: BaseChatModel
+    ) -> Union[AgentAction, AgentFinish]:
         try:
             response = parse_json_markdown(text)
             action, action_input = response["action"], response["action_input"]
@@ -47,17 +56,15 @@ class CodeChatAgentOutputParser(AgentOutputParser):
                 return AgentFinish({"output": action_input}, text)
             else:
                 return AgentAction(action, action_input, text)
-        except Exception as e:
+        except Exception:
             if '"action": "python"' in text:
                 # extract python code from text with prompt
-                text = extract_python_code(text, llm=llm)
+                text = extract_python_code(text, llm=llm) or ""
                 match = re.search(r"```python\n(.*?)```", text)
                 if match:
                     code = match.group(1).replace("\\n", "; ")
                     return AgentAction("python", code, text)
-
             raise OutputParserException(f"Could not parse LLM output: `{text}`")
-                
 
     @property
     def _type(self) -> str:

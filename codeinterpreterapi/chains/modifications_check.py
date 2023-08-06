@@ -2,9 +2,7 @@ import json
 from typing import List, Optional
 
 from langchain.base_language import BaseLanguageModel
-from langchain.chat_models.openai import ChatOpenAI
 from langchain.chat_models.anthropic import ChatAnthropic
-from langchain.schema import AIMessage, OutputParserException
 
 from codeinterpreterapi.prompts import determine_modifications_prompt
 
@@ -21,7 +19,6 @@ async def get_file_modifications(
 
     result = await llm.apredict(prompt, stop="```")
 
-    
     try:
         result = json.loads(result)
     except json.JSONDecodeError:
@@ -29,13 +26,12 @@ async def get_file_modifications(
     if not result or not isinstance(result, dict) or "modifications" not in result:
         return await get_file_modifications(code, llm, retry=retry - 1)
     return result["modifications"]
-    
+
 
 async def test():
     llm = ChatAnthropic(model="claude-1.3")  # type: ignore
-    
-    code = \
-        """
+
+    code = """
         import matplotlib.pyplot as plt
 
         x = list(range(1, 11))
@@ -48,12 +44,15 @@ async def test():
 
         plt.show()
         """
-    
+
     print(await get_file_modifications(code, llm))
-    
+
 
 if __name__ == "__main__":
-    import asyncio, dotenv
+    import asyncio
+
+    import dotenv
+
     dotenv.load_dotenv()
 
     asyncio.run(test())

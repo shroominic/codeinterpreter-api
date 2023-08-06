@@ -1,31 +1,49 @@
-import uuid, base64, re, traceback
+import base64
+import re
+import traceback
+import uuid
 from io import BytesIO
 from os import getenv
 from typing import Optional
+
 from codeboxapi import CodeBox  # type: ignore
 from codeboxapi.schema import CodeBoxOutput  # type: ignore
-from langchain.tools import StructuredTool, BaseTool
-from langchain.chat_models import ChatOpenAI, ChatAnthropic, AzureChatOpenAI
+from langchain.agents import (
+    AgentExecutor,
+    BaseSingleActionAgent,
+    ConversationalAgent,
+    ConversationalChatAgent,
+)
+from langchain.chat_models import ChatAnthropic, ChatOpenAI, AzureChatOpenAI
 from langchain.chat_models.base import BaseChatModel
-from langchain.schema.language_model import BaseLanguageModel
-from langchain.prompts.chat import MessagesPlaceholder
-from langchain.agents import AgentExecutor, BaseSingleActionAgent, ConversationalChatAgent, ConversationalAgent
 from langchain.memory import ConversationBufferMemory
+from langchain.prompts.chat import MessagesPlaceholder
+from langchain.schema.language_model import BaseLanguageModel
+from langchain.tools import BaseTool, StructuredTool
 
-from codeinterpreterapi.config import settings
 from codeinterpreterapi.agents import OpenAIFunctionsAgent
-from codeinterpreterapi.prompts import code_interpreter_system_message
 from codeinterpreterapi.chains import get_file_modifications, remove_download_link
-from codeinterpreterapi.utils import CodeCallbackHandler, CodeAgentOutputParser, CodeChatAgentOutputParser
-from codeinterpreterapi.schema import CodeInterpreterResponse, CodeInput, File, UserRequest
+from codeinterpreterapi.config import settings
+from codeinterpreterapi.prompts import code_interpreter_system_message
+from codeinterpreterapi.schema import (
+    CodeInput,
+    CodeInterpreterResponse,
+    File,
+    UserRequest,
+)
+from codeinterpreterapi.utils import (
+    CodeAgentOutputParser,
+    CodeCallbackHandler,
+    CodeChatAgentOutputParser,
+)
 
 
 class CodeInterpreterSession:
     def __init__(
-        self, 
-        llm: Optional[BaseLanguageModel] = None, 
-        additional_tools: list[BaseTool] = [], 
-        **kwargs
+        self,
+        llm: Optional[BaseLanguageModel] = None,
+        additional_tools: list[BaseTool] = [],
+        **kwargs,
     ) -> None:
         self.codebox = CodeBox()
         self.verbose = kwargs.get("verbose", settings.VERBOSE)
@@ -37,32 +55,15 @@ class CodeInterpreterSession:
 
     def start(self) -> None:
         self.codebox.start()
-    
+
     async def astart(self) -> None:
-        if type(self.codebox) != CodeBox:
-            # check if jupyter-kernel-gateway is installed
-            import pkg_resources  # type: ignore
-            try:
-                pkg_resources.get_distribution("jupyter-kernel-gateway")
-            except pkg_resources.DistributionNotFound:
-                print(
-                    "Make sure 'jupyter-kernel-gateway' is installed when using without a CODEBOX_API_KEY.\n"
-                    "You can install it with 'pip install jupyter-kernel-gateway'."
-                )
-                exit(1)
         await self.codebox.astart()
 
-    def _tools(
-        self, 
-        additional_tools: list[BaseTool]
-    ) -> list[BaseTool]:
+    def _tools(self, additional_tools: list[BaseTool]) -> list[BaseTool]:
         return additional_tools + [
             StructuredTool(
                 name="python",
-                description=
-                # TODO: variables as context to the agent
-                # TODO: current files as context to the agent
-                "Input a string of code to a python interpreter (jupyter kernel). "
+                description="Input a string of code to a ipython interpreter. "
                 "Write the entire code in a single string. This string can "
                 "be really long, so you can use the `;` character to split lines. "
                 "Variables are preserved between runs. ",
@@ -73,20 +74,18 @@ class CodeInterpreterSession:
         ]
 
     def _choose_llm(
-        self,
-        model: str = "gpt-4",
-        openai_api_key: Optional[str] = None,
-        **kwargs
+        self, model: str = "gpt-4", openai_api_key: Optional[str] = None, **kwargs
     ) -> BaseChatModel:
         if "gpt" in model:
             openai_api_key = (
-                openai_api_key 
-                or settings.OPENAI_API_KEY 
+                openai_api_key
+                or settings.OPENAI_API_KEY
                 or getenv("OPENAI_API_KEY", None)
             )
             if openai_api_key is None:
                 raise ValueError(
-                    "OpenAI API key missing. Set OPENAI_API_KEY env variable or pass `openai_api_key` to session."
+                    "OpenAI API key missing. Set OPENAI_API_KEY env variable "
+                    "or pass `openai_api_key` to session."
                 )
             openai_api_version = getenv("OPENAI_API_VERSION")
             openai_api_base = getenv("OPENAI_API_BASE")
@@ -121,7 +120,9 @@ class CodeInterpreterSession:
                 llm=self.llm,
                 tools=self.tools,
                 system_message=code_interpreter_system_message,
-                extra_prompt_messages=[MessagesPlaceholder(variable_name="chat_history")],
+                extra_prompt_messages=[
+                    MessagesPlaceholder(variable_name="chat_history")
+                ],
             )
             if isinstance(self.llm, ChatOpenAI)
             else ConversationalChatAgent.from_llm_and_tools(
@@ -146,7 +147,9 @@ class CodeInterpreterSession:
             max_iterations=9,
             tools=self.tools,
             verbose=self.verbose,
-            memory=ConversationBufferMemory(memory_key="chat_history", return_messages=True),
+            memory=ConversationBufferMemory(
+                memory_key="chat_history", return_messages=True
+            ),
         )
 
     async def show_code(self, code: str) -> None:
@@ -178,8 +181,11 @@ class CodeInterpreterSession:
                     r"ModuleNotFoundError: No module named '(.*)'", output.content
                 ):
                     await self.codebox.ainstall(package.group(1))
-                    return f"{package.group(1)} was missing but got installed now. Please try again."
-            else: 
+                    return (
+                        f"{package.group(1)} was missing but "
+                        "got installed now. Please try again."
+                    )
+            else:
                 # TODO: preanalyze error to optimize next code generation
                 pass
             if self.verbose:
@@ -201,6 +207,8 @@ class CodeInterpreterSession:
         return output.content
 
     async def _input_handler(self, request: UserRequest):
+        # TODO: variables as context to the agent
+        # TODO: current files as context to the agent
         if not request.files:
             return
         if not request.content:
@@ -219,9 +227,9 @@ class CodeInterpreterSession:
         for file in self.output_files:
             if str(file.name) in final_response:
                 # rm ![Any](file.name) from the response
-                final_response = re.sub(rf"\n\n!\[.*\]\(.*\)", "", final_response)
+                final_response = re.sub(r"\n\n!\[.*\]\(.*\)", "", final_response)
 
-        if self.output_files and re.search(rf"\n\[.*\]\(.*\)", final_response):
+        if self.output_files and re.search(r"\n\[.*\]\(.*\)", final_response):
             try:
                 final_response = await remove_download_link(final_response, self.llm)
             except Exception as e:
@@ -247,7 +255,8 @@ class CodeInterpreterSession:
                 traceback.print_exc()
             if detailed_error:
                 return CodeInterpreterResponse(
-                    content=f"Error in CodeInterpreterSession: {e.__class__.__name__}  - {e}"
+                    content="Error in CodeInterpreterSession: "
+                    f"{e.__class__.__name__}  - {e}"
                 )
             else:
                 return CodeInterpreterResponse(

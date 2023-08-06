@@ -1,11 +1,5 @@
-"""
-The exciting part about this example is
-that the code interpreter has internet access
-so it can download the bitcoin chart from yahoo finance
-and plot it for you
-"""
-
 from datetime import datetime
+
 from codeinterpreterapi import CodeInterpreterSession
 
 
@@ -17,9 +11,8 @@ async def main():
             f"Plot the bitcoin chart of 2023 YTD (today is {currentdate})"
         )
 
-        print("AI: ", response.content)
-        for file in response.files:
-            file.show_image()
+        # prints the text and shows the image
+        response.show()
 
 
 if __name__ == "__main__":
