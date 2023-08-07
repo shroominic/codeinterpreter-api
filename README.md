@@ -31,18 +31,18 @@ To configure OpenAI and Azure OpenAI, ensure that you set the appropriate enviro
 
 For OpenAI, set the OPENAI_API_KEY environment variable:
 ```
-export OPENAI_API_KEY=your_openai_api_key  
+export OPENAI_API_KEY=your_openai_api_key
 ```
- 
+
 For Azure OpenAI, set the following environment variables:
 ```
-export OPENAI_API_TYPE=azure  
-export OPENAI_API_VERSION=your_api_version  
-export OPENAI_API_BASE=your_api_base  
-export OPENAI_API_KEY=your_azure_openai_api_key  
-export DEPLOYMENT_NAME=your_deployment_name  
+export OPENAI_API_TYPE=azure
+export OPENAI_API_VERSION=your_api_version
+export OPENAI_API_BASE=your_api_base
+export OPENAI_API_KEY=your_azure_openai_api_key
+export DEPLOYMENT_NAME=your_deployment_name
 ```
- 
+
 Remember to replace the placeholders with your actual API keys and other required information.
 
 ```python

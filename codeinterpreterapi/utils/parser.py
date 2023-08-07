@@ -39,8 +39,7 @@ class CodeAgentOutputParser(AgentOutputParser):
 
 class CodeChatAgentOutputParser(AgentOutputParser):
     def get_format_instructions(self) -> str:
-        from langchain.agents.conversational_chat.prompt import \
-            FORMAT_INSTRUCTIONS
+        from langchain.agents.conversational_chat.prompt import FORMAT_INSTRUCTIONS
 
         return FORMAT_INSTRUCTIONS
 

@@ -22,15 +22,20 @@ from langchain.schema.language_model import BaseLanguageModel
 from langchain.tools import BaseTool, StructuredTool
 
 from codeinterpreterapi.agents import OpenAIFunctionsAgent
-from codeinterpreterapi.chains import (get_file_modifications,
-                                       remove_download_link)
+from codeinterpreterapi.chains import get_file_modifications, remove_download_link
 from codeinterpreterapi.config import settings
 from codeinterpreterapi.prompts import code_interpreter_system_message
-from codeinterpreterapi.schema import (CodeInput, CodeInterpreterResponse,
-                                       File, UserRequest)
-from codeinterpreterapi.utils import (CodeAgentOutputParser,
-                                      CodeCallbackHandler,
-                                      CodeChatAgentOutputParser)
+from codeinterpreterapi.schema import (
+    CodeInput,
+    CodeInterpreterResponse,
+    File,
+    UserRequest,
+)
+from codeinterpreterapi.utils import (
+    CodeAgentOutputParser,
+    CodeCallbackHandler,
+    CodeChatAgentOutputParser,
+)
 
 
 class CodeInterpreterSession:
@@ -86,7 +91,12 @@ class CodeInterpreterSession:
             openai_api_base = getenv("OPENAI_API_BASE")
             deployment_name = getenv("DEPLOYMENT_NAME")
             openapi_type = getenv("OPENAI_API_TYPE")
-            if openapi_type == "azure" and openai_api_version and openai_api_base and deployment_name:
+            if (
+                openapi_type == "azure"
+                and openai_api_version
+                and openai_api_base
+                and deployment_name
+            ):
                 return AzureChatOpenAI(
                     temperature=0.03,
                     openai_api_base=openai_api_base,
@@ -94,7 +104,7 @@ class CodeInterpreterSession:
                     deployment_name=deployment_name,
                     openai_api_key=openai_api_key,
                     max_retries=3,
-                    request_timeout=60*3
+                    request_timeout=60 * 3,
                 )
             else:
                 return ChatOpenAI(
