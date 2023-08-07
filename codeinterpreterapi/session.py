@@ -8,8 +8,12 @@ from typing import Optional
 
 from codeboxapi import CodeBox  # type: ignore
 from codeboxapi.schema import CodeBoxOutput  # type: ignore
-from langchain.agents import (AgentExecutor, BaseSingleActionAgent,
-                              ConversationalAgent, ConversationalChatAgent)
+from langchain.agents import (
+    AgentExecutor,
+    BaseSingleActionAgent,
+    ConversationalAgent,
+    ConversationalChatAgent,
+)
 from langchain.chat_models import AzureChatOpenAI, ChatAnthropic, ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 from langchain.memory import ConversationBufferMemory
