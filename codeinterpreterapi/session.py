@@ -8,13 +8,9 @@ from typing import Optional
 
 from codeboxapi import CodeBox  # type: ignore
 from codeboxapi.schema import CodeBoxOutput  # type: ignore
-from langchain.agents import (
-    AgentExecutor,
-    BaseSingleActionAgent,
-    ConversationalAgent,
-    ConversationalChatAgent,
-)
-from langchain.chat_models import ChatAnthropic, ChatOpenAI, AzureChatOpenAI
+from langchain.agents import (AgentExecutor, BaseSingleActionAgent,
+                              ConversationalAgent, ConversationalChatAgent)
+from langchain.chat_models import AzureChatOpenAI, ChatAnthropic, ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts.chat import MessagesPlaceholder
@@ -22,20 +18,15 @@ from langchain.schema.language_model import BaseLanguageModel
 from langchain.tools import BaseTool, StructuredTool
 
 from codeinterpreterapi.agents import OpenAIFunctionsAgent
-from codeinterpreterapi.chains import get_file_modifications, remove_download_link
+from codeinterpreterapi.chains import (get_file_modifications,
+                                       remove_download_link)
 from codeinterpreterapi.config import settings
 from codeinterpreterapi.prompts import code_interpreter_system_message
-from codeinterpreterapi.schema import (
-    CodeInput,
-    CodeInterpreterResponse,
-    File,
-    UserRequest,
-)
-from codeinterpreterapi.utils import (
-    CodeAgentOutputParser,
-    CodeCallbackHandler,
-    CodeChatAgentOutputParser,
-)
+from codeinterpreterapi.schema import (CodeInput, CodeInterpreterResponse,
+                                       File, UserRequest)
+from codeinterpreterapi.utils import (CodeAgentOutputParser,
+                                      CodeCallbackHandler,
+                                      CodeChatAgentOutputParser)
 
 
 class CodeInterpreterSession:
