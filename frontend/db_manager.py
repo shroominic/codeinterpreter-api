@@ -69,30 +69,38 @@ class DBManager:
         return self.fetch_query("SELECT * FROM chats ORDER BY updated_at DESC")
 
     def get_chat(self, chat_id):
-        return self.fetch_query("SELECT * FROM chats WHERE id = ?", (chat_id,))[0]
+        return self.fetch_query("SELECT * FROM chats WHERE id = ?",
+                                (chat_id,))[0]
 
     # Chat Message Operations
     def save_message(self, chat_id, category, content):
         now = datetime.now()
         self.execute_query('''
-            INSERT INTO chat_messages (chat_id, category, content, created_at, updated_at)
+            INSERT INTO chat_messages (chat_id, category,
+                           content, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?)
         ''', (chat_id, category, content, now, now))
         return self.cursor.lastrowid
 
     def get_chat_messages(self, chat_id):
-        return self.fetch_query("SELECT * FROM chat_messages WHERE chat_id = ?", (chat_id,))
+        return self.fetch_query("SELECT * FROM chat_messages "
+                                "WHERE chat_id = ?",
+                                (chat_id,))
 
     def get_chat_message(self, chat_message_id):
-        return self.fetch_query("SELECT * FROM chat_messages WHERE id = ?", (chat_message_id,))[0]
+        return self.fetch_query("SELECT * FROM chat_messages WHERE id = ?",
+                                (chat_message_id,))[0]
 
     # File Operations
     def save_file(self, chat_message_id, name, content):
         now = datetime.now()
         self.execute_query('''
-            INSERT INTO generated_files (chat_message_id, name, content, created_at, updated_at)
+            INSERT INTO generated_files (chat_message_id, name,
+                           content, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?)
         ''', (chat_message_id, name, content, now, now))
 
     def get_generated_files(self, chat_message_id):
-        return self.fetch_query("SELECT * FROM generated_files WHERE chat_message_id = ?", (chat_message_id,))
+        return self.fetch_query("SELECT * FROM generated_files "
+                                "WHERE chat_message_id = ?",
+                                (chat_message_id,))
