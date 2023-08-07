@@ -1,5 +1,4 @@
-from codeinterpreterapi import CodeInterpreterSession
-from codeinterpreterapi import File
+from codeinterpreterapi import CodeInterpreterSession, File
 
 
 class CodeInterpreter:

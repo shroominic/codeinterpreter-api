@@ -1,11 +1,12 @@
-import traceback
 import asyncio
-import streamlit as st
-from codeinterpreterapi.config import settings
-from db_manager import DBManager
-from code_interpreter import CodeInterpreter
+import traceback
 from datetime import datetime
 
+import streamlit as st
+from code_interpreter import CodeInterpreter
+from db_manager import DBManager
+
+from codeinterpreterapi.config import settings
 
 # App title
 st.set_page_config(page_title="Code Interpreter API 🚀", layout="wide")
