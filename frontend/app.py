@@ -8,6 +8,14 @@ from db_manager import DBManager
 
 from codeinterpreterapi.config import settings
 
+
+def show_image(file_: bytes, caption: str = ""):
+    try:
+        st.image(file_, caption=caption)
+    except Exception as ex:
+        print("Cannot display file: ", ex)
+
+
 # App title
 st.set_page_config(page_title="Code Interpreter API 🚀", layout="wide")
 # Replicate Credentials
@@ -90,7 +98,7 @@ if settings.OPENAI_API_KEY is not None:
                         for file in files:
                             data = file[3]
                             file_name = file[2]
-                            st.image(data)
+                            show_image(data)
                             st.download_button(
                                 label=f"Download: {file_name}",
                                 data=data,
@@ -123,7 +131,7 @@ if settings.OPENAI_API_KEY is not None:
                             data = file.content
                             file_name = file.name
                             db.save_file(message_id, file_name, data)
-                            st.image(data, caption=user_message)
+                            show_image(data, caption=user_message)
                             st.download_button(
                                 label=f"Download: {file_name}",
                                 data=data,
