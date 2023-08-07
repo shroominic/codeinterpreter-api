@@ -15,8 +15,7 @@ with st.sidebar:
     if settings.OPENAI_API_KEY is not None:
         st.success("OpenAI API key already provided!", icon="✅")
     else:
-        openai_api = st.text_input("Enter your OpenAI API token:",
-                                   type="password")
+        openai_api = st.text_input("Enter your OpenAI API token:", type="password")
         if not openai_api.startswith("sk"):
             st.warning("Please enter your credentials!", icon="⚠️")
         else:
@@ -25,8 +24,7 @@ with st.sidebar:
             st.experimental_rerun()
 
     st.markdown(
-        "📖 Learn more "
-        "[here](https://github.com/shroominic/codeinterpreter-api)"
+        "📖 Learn more [here](https://github.com/shroominic/codeinterpreter-api)"
     )
 
 if settings.OPENAI_API_KEY is not None:
@@ -52,8 +50,7 @@ if settings.OPENAI_API_KEY is not None:
             st.session_state.current_chat = db.get_chat(chat_id)
             st.session_state.chats = db.get_chats()
         st.session_state.current_chat = st.radio(
-            "Chat Histories", st.session_state.chats,
-            format_func=lambda x: x[1]
+            "Chat Histories", st.session_state.chats, format_func=lambda x: x[1]
         )
 
     header_container = st.container()
@@ -61,8 +58,9 @@ if settings.OPENAI_API_KEY is not None:
     form_container = st.container()
 
     if st.session_state.current_chat is None:
-        st.caption("Please select a chat history or press "
-                   "'New Chat' from the sidebar")
+        st.caption(
+            "Please select a chat history or press " "'New Chat' from the sidebar"
+        )
     else:
         chat_id = st.session_state.current_chat[0]
         chat_title = st.session_state.current_chat[1]
@@ -103,23 +101,18 @@ if settings.OPENAI_API_KEY is not None:
                 "Choose files for analysis:", accept_multiple_files=True
             )
             text_area = st.text_area(
-                "Enter your message:",
-                placeholder="Enter your message", value=""
+                "Enter your message:", placeholder="Enter your message", value=""
             )
             if st.form_submit_button("Submit"):
                 user_message = text_area
                 message_id = db.save_message(chat_id, "user", user_message)
-                st.session_state.chat_messages.append(
-                    db.get_chat_message(message_id)
-                    )
+                st.session_state.chat_messages.append(db.get_chat_message(message_id))
                 with chat_container:
                     st.chat_message("user").write(user_message)
 
                 try:
-                    response = asyncio.run(ci.process(user_message,
-                                                      uploaded_files))
-                    message_id = db.save_message(chat_id, "assistant",
-                                                 response.content)
+                    response = asyncio.run(ci.process(user_message, uploaded_files))
+                    message_id = db.save_message(chat_id, "assistant", response.content)
                     st.session_state.chat_messages.append(
                         db.get_chat_message(message_id)
                     )
@@ -138,6 +131,5 @@ if settings.OPENAI_API_KEY is not None:
 
                 except Exception as e:
                     with chat_container:
-                        st.write(f"An error occurred: "
-                                 f"{e.__class__.__name__}: {e}")
+                        st.write(f"An error occurred: " f"{e.__class__.__name__}: {e}")
                         st.write(traceback.format_exc())
