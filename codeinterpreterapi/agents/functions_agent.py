@@ -1,28 +1,32 @@
-"""
-Module implements an agent that uses OpenAI's APIs function enabled API.
-
-This file is a modified version of the original file
-from langchain/agents/openai_functions_agent/base.py.
-Credits go to the original authors :)
-"""
-
+"""Module implements an agent that uses OpenAI's APIs function enabled API."""
 import json
 from dataclasses import dataclass
 from json import JSONDecodeError
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
 from langchain.agents import BaseSingleActionAgent
-from langchain.base_language import BaseLanguageModel
 from langchain.callbacks.base import BaseCallbackManager
 from langchain.callbacks.manager import Callbacks
 from langchain.chat_models.openai import ChatOpenAI
-from langchain.prompts.chat import (BaseMessagePromptTemplate,
-                                    ChatPromptTemplate,
-                                    HumanMessagePromptTemplate,
-                                    MessagesPlaceholder)
-from langchain.schema import (AgentAction, AgentFinish, AIMessage, BaseMessage,
-                              BasePromptTemplate, FunctionMessage,
-                              OutputParserException, SystemMessage)
+from langchain.prompts.chat import (
+    BaseMessagePromptTemplate,
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+)
+from langchain.schema import (
+    AgentAction,
+    AgentFinish,
+    BasePromptTemplate,
+    OutputParserException,
+)
+from langchain.schema.language_model import BaseLanguageModel
+from langchain.schema.messages import (
+    AIMessage,
+    BaseMessage,
+    FunctionMessage,
+    SystemMessage,
+)
 from langchain.tools import BaseTool
 from langchain.tools.convert_to_openai import format_tool_to_openai_function
 from pydantic import root_validator
@@ -95,9 +99,7 @@ def _format_intermediate_steps(
     return messages
 
 
-async def _parse_ai_message(
-    message: BaseMessage, llm: BaseLanguageModel
-) -> Union[AgentAction, AgentFinish]:
+def _parse_ai_message(message: BaseMessage) -> Union[AgentAction, AgentFinish]:
     """Parse an AI message."""
     if not isinstance(message, AIMessage):
         raise TypeError(f"Expected an AI message got {type(message)}")
@@ -105,7 +107,6 @@ async def _parse_ai_message(
     function_call = message.additional_kwargs.get("function_call", {})
 
     if function_call:
-        function_call = message.additional_kwargs["function_call"]
         function_name = function_call["name"]
         try:
             _tool_input = json.loads(function_call["arguments"])
@@ -189,8 +190,42 @@ class OpenAIFunctionsAgent(BaseSingleActionAgent):
     def functions(self) -> List[dict]:
         return [dict(format_tool_to_openai_function(t)) for t in self.tools]
 
-    def plan(self):
-        raise NotImplementedError
+    def plan(
+        self,
+        intermediate_steps: List[Tuple[AgentAction, str]],
+        callbacks: Callbacks = None,
+        with_functions: bool = True,
+        **kwargs: Any,
+    ) -> Union[AgentAction, AgentFinish]:
+        """Given input, decided what to do.
+
+        Args:
+            intermediate_steps: Steps the LLM has taken to date, along with observations
+            **kwargs: User inputs.
+
+        Returns:
+            Action specifying what tool to use.
+        """
+        agent_scratchpad = _format_intermediate_steps(intermediate_steps)
+        selected_inputs = {
+            k: kwargs[k] for k in self.prompt.input_variables if k != "agent_scratchpad"
+        }
+        full_inputs = dict(**selected_inputs, agent_scratchpad=agent_scratchpad)
+        prompt = self.prompt.format_prompt(**full_inputs)
+        messages = prompt.to_messages()
+        if with_functions:
+            predicted_message = self.llm.predict_messages(
+                messages,
+                functions=self.functions,
+                callbacks=callbacks,
+            )
+        else:
+            predicted_message = self.llm.predict_messages(
+                messages,
+                callbacks=callbacks,
+            )
+        agent_decision = _parse_ai_message(predicted_message)
+        return agent_decision
 
     async def aplan(
         self,
@@ -218,8 +253,37 @@ class OpenAIFunctionsAgent(BaseSingleActionAgent):
         predicted_message = await self.llm.apredict_messages(
             messages, functions=self.functions, callbacks=callbacks
         )
-        agent_decision = await _parse_ai_message(predicted_message, self.llm)
+        agent_decision = _parse_ai_message(predicted_message)
         return agent_decision
+
+    def return_stopped_response(
+        self,
+        early_stopping_method: str,
+        intermediate_steps: List[Tuple[AgentAction, str]],
+        **kwargs: Any,
+    ) -> AgentFinish:
+        """Return response when agent has been stopped due to max iterations."""
+        if early_stopping_method == "force":
+            # `force` just returns a constant string
+            return AgentFinish(
+                {"output": "Agent stopped due to iteration limit or time limit."}, ""
+            )
+        elif early_stopping_method == "generate":
+            # Generate does one final forward pass
+            agent_decision = self.plan(
+                intermediate_steps, with_functions=False, **kwargs
+            )
+            if type(agent_decision) == AgentFinish:  # noqa: E721
+                return agent_decision
+            else:
+                raise ValueError(
+                    f"got AgentAction with no functions provided: {agent_decision}"
+                )
+        else:
+            raise ValueError(
+                "early_stopping_method should be one of `force` or `generate`, "
+                f"got {early_stopping_method}"
+            )
 
     @classmethod
     def create_prompt(
@@ -275,7 +339,7 @@ class OpenAIFunctionsAgent(BaseSingleActionAgent):
             extra_prompt_messages=extra_prompt_messages,
             system_message=system_message,
         )
-        return cls(
+        return cls(  # type: ignore
             llm=llm,
             prompt=prompt,
             tools=tools,
