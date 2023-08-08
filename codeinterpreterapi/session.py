@@ -55,11 +55,11 @@ class CodeInterpreterSession:
             self.session_id = str(uuid.uuid4())
         else:
             self.session_id = session_id
-        self.history_storage = history_storage
-        if self.session_storage == 'file' and not os.path.exists(
-            os.environ['SESSION_FOLDER_STORAGE']
+        self.history_storage = os.environ["STORAGE_TYPE"]
+        if self.history_storage == "file" and not os.path.exists(
+            os.environ["SESSION_FOLDER_STORAGE"]
         ):
-            os.mkdir(os.environ['SESSION_FOLDER_STORAGE'])
+            os.mkdir(os.environ["SESSION_FOLDER_STORAGE"])
 
         self.codebox = CodeBox()
         self.verbose = kwargs.get("verbose", settings.VERBOSE)
