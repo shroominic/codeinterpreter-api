@@ -16,22 +16,13 @@ from langchain.base_language import BaseLanguageModel
 from langchain.callbacks.base import BaseCallbackManager
 from langchain.callbacks.manager import Callbacks
 from langchain.chat_models.openai import ChatOpenAI
-from langchain.prompts.chat import (
-    BaseMessagePromptTemplate,
-    ChatPromptTemplate,
-    HumanMessagePromptTemplate,
-    MessagesPlaceholder,
-)
-from langchain.schema import (
-    AgentAction,
-    AgentFinish,
-    AIMessage,
-    BaseMessage,
-    BasePromptTemplate,
-    FunctionMessage,
-    OutputParserException,
-    SystemMessage,
-)
+from langchain.prompts.chat import (BaseMessagePromptTemplate,
+                                    ChatPromptTemplate,
+                                    HumanMessagePromptTemplate,
+                                    MessagesPlaceholder)
+from langchain.schema import (AgentAction, AgentFinish, AIMessage, BaseMessage,
+                              BasePromptTemplate, FunctionMessage,
+                              OutputParserException, SystemMessage)
 from langchain.tools import BaseTool
 from langchain.tools.convert_to_openai import format_tool_to_openai_function
 from pydantic import root_validator
