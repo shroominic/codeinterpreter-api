@@ -179,7 +179,7 @@ class CodeInterpreterSession:
             tools=self.tools,
             verbose=self.verbose,
             memory=ConversationBufferMemory(
-                memory_key="chat_history", return_messages=True, , chat_memory=history
+                memory_key="chat_history", return_messages=True, chat_memory=history
             ),
         )
 
