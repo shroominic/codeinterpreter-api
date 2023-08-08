@@ -1,6 +1,6 @@
 import asyncio
 
-import streamlit as st
+import streamlit as st  # type: ignore
 
 from codeinterpreterapi import File
 from frontend.utils import get_images
