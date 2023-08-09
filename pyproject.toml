@@ -13,13 +13,13 @@ python = ">=3.9,<3.9.7 || >3.9.7,<4.0"
 python-dotenv = "^1"
 openai = "^0.27"
 langchain = "^0.0.242"
-codeboxapi = "^0.0.15"
+codeboxapi = ">=0.0.17"
 streamlit = { version = "^1", optional = true }
 jupyter-kernel-gateway = { version = "^2", optional = true }
 Pillow = { version = "^9", optional = true }
 
 [tool.poetry.extras]
-all = ["localbox", "frontend", "image_support"]
+all = ["jupyter-kernel-gateway", "streamlit", "Pillow"]
 localbox = ["jupyter-kernel-gateway"]
 frontend = ["streamlit"]
 image_support = ["Pillow"]
