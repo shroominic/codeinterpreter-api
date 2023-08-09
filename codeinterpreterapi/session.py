@@ -58,6 +58,7 @@ class CodeInterpreterSession:
         self.verbose = kwargs.get("verbose", settings.VERBOSE)
         self.tools: list[BaseTool] = self._tools(additional_tools)
         self.llm: BaseLanguageModel = llm or self._choose_llm(**kwargs)
+        self.system_messae = system_message
         self.agent_executor: Optional[AgentExecutor] = None
         self.input_files: list[File] = []
         self.output_files: list[File] = []
