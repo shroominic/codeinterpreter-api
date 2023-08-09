@@ -63,9 +63,10 @@ class CodeInterpreterSession:
         self.code_log: list[tuple[str, str]] = []
 
     @classmethod
-    def from_id(cls, session_id: UUID) -> "CodeInterpreterSession":
-        session = cls()
+    def from_id(cls, session_id: UUID, **kwargs) -> "CodeInterpreterSession":
+        session = cls(**kwargs)
         session.codebox = CodeBox.from_id(session_id)
+        session.agent_executor = session._agent_executor()
         return session
 
     @property
