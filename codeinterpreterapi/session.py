@@ -23,7 +23,7 @@ from langchain.memory.chat_message_histories import (
     RedisChatMessageHistory,
 )
 from langchain.prompts.chat import MessagesPlaceholder
-from langchain.schema import BaseChatMessageHistory, BaseLanguageModel
+from langchain.schema import BaseChatMessageHistory, BaseLanguageModel, SystemMessage
 from langchain.tools import BaseTool, StructuredTool
 
 from codeinterpreterapi.agents import OpenAIFunctionsAgent
@@ -50,6 +50,7 @@ class CodeInterpreterSession:
     def __init__(
         self,
         llm: Optional[BaseLanguageModel] = None,
+        system_message: SystemMessage = code_interpreter_system_message,
         additional_tools: list[BaseTool] = [],
         **kwargs,
     ) -> None:
@@ -148,7 +149,7 @@ class CodeInterpreterSession:
             OpenAIFunctionsAgent.from_llm_and_tools(
                 llm=self.llm,
                 tools=self.tools,
-                system_message=code_interpreter_system_message,
+                system_message=self.system_message,
                 extra_prompt_messages=[
                     MessagesPlaceholder(variable_name="chat_history")
                 ],
