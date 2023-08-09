@@ -606,13 +606,13 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
 name = "codeboxapi"
-version = "0.0.17"
+version = "0.0.18"
 description = "CodeBox gives you an easy scalable and isolated python interpreter for your LLM Agents."
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "codeboxapi-0.0.17-py3-none-any.whl", hash = "sha256:5bf86609219b4153a792be8b6e6410208f91d7c3d53da1b8de608410f63dcf66"},
-    {file = "codeboxapi-0.0.17.tar.gz", hash = "sha256:b12aafaa1198761fab5b883f5a495fe0110e3b1570bfafabae2cc14c039aa44b"},
+    {file = "codeboxapi-0.0.18-py3-none-any.whl", hash = "sha256:c0a6581374b943212dcafab11d6a6185c09590de14d5e399cd37538c09f3143b"},
+    {file = "codeboxapi-0.0.18.tar.gz", hash = "sha256:edf58eaf8bef1ddee0f9da06a432ddc1e35d133f9876ec0382512e9c6b5c9753"},
 ]
 
 [package.dependencies]
@@ -3817,4 +3817,4 @@ localbox = ["jupyter-kernel-gateway"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.9.7 || >3.9.7,<4.0"
-content-hash = "8e8c6da1b93ff95b25abe71e372f45077f1fd62cdee77af34a3a80d038ce8af7"
+content-hash = "bde69f0bf341b7ef761249e6a7f229d5dc64b69f59324f3f12d21ec856c53b50"
