@@ -51,6 +51,7 @@ class CodeInterpreterSession:
         self,
         llm: Optional[BaseLanguageModel] = None,
         system_message: SystemMessage = code_interpreter_system_message,
+        max_iterations: int = 9,
         additional_tools: list[BaseTool] = [],
         **kwargs,
     ) -> None:
@@ -58,6 +59,7 @@ class CodeInterpreterSession:
         self.verbose = kwargs.get("verbose", settings.VERBOSE)
         self.tools: list[BaseTool] = self._tools(additional_tools)
         self.llm: BaseLanguageModel = llm or self._choose_llm(**kwargs)
+        self.max_iterations = max_iterations
         self.system_message = system_message
         self.agent_executor: Optional[AgentExecutor] = None
         self.input_files: list[File] = []
@@ -191,7 +193,7 @@ class CodeInterpreterSession:
     def _agent_executor(self) -> AgentExecutor:
         return AgentExecutor.from_agent_and_tools(
             agent=self._choose_agent(),
-            max_iterations=9,
+            max_iterations=self.max_iterations,
             tools=self.tools,
             verbose=self.verbose,
             memory=ConversationBufferMemory(
