@@ -57,7 +57,7 @@ class CodeInterpreterSession:
         self.verbose = kwargs.get("verbose", settings.VERBOSE)
         self.tools: list[BaseTool] = self._tools(additional_tools)
         self.llm: BaseLanguageModel = llm or self._choose_llm(**kwargs)
-        self.agent_executor: AgentExecutor | None = None
+        self.agent_executor: Optional[AgentExecutor] = None
         self.input_files: list[File] = []
         self.output_files: list[File] = []
         self.code_log: list[tuple[str, str]] = []
@@ -69,7 +69,7 @@ class CodeInterpreterSession:
         return session
 
     @property
-    def session_id(self) -> UUID | None:
+    def session_id(self) -> Optional[UUID]:
         return self.codebox.session_id
 
     def start(self) -> SessionStatus:
