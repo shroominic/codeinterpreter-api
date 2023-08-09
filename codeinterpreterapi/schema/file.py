@@ -9,6 +9,8 @@ class File(BaseModel):
 
     @classmethod
     def from_path(cls, path: str):
+        if not path.startswith("/"):
+            path = f"./{path}"
         with open(path, "rb") as f:
             path = path.split("/")[-1]
             return cls(name=path, content=f.read())
@@ -33,6 +35,8 @@ class File(BaseModel):
                 return cls(name=url.split("/")[-1], content=await r.read())
 
     def save(self, path: str):
+        if not path.startswith("/"):
+            path = f"./{path}"
         with open(path, "wb") as f:
             f.write(self.content)
 

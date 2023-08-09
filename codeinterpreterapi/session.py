@@ -1,10 +1,10 @@
 import base64
 import re
 import traceback
-import uuid
 from io import BytesIO
 from os import getenv
 from typing import Optional
+from uuid import UUID, uuid4
 
 from codeboxapi import CodeBox  # type: ignore
 from codeboxapi.schema import CodeBoxOutput  # type: ignore
@@ -17,8 +17,13 @@ from langchain.agents import (
 from langchain.chat_models import AzureChatOpenAI, ChatAnthropic, ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 from langchain.memory import ConversationBufferMemory
+from langchain.memory.chat_message_histories import (
+    ChatMessageHistory,
+    PostgresChatMessageHistory,
+    RedisChatMessageHistory,
+)
 from langchain.prompts.chat import MessagesPlaceholder
-from langchain.schema.language_model import BaseLanguageModel
+from langchain.schema import BaseChatMessageHistory, BaseLanguageModel
 from langchain.tools import BaseTool, StructuredTool
 
 from codeinterpreterapi.agents import OpenAIFunctionsAgent
@@ -28,6 +33,7 @@ from codeinterpreterapi.chains import (
     get_file_modifications,
     remove_download_link,
 )
+from codeinterpreterapi.chat_history import CodeBoxChatMessageHistory
 from codeinterpreterapi.config import settings
 from codeinterpreterapi.parser import CodeAgentOutputParser, CodeChatAgentOutputParser
 from codeinterpreterapi.prompts import code_interpreter_system_message
@@ -47,20 +53,35 @@ class CodeInterpreterSession:
         additional_tools: list[BaseTool] = [],
         **kwargs,
     ) -> None:
-        self.codebox = CodeBox(**kwargs)
+        self.codebox = CodeBox()
         self.verbose = kwargs.get("verbose", settings.VERBOSE)
         self.tools: list[BaseTool] = self._tools(additional_tools)
         self.llm: BaseLanguageModel = llm or self._choose_llm(**kwargs)
-        self.agent_executor: AgentExecutor = self._agent_executor()
+        self.agent_executor: Optional[AgentExecutor] = None
         self.input_files: list[File] = []
         self.output_files: list[File] = []
         self.code_log: list[tuple[str, str]] = []
 
+    @classmethod
+    def from_id(cls, session_id: UUID, **kwargs) -> "CodeInterpreterSession":
+        session = cls(**kwargs)
+        session.codebox = CodeBox.from_id(session_id)
+        session.agent_executor = session._agent_executor()
+        return session
+
+    @property
+    def session_id(self) -> Optional[UUID]:
+        return self.codebox.session_id
+
     def start(self) -> SessionStatus:
-        return SessionStatus.from_codebox_status(self.codebox.start())
+        status = SessionStatus.from_codebox_status(self.codebox.start())
+        self.agent_executor = self._agent_executor()
+        return status
 
     async def astart(self) -> SessionStatus:
-        return SessionStatus.from_codebox_status(await self.codebox.astart())
+        status = SessionStatus.from_codebox_status(await self.codebox.astart())
+        self.agent_executor = self._agent_executor()
+        return status
 
     def _tools(self, additional_tools: list[BaseTool]) -> list[BaseTool]:
         return additional_tools + [
@@ -108,7 +129,7 @@ class CodeInterpreterSession:
                     openai_api_key=openai_api_key,
                     max_retries=3,
                     request_timeout=60 * 3,
-                )
+                )  # type: ignore
             else:
                 return ChatOpenAI(
                     temperature=0.03,
@@ -116,7 +137,7 @@ class CodeInterpreterSession:
                     openai_api_key=openai_api_key,
                     max_retries=3,
                     request_timeout=60 * 3,
-                )
+                )  # type: ignore
         elif "claude" in model:
             return ChatAnthropic(model=model)
         else:
@@ -148,6 +169,23 @@ class CodeInterpreterSession:
             )
         )
 
+    def _history_backend(self) -> BaseChatMessageHistory:
+        return (
+            CodeBoxChatMessageHistory(codebox=self.codebox)
+            if settings.HISTORY_BACKEND == "codebox"
+            else RedisChatMessageHistory(
+                session_id=str(self.session_id),
+                url=settings.REDIS_URL,
+            )
+            if settings.HISTORY_BACKEND == "redis"
+            else PostgresChatMessageHistory(
+                session_id=str(self.session_id),
+                connection_string=settings.POSTGRES_URL,
+            )
+            if settings.HISTORY_BACKEND == "postgres"
+            else ChatMessageHistory()
+        )
+
     def _agent_executor(self) -> AgentExecutor:
         return AgentExecutor.from_agent_and_tools(
             agent=self._choose_agent(),
@@ -155,7 +193,9 @@ class CodeInterpreterSession:
             tools=self.tools,
             verbose=self.verbose,
             memory=ConversationBufferMemory(
-                memory_key="chat_history", return_messages=True
+                memory_key="chat_history",
+                return_messages=True,
+                chat_memory=self._history_backend(),
             ),
         )
 
@@ -178,7 +218,7 @@ class CodeInterpreterSession:
             raise TypeError("Expected output.content to be a string.")
 
         if output.type == "image/png":
-            filename = f"image-{uuid.uuid4()}.png"
+            filename = f"image-{uuid4()}.png"
             file_buffer = BytesIO(base64.b64decode(output.content))
             file_buffer.name = filename
             self.output_files.append(File(name=filename, content=file_buffer.read()))
@@ -225,7 +265,7 @@ class CodeInterpreterSession:
             raise TypeError("Expected output.content to be a string.")
 
         if output.type == "image/png":
-            filename = f"image-{uuid.uuid4()}.png"
+            filename = f"image-{uuid4()}.png"
             file_buffer = BytesIO(base64.b64decode(output.content))
             file_buffer.name = filename
             self.output_files.append(File(name=filename, content=file_buffer.read()))
@@ -349,6 +389,7 @@ class CodeInterpreterSession:
         user_request = UserRequest(content=user_msg, files=files)
         try:
             self._input_handler(user_request)
+            assert self.agent_executor, "Session not initialized."
             response = self.agent_executor.run(input=user_request.content)
             return self._output_handler(response)
         except Exception as e:
@@ -392,6 +433,7 @@ class CodeInterpreterSession:
         user_request = UserRequest(content=user_msg, files=files)
         try:
             await self._ainput_handler(user_request)
+            assert self.agent_executor, "Session not initialized."
             response = await self.agent_executor.arun(input=user_request.content)
             return await self._aoutput_handler(response)
         except Exception as e:
