@@ -14,6 +14,8 @@ from langchain.agents import (
     ConversationalAgent,
     ConversationalChatAgent,
 )
+import litellm
+from litellm import completion
 from langchain.chat_models import AzureChatOpenAI, ChatAnthropic, ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 from langchain.memory import ConversationBufferMemory
@@ -116,9 +118,18 @@ class CodeInterpreterSession:
                     openai_api_key=openai_api_key,
                     max_retries=3,
                     request_timeout=60 * 3,
+                    client=completion
                 )
         elif "claude" in model:
             return ChatAnthropic(model=model)
+        elif model in litellm.model_list:
+            return ChatOpenAI(
+                    model=model,
+                    openai_api_key=openai_api_key,
+                    max_retries=3,
+                    request_timeout=60 * 3,
+                    client=completion
+                )
         else:
             raise ValueError(f"Unknown model: {model} (expected gpt or claude model)")
 
