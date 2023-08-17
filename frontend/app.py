@@ -2,7 +2,7 @@ import asyncio
 import traceback
 from datetime import datetime
 
-import streamlit as st
+import streamlit as st  # type: ignore
 from code_interpreter import CodeInterpreter
 from db_manager import DBManager
 
