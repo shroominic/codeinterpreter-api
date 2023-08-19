@@ -4,7 +4,7 @@ determine_modifications_prompt = PromptTemplate(
     input_variables=["code"],
     template="The user will input some code and you need to determine "
     "if the code makes any changes to the file system. \n"
-    "With changes it means creating new files or modifying exsisting ones.\n"
+    "With changes it means creating new files or modifying existing ones.\n"
     "Format your answer as JSON inside a codeblock with a "
     "list of filenames that are modified by the code.\n"
     "If the code does not make any changes to the file system, "
