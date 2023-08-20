@@ -23,7 +23,7 @@ from langchain.memory.chat_message_histories import (
     RedisChatMessageHistory,
 )
 from langchain.prompts.chat import MessagesPlaceholder
-from langchain.schema import BaseChatMessageHistory, BaseLanguageModel
+from langchain.schema import BaseChatMessageHistory, BaseLanguageModel, SystemMessage
 from langchain.tools import BaseTool, StructuredTool
 
 from codeinterpreterapi.agents import OpenAIFunctionsAgent
@@ -50,6 +50,8 @@ class CodeInterpreterSession:
     def __init__(
         self,
         llm: Optional[BaseLanguageModel] = None,
+        system_message: SystemMessage = code_interpreter_system_message,
+        max_iterations: int = 9,
         additional_tools: list[BaseTool] = [],
         **kwargs,
     ) -> None:
@@ -57,6 +59,8 @@ class CodeInterpreterSession:
         self.verbose = kwargs.get("verbose", settings.VERBOSE)
         self.tools: list[BaseTool] = self._tools(additional_tools)
         self.llm: BaseLanguageModel = llm or self._choose_llm(**kwargs)
+        self.max_iterations = max_iterations
+        self.system_message = system_message
         self.agent_executor: Optional[AgentExecutor] = None
         self.input_files: list[File] = []
         self.output_files: list[File] = []
@@ -148,7 +152,7 @@ class CodeInterpreterSession:
             OpenAIFunctionsAgent.from_llm_and_tools(
                 llm=self.llm,
                 tools=self.tools,
-                system_message=code_interpreter_system_message,
+                system_message=self.system_message,
                 extra_prompt_messages=[
                     MessagesPlaceholder(variable_name="chat_history")
                 ],
@@ -189,7 +193,7 @@ class CodeInterpreterSession:
     def _agent_executor(self) -> AgentExecutor:
         return AgentExecutor.from_agent_and_tools(
             agent=self._choose_agent(),
-            max_iterations=9,
+            max_iterations=self.max_iterations,
             tools=self.tools,
             verbose=self.verbose,
             memory=ConversationBufferMemory(
