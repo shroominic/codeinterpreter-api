@@ -13,6 +13,7 @@ python = ">=3.9,<3.9.7 || >3.9.7,<4.0"
 python-dotenv = "^1"
 openai = "^0.27"
 pydantic = "^2"
+pydantic-settings = "^2"
 langchain = "^0.0.267"
 codeboxapi = ">=0.0.18"
 streamlit = { version = "^1", optional = true }
