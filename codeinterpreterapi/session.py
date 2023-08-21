@@ -5,7 +5,6 @@ from io import BytesIO
 from os import getenv
 from typing import Optional
 from uuid import UUID, uuid4
-
 from codeboxapi import CodeBox  # type: ignore
 from codeboxapi.schema import CodeBoxOutput  # type: ignore
 from langchain.agents import (
@@ -14,6 +13,7 @@ from langchain.agents import (
     ConversationalAgent,
     ConversationalChatAgent,
 )
+from langchain.schema import BaseChatMessageHistory
 from langchain.chat_models import AzureChatOpenAI, ChatAnthropic, ChatOpenAI, ChatLiteLLM
 from langchain.chat_models.base import BaseChatModel
 from langchain.memory import ConversationBufferMemory
@@ -23,7 +23,7 @@ from langchain.memory.chat_message_histories import (
     RedisChatMessageHistory,
 )
 from langchain.prompts.chat import MessagesPlaceholder
-from langchain.schema import BaseChatMessageHistory, BaseLanguageModel
+from langchain.base_language import BaseLanguageModel
 from langchain.tools import BaseTool, StructuredTool
 
 from codeinterpreterapi.agents import OpenAIFunctionsAgent
@@ -98,8 +98,12 @@ class CodeInterpreterSession:
         ]
 
     def _choose_llm(
-        self, model: str = "gpt-4", openai_api_key: Optional[str] = None, **kwargs
+        self, model: str = "gpt-4", openai_api_key: Optional[str] = None, debugger = False, email: str = None, **kwargs
     ) -> BaseChatModel:
+        if ChatLiteLLM:
+            import litellm # should already be installed through langchain
+            litellm.debugger = debugger
+            litellm.email = email
         return ChatLiteLLM(
                     temperature=0.03,
                     model_name=model,
@@ -122,7 +126,7 @@ class CodeInterpreterSession:
                 llm=self.llm,
                 tools=self.tools,
                 system_message=code_interpreter_system_message.content,
-                output_parser=CodeChatAgentOutputParser(),
+                output_parser=CodeChatAgentOutputParser(llm=self.llm),
             )
             if isinstance(self.llm, BaseChatModel)
             else ConversationalAgent.from_llm_and_tools(

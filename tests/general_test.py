@@ -2,23 +2,6 @@ import asyncio
 
 from codeinterpreterapi import CodeInterpreterSession, File
 
-
-def test_codebox():
-    session = CodeInterpreterSession()
-    assert run_sync(session), "Failed to run sync CodeInterpreterSession remotely"
-    assert asyncio.run(
-        run_async(session)
-    ), "Failed to run async CodeInterpreterSession remotely"
-
-
-def test_localbox():
-    session = CodeInterpreterSession(local=True)
-    assert run_sync(session), "Failed to run sync CodeInterpreterSession locally"
-    assert asyncio.run(
-        run_async(session)
-    ), "Failed to run async CodeInterpreterSession locally"
-
-
 def run_sync(session: CodeInterpreterSession) -> bool:
     try:
         assert session.start() == "started"
@@ -45,6 +28,20 @@ def run_sync(session: CodeInterpreterSession) -> bool:
 
     return True
 
+
+def test_codebox():
+    session = CodeInterpreterSession()
+    assert run_sync(session), "Failed to run sync CodeInterpreterSession remotely"
+    assert asyncio.run(
+        run_async(session)
+    ), "Failed to run async CodeInterpreterSession remotely"
+
+def test_localbox():
+    session = CodeInterpreterSession(local=True)
+    assert run_sync(session), "Failed to run sync CodeInterpreterSession locally"
+    assert asyncio.run(
+        run_async(session)
+    ), "Failed to run async CodeInterpreterSession locally"
 
 async def run_async(session: CodeInterpreterSession) -> bool:
     try:

@@ -139,6 +139,21 @@ To start the web application created with streamlit:
 streamlit run frontend/app.py
 ```
 
+## Debugging
+If you're testing codeinterpreter, and need to see if calls were made successfully + the exact call logs, you can use the [LiteLLM Debugger tool](https://docs.litellm.ai/docs/debugging/hosted_debugging). 
+
+```
+CodeInterpreterSession(debugger=True, email="test@berri.ai")
+```
+Your Logs will be viewable in real-time @  `admin.litellm.ai/<your_email>`. 
+
+See our live dashboard 👉 [admin.litellm.ai](https://admin.litellm.ai/)
+
+<img src="./img/dashboard.png" width="900"/>
+
+
+
+
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)

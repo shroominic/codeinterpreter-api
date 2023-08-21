@@ -38,6 +38,10 @@ class CodeAgentOutputParser(AgentOutputParser):
 
 
 class CodeChatAgentOutputParser(AgentOutputParser):
+    llm: BaseChatModel = None
+    def __init__(self, llm=None):
+        super().__init__()  # don't forget to call the parent class __init__ method if needed
+        self.llm = llm
     def get_format_instructions(self) -> str:
         from langchain.agents.conversational_chat.prompt import FORMAT_INSTRUCTIONS
 
@@ -47,8 +51,9 @@ class CodeChatAgentOutputParser(AgentOutputParser):
         raise NotImplementedError
 
     async def aparse(
-        self, text: str, llm: BaseChatModel
+        self, text: str, llm: BaseChatModel = None
     ) -> Union[AgentAction, AgentFinish]:
+        llm = llm or self.llm
         try:
             response = parse_json_markdown(text)
             action, action_input = response["action"], response["action_input"]
