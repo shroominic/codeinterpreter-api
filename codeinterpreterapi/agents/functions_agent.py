@@ -20,7 +20,7 @@ from langchain.schema import (
     BasePromptTemplate,
     OutputParserException,
 )
-from langchain.schema.language_model import BaseLanguageModel
+from langchain.base_language import BaseLanguageModel
 from langchain.schema.messages import (
     AIMessage,
     BaseMessage,
