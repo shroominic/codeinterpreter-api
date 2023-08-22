@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "codeinterpreterapi"
-version = "0.0.11"
+version = "0.0.12"
 authors = ["Shroominic <contact@shroominic.com>"]
 license = "MIT"
 description = "CodeInterpreterAPI is an (unofficial) open source python interface for the ChatGPT CodeInterpreter."
@@ -9,13 +9,13 @@ readme = "README.md"
 repository = "https://github.com/shroominic/codeinterpreter-api"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.9.7 || >3.9.7,<4.0"
-python-dotenv = "^1"
-openai = "^0.27"
+python = ">=3.9.7,<4.0"
+langchain = ">=0.0.269"
+codeboxapi = ">=0.0.19"
+openai = "*"
+python-dotenv = "*"
 pydantic = "^2"
 pydantic-settings = "^2"
-langchain = "^0.0.267"
-codeboxapi = ">=0.0.18"
 streamlit = { version = "^1", optional = true }
 jupyter-kernel-gateway = { version = "^2", optional = true }
 Pillow = { version = "^9", optional = true }
@@ -30,11 +30,11 @@ image_support = ["Pillow"]
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7"
-mypy = "^1.4"
+pytest = ">=7.3"
+mypy = ">=1.4"
 black = "^23"
 flake8 = "^6"
-pre-commit = "^3.3"
+pre-commit = ">=3.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
