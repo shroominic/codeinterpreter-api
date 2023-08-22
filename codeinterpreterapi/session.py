@@ -14,6 +14,7 @@ from langchain.agents import (
     ConversationalAgent,
     ConversationalChatAgent,
 )
+from langchain.base_language import BaseLanguageModel
 from langchain.chat_models import AzureChatOpenAI, ChatAnthropic, ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 from langchain.memory import ConversationBufferMemory
@@ -23,7 +24,7 @@ from langchain.memory.chat_message_histories import (
     RedisChatMessageHistory,
 )
 from langchain.prompts.chat import MessagesPlaceholder
-from langchain.schema import BaseChatMessageHistory, BaseLanguageModel, SystemMessage
+from langchain.schema import BaseChatMessageHistory, SystemMessage
 from langchain.tools import BaseTool, StructuredTool
 
 from codeinterpreterapi.agents import OpenAIFunctionsAgent
@@ -97,7 +98,7 @@ class CodeInterpreterSession:
                 "Variables are preserved between runs. ",
                 func=self._run_handler,
                 coroutine=self._arun_handler,
-                args_schema=CodeInput,
+                args_schema=CodeInput,  # type: ignore
             ),
         ]
 
