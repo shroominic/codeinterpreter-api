@@ -163,7 +163,7 @@ class CodeInterpreterSession:
                 llm=self.llm,
                 tools=self.tools,
                 system_message=code_interpreter_system_message.content,
-                output_parser=CodeChatAgentOutputParser(),
+                output_parser=CodeChatAgentOutputParser(self.llm),
             )
             if isinstance(self.llm, BaseChatModel)
             else ConversationalAgent.from_llm_and_tools(

@@ -2,13 +2,20 @@ from langchain.base_language import BaseLanguageModel
 from langchain.chat_models.anthropic import ChatAnthropic
 
 
-# TODO: make async
 def extract_python_code(
     text: str,
     llm: BaseLanguageModel,
     retry: int = 2,
 ):
-    pass
+    pass  # TODO
+
+
+async def aextract_python_code(
+    text: str,
+    llm: BaseLanguageModel,
+    retry: int = 2,
+):
+    pass  # TODO
 
 
 async def test():
