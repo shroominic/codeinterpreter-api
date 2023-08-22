@@ -240,7 +240,7 @@ class CodeInterpreterSession:
                         "got installed now. Please try again."
                     )
             else:
-                # TODO: preanalyze error to optimize next code generation
+                # TODO: pre-analyze error to optimize next code generation
                 pass
             if self.verbose:
                 print("Error:", output.content)
@@ -287,7 +287,7 @@ class CodeInterpreterSession:
                         "got installed now. Please try again."
                     )
             else:
-                # TODO: preanalyze error to optimize next code generation
+                # TODO: pre-analyze error to optimize next code generation
                 pass
             if self.verbose:
                 print("Error:", output.content)
