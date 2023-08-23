@@ -467,13 +467,15 @@ class CodeInterpreterSession:
     async def astop(self) -> SessionStatus:
         return SessionStatus.from_codebox_status(await self.codebox.astop())
     
-    def install_package(self, package_name: str):
-        """Install a package in the current session"""
-        self.codebox.install(package_name)
+    def install_packages(self, package_names: list[str]):
+        """Install multiple packages in the current session"""
+        for package in package_names:
+            self.codebox.install(package)
 
-    async def ainstall_package(self, package_name: str):
-        """Asynchronously install a package in the current session"""
-        await self.codebox.ainstall(package_name)
+    async def ainstall_packages(self, package_names: list[str]):
+        """Asynchronously install multiple packages in the current session"""
+        for package in package_names:
+            await self.codebox.ainstall(package)
 
     def __enter__(self) -> "CodeInterpreterSession":
         self.start()
