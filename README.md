@@ -136,7 +136,7 @@ Thanks!
 To start the web application created with streamlit:
 
 ```bash
-streamlit run frontend/app.py
+streamlit run frontend/app.py --browser.gatherUsageStats=False
 ```
 
 ## License
