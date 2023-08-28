@@ -46,7 +46,9 @@ from codeinterpreterapi.schema import (
 
 
 def _handle_deprecated_kwargs(kwargs: dict) -> None:
-    settings.MODEL = kwargs.get("max_retry", settings.MAX_RETRY)
+    settings.MODEL = kwargs.get("model", settings.MODEL)
+    settings.MAX_RETRY = kwargs.get("max_retry", settings.MAX_RETRY)
+    settings.TEMPERATURE = kwargs.get("temperature", settings.TEMPERATURE)
     settings.OPENAI_API_KEY = kwargs.get("openai_api_key", settings.OPENAI_API_KEY)
     settings.SYSTEM_MESSAGE = kwargs.get("system_message", settings.SYSTEM_MESSAGE)
     settings.MAX_ITERATIONS = kwargs.get("max_iterations", settings.MAX_ITERATIONS)
@@ -63,7 +65,7 @@ class CodeInterpreterSession:
         self.codebox = CodeBox(requirements=settings.CUSTOM_PACKAGES)
         self.verbose = kwargs.get("verbose", settings.VERBOSE)
         self.tools: list[BaseTool] = self._tools(additional_tools)
-        self.llm: BaseLanguageModel = llm or self._choose_llm(**kwargs)
+        self.llm: BaseLanguageModel = llm or self._choose_llm()
         self.agent_executor: Optional[AgentExecutor] = None
         self.input_files: list[File] = []
         self.output_files: list[File] = []
