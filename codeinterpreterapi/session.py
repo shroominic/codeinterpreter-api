@@ -152,13 +152,6 @@ class CodeInterpreterSession:
                 temperature=settings.TEMPERATURE,
                 anthropic_api_key=settings.ANTHROPIC_API_KEY,
             )
-        elif settings.OPENROUTER_API_KEY:
-            return ChatOpenAI(
-                model=settings.OPENROUTER_DEFAULT_CHAT_MODEL,
-                temperature=settings.TEMPERATURE,
-                openai_api_key=settings.OPENROUTER_API_KEY,
-                openai_api_base=settings.OPENROUTER_API_BASE,
-            )
         else:
             raise ValueError("Please set the API key for the LLM you want to use.")
 

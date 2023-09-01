@@ -24,9 +24,6 @@ class CodeInterpreterAPISettings(BaseSettings):
     AZURE_API_VERSION: Optional[str] = None
     AZURE_DEPLOYMENT_NAME: Optional[str] = None
     ANTHROPIC_API_KEY: Optional[str] = None
-    OPENROUTER_API_KEY: Optional[str] = None
-    OPENROUTER_API_BASE: Optional[str] = "https://openrouter.ai/api/v1"
-    OPENROUTER_DEFAULT_CHAT_MODEL = "openai/gpt-4"
 
     # LLM Settings
     MODEL: str = "gpt-3.5-turbo"
@@ -44,7 +41,7 @@ class CodeInterpreterAPISettings(BaseSettings):
 
     # CodeBox
     CODEBOX_API_KEY: Optional[str] = None
-    CUSTOM_PACKAGES: list[str] = []  # implement custom logic for codebox
+    CUSTOM_PACKAGES: list[str] = []
 
     # deprecated
     VERBOSE: bool = DEBUG
