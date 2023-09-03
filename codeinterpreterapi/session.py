@@ -148,7 +148,7 @@ class CodeInterpreterSession:
                 print("Please set the claude model in the settings.")
             self.log("Using Chat Anthropic")
             return ChatAnthropic(
-                model=settings.MODEL,
+                model_name=settings.MODEL,
                 temperature=settings.TEMPERATURE,
                 anthropic_api_key=settings.ANTHROPIC_API_KEY,
             )
@@ -473,16 +473,6 @@ class CodeInterpreterSession:
 
     async def astop(self) -> SessionStatus:
         return SessionStatus.from_codebox_status(await self.codebox.astop())
-    
-    def install_packages(self, package_names: list[str]):
-        """Install multiple packages in the current session"""
-        for package in package_names:
-            self.codebox.install(package)
-
-    async def ainstall_packages(self, package_names: list[str]):
-        """Asynchronously install multiple packages in the current session"""
-        for package in package_names:
-            await self.codebox.ainstall(package)
 
     def __enter__(self) -> "CodeInterpreterSession":
         self.start()
