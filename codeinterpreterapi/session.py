@@ -63,7 +63,7 @@ class CodeInterpreterSession:
     ) -> None:
         _handle_deprecated_kwargs(kwargs)
         self.codebox = CodeBox(requirements=settings.CUSTOM_PACKAGES)
-        self.verbose = kwargs.get("verbose", settings.VERBOSE)
+        self.verbose = kwargs.get("verbose", settings.DEBUG)
         self.tools: list[BaseTool] = self._tools(additional_tools)
         self.llm: BaseLanguageModel = llm or self._choose_llm()
         self.agent_executor: Optional[AgentExecutor] = None
@@ -85,21 +85,18 @@ class CodeInterpreterSession:
     def start(self) -> SessionStatus:
         status = SessionStatus.from_codebox_status(self.codebox.start())
         self.agent_executor = self._agent_executor()
+        self.codebox.run(
+            f"!pip install -q {' '.join(settings.CUSTOM_PACKAGES)}",
+        )
         return status
 
     async def astart(self) -> SessionStatus:
         status = SessionStatus.from_codebox_status(await self.codebox.astart())
         self.agent_executor = self._agent_executor()
+        await self.codebox.arun(
+            f"!pip install -q {' '.join(settings.CUSTOM_PACKAGES)}",
+        )
         return status
-
-    async def ainstall_additional_packages(self) -> None:
-        for package in settings.CUSTOM_PACKAGES:
-            # check if already installed
-            if await self.codebox.arun(f"import {package}"):
-                continue
-            if settings.VERBOSE:
-                print(f"Installing {package}...")
-            await self.codebox.ainstall(package)
 
     def _tools(self, additional_tools: list[BaseTool]) -> list[BaseTool]:
         return additional_tools + [
@@ -110,7 +107,7 @@ class CodeInterpreterSession:
                 "be really long, so you can use the `;` character to split lines. "
                 "Variables are preserved between runs. "
                 + (
-                    f"You have access to all default python packages + {settings.CUSTOM_PACKAGES} "
+                    f"You can use all default python packages specifically also these: {settings.CUSTOM_PACKAGES}"
                 )
                 if settings.CUSTOM_PACKAGES
                 else "",  # TODO: or include this in the system message
@@ -127,6 +124,7 @@ class CodeInterpreterSession:
             and settings.AZURE_API_VERSION
             and settings.AZURE_DEPLOYMENT_NAME
         ):
+            self.log("Using Azure Chat OpenAI")
             return AzureChatOpenAI(
                 temperature=0.03,
                 openai_api_base=settings.AZURE_API_BASE,
@@ -137,6 +135,7 @@ class CodeInterpreterSession:
                 request_timeout=settings.REQUEST_TIMEOUT,
             )  # type: ignore
         elif settings.OPENAI_API_KEY:
+            self.log("Using Chat OpenAI")
             return ChatOpenAI(
                 model=settings.MODEL,
                 openai_api_key=settings.OPENAI_API_KEY,
@@ -147,6 +146,7 @@ class CodeInterpreterSession:
         elif settings.ANTHROPIC_API_KEY:
             if "claude" not in settings.MODEL:
                 print("Please set the claude model in the settings.")
+            self.log("Using Chat Anthropic")
             return ChatAnthropic(
                 model=settings.MODEL,
                 temperature=settings.TEMPERATURE,
@@ -220,7 +220,7 @@ class CodeInterpreterSession:
         if self.verbose:
             print(code)
 
-    def _run_handler(self, code: str):
+    def _run_handler(self, code: str) -> str:
         """Run code in container and send the output to the user"""
         self.show_code(code)
         output: CodeBoxOutput = self.codebox.run(code)
@@ -267,7 +267,7 @@ class CodeInterpreterSession:
 
         return output.content
 
-    async def _arun_handler(self, code: str):
+    async def _arun_handler(self, code: str) -> str:
         """Run code in container and send the output to the user"""
         await self.ashow_code(code)
         output: CodeBoxOutput = await self.codebox.arun(code)
@@ -329,7 +329,7 @@ class CodeInterpreterSession:
             self.codebox.upload(file.name, file.content)
         request.content += "**File(s) are now available in the cwd. **\n"
 
-    async def _ainput_handler(self, request: UserRequest):
+    async def _ainput_handler(self, request: UserRequest) -> None:
         # TODO: variables as context to the agent
         # TODO: current files as context to the agent
         if not request.files:
@@ -463,6 +463,10 @@ class CodeInterpreterSession:
 
     async def ais_running(self) -> bool:
         return await self.codebox.astatus() == "running"
+
+    def log(self, msg: str) -> None:
+        if self.verbose:
+            print(msg)
 
     def stop(self) -> SessionStatus:
         return SessionStatus.from_codebox_status(self.codebox.stop())
