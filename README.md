@@ -30,12 +30,14 @@ For deployments, you can use `pip install codeinterpreterapi` instead which does
 To configure OpenAI and Azure OpenAI, ensure that you set the appropriate environment variables (or use a .env file):
 
 For OpenAI, set the OPENAI_API_KEY environment variable:
-```
+
+```bash
 export OPENAI_API_KEY=your_openai_api_key
 ```
 
 For Azure OpenAI, set the following environment variables:
-```
+
+```bash
 export OPENAI_API_TYPE=azure
 export OPENAI_API_VERSION=your_api_version
 export OPENAI_API_BASE=your_api_base
@@ -155,6 +157,7 @@ Thanks, this helps a lot! ❤️
 
 ## Star History
 
+<!-- markdownlint-disable MD033 -->
 <a href="https://star-history.com/#shroominic/codeinterpreter-api&Date">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=shroominic/codeinterpreter-api&type=Date&theme=dark" />
