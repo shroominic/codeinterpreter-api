@@ -3,7 +3,7 @@ import shutil
 import tempfile
 from typing import Optional
 
-import streamlit as st  # type: ignore
+import streamlit as st
 
 from codeinterpreterapi import CodeInterpreterSession
 
@@ -19,13 +19,13 @@ def create_temp_folder() -> str:
 async def get_images(prompt: str, files: Optional[list] = None):
     if files is None:
         files = []
-    with st.chat_message("user"):
+    with st.chat_message("user"):  # type: ignore
         st.write(prompt)
     with st.spinner():
         async with CodeInterpreterSession(model="gpt-3.5-turbo") as session:
             response = await session.generate_response(prompt, files=files)
 
-            with st.chat_message("assistant"):
+            with st.chat_message("assistant"):  # type: ignore
                 st.write(response.content)
 
                 # Showing Results
@@ -38,7 +38,6 @@ async def get_images(prompt: str, files: Optional[list] = None):
                         "Download Results",
                         response.files[0].content,
                         file_name=response.files[0].name,
-                        use_container_width=True,
                     )
                 else:
                     target_path = tempfile.mkdtemp()
@@ -53,5 +52,4 @@ async def get_images(prompt: str, files: Optional[list] = None):
                             "Download Results",
                             f,
                             file_name="archive.zip",
-                            use_container_width=True,
                         )

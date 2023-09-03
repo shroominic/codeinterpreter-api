@@ -1,10 +1,10 @@
 import asyncio
 import sys
 
-import streamlit as st  # type: ignore
+import streamlit as st
 
 from codeinterpreterapi import File
-from utils import get_images
+from frontend.utils import get_images
 
 # Page configuration
 st.set_page_config(layout="wide")
@@ -26,7 +26,7 @@ for uploaded_file in uploaded_files:
     uploaded_files_list.append(File(name=uploaded_file.name, content=bytes_data))
 
 # This will create a button
-button_pressed = st.button("Run code interpreter", use_container_width=True)
+button_pressed = st.button("Run code interpreter api")
 
 # This will display the images only when the button is pressed
 if button_pressed and input_text != "":
