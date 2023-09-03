@@ -4,7 +4,7 @@ import sys
 import streamlit as st  # type: ignore
 
 from codeinterpreterapi import File
-from frontend.utils import get_images
+from utils import get_images
 
 # Page configuration
 st.set_page_config(layout="wide")
@@ -18,7 +18,7 @@ st.sidebar.markdown("[Github Repo](https://github.com/shroominic/codeinterpreter
 
 # This will create a textbox where you can input text
 input_text = st.text_area("Write your prompt")
-uploaded_files = st.file_uploader("Upload your files", accept_multiple_files=True)
+uploaded_files = st.file_uploader("Upload your files", accept_multiple_files=True) or []
 
 uploaded_files_list = []
 for uploaded_file in uploaded_files:

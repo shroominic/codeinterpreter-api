@@ -27,6 +27,7 @@ class CodeInterpreterResponse(AIMessage):
     def show(self):
         print("AI: ", self.content)
         for file in self.files:
+            print("File: ", file.name)
             file.show_image()
 
     def __str__(self):
