@@ -27,11 +27,11 @@ class CodeInterpreterAPISettings(BaseSettings):
 
     # LLM Settings
     MODEL: str = "gpt-3.5-turbo"
-    TEMPERATURE: float = 0.02
+    TEMPERATURE: float = 0.03
     DETAILED_ERROR: bool = True
     SYSTEM_MESSAGE: SystemMessage = code_interpreter_system_message
     REQUEST_TIMEOUT: int = 3 * 60
-    MAX_ITERATIONS: int = 15
+    MAX_ITERATIONS: int = 12
     MAX_RETRY: int = 3
 
     # Production Settings
