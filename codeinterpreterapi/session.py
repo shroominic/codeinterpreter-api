@@ -14,6 +14,7 @@ from langchain.agents import (
     ConversationalChatAgent,
 )
 from langchain.base_language import BaseLanguageModel
+from langchain.callbacks.manager import Callbacks
 from langchain.chat_models import AzureChatOpenAI, ChatAnthropic, ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 from langchain.memory import ConversationBufferMemory
@@ -59,6 +60,7 @@ class CodeInterpreterSession:
         self,
         llm: Optional[BaseLanguageModel] = None,
         additional_tools: list[BaseTool] = [],
+        callbacks: Callbacks = None,
         **kwargs,
     ) -> None:
         _handle_deprecated_kwargs(kwargs)
@@ -66,6 +68,7 @@ class CodeInterpreterSession:
         self.verbose = kwargs.get("verbose", settings.DEBUG)
         self.tools: list[BaseTool] = self._tools(additional_tools)
         self.llm: BaseLanguageModel = llm or self._choose_llm()
+        self.callbacks = callbacks
         self.agent_executor: Optional[AgentExecutor] = None
         self.input_files: list[File] = []
         self.output_files: list[File] = []
@@ -209,6 +212,7 @@ class CodeInterpreterSession:
                 return_messages=True,
                 chat_memory=self._history_backend(),
             ),
+            callbacks=self.callbacks,
         )
 
     def show_code(self, code: str) -> None:
@@ -239,7 +243,8 @@ class CodeInterpreterSession:
         elif output.type == "error":
             if "ModuleNotFoundError" in output.content:
                 if package := re.search(
-                    r"ModuleNotFoundError: No module named '(.*)'", output.content
+                    r"ModuleNotFoundError: No module named '(.*)'",
+                    output.content,
                 ):
                     self.codebox.install(package.group(1))
                     return (
@@ -286,7 +291,8 @@ class CodeInterpreterSession:
         elif output.type == "error":
             if "ModuleNotFoundError" in output.content:
                 if package := re.search(
-                    r"ModuleNotFoundError: No module named '(.*)'", output.content
+                    r"ModuleNotFoundError: No module named '(.*)'",
+                    output.content,
                 ):
                     await self.codebox.ainstall(package.group(1))
                     return (
