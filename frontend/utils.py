@@ -23,7 +23,7 @@ async def get_images(prompt: str, files: Optional[list] = None):
         st.write(prompt)
     with st.spinner():
         async with CodeInterpreterSession(model="gpt-3.5-turbo") as session:
-            response = await session.generate_response(prompt, files=files)
+            response = await session.agenerate_response(prompt, files=files)
 
             with st.chat_message("assistant"):  # type: ignore
                 st.write(response.content)

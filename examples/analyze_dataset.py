@@ -11,7 +11,7 @@ async def main():
         ]
 
         # generate the response
-        response = await session.generate_response(user_request, files=files)
+        response = await session.agenerate_response(user_request, files=files)
 
         # output the response (text + image)
         response.show()

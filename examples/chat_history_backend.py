@@ -15,7 +15,7 @@ def main():
     print("Session ID:", session.session_id)
     session_id = session.session_id
 
-    response = session.generate_response_sync("Plot the bitcoin chart of 2023 YTD")
+    response = session.generate_response("Plot the bitcoin chart of 2023 YTD")
     response.show()
 
     del session
@@ -23,7 +23,7 @@ def main():
     assert session_id is not None
     session = CodeInterpreterSession.from_id(session_id)
 
-    response = session.generate_response_sync("Now for the last 5 years")
+    response = session.generate_response("Now for the last 5 years")
     response.show()
 
     session.stop()

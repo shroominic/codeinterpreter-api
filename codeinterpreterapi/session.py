@@ -402,6 +402,17 @@ class CodeInterpreterSession:
         user_msg: str,
         files: list[File] = [],
     ) -> CodeInterpreterResponse:
+        print("DEPRECATION WARNING: Use generate_response for sync generation.\n")
+        return self.generate_response(
+            user_msg=user_msg,
+            files=files,
+        )
+
+    def generate_response(
+        self,
+        user_msg: str,
+        files: list[File] = [],
+    ) -> CodeInterpreterResponse:
         """Generate a Code Interpreter response based on the user's input."""
         user_request = UserRequest(content=user_msg, files=files)
         try:
@@ -422,21 +433,6 @@ class CodeInterpreterSession:
                     content="Sorry, something went while generating your response."
                     "Please try again or restart the session."
                 )
-
-    async def generate_response(
-        self,
-        user_msg: str,
-        files: list[File] = [],
-    ) -> CodeInterpreterResponse:
-        print(
-            "DEPRECATION WARNING: Use agenerate_response for async generation.\n"
-            "This function will be converted to sync in the future.\n"
-            "You can use generate_response_sync for now.",
-        )
-        return await self.agenerate_response(
-            user_msg=user_msg,
-            files=files,
-        )
 
     async def agenerate_response(
         self,
