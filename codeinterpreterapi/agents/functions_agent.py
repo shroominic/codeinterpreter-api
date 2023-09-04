@@ -8,26 +8,16 @@ from langchain.agents import BaseSingleActionAgent
 from langchain.callbacks.base import BaseCallbackManager
 from langchain.callbacks.manager import Callbacks  # type: ignore
 from langchain.chat_models.openai import ChatOpenAI
-from langchain.prompts.chat import (
-    BaseMessagePromptTemplate,
-    ChatPromptTemplate,
-    HumanMessagePromptTemplate,
-    MessagesPlaceholder,
-)
+from langchain.prompts.chat import (BaseMessagePromptTemplate,
+                                    ChatPromptTemplate,
+                                    HumanMessagePromptTemplate,
+                                    MessagesPlaceholder)
 from langchain.pydantic_v1 import root_validator
-from langchain.schema import (
-    AgentAction,
-    AgentFinish,
-    BasePromptTemplate,
-    OutputParserException,
-)
+from langchain.schema import (AgentAction, AgentFinish, BasePromptTemplate,
+                              OutputParserException)
 from langchain.schema.language_model import BaseLanguageModel
-from langchain.schema.messages import (
-    AIMessage,
-    BaseMessage,
-    FunctionMessage,
-    SystemMessage,
-)
+from langchain.schema.messages import (AIMessage, BaseMessage, FunctionMessage,
+                                       SystemMessage)
 from langchain.tools import BaseTool
 from langchain.tools.convert_to_openai import format_tool_to_openai_function
 

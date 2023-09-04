@@ -7,46 +7,30 @@ from uuid import UUID, uuid4
 
 from codeboxapi import CodeBox  # type: ignore
 from codeboxapi.schema import CodeBoxOutput  # type: ignore
-from langchain.agents import (
-    AgentExecutor,
-    BaseSingleActionAgent,
-    ConversationalAgent,
-    ConversationalChatAgent,
-)
+from langchain.agents import (AgentExecutor, BaseSingleActionAgent,
+                              ConversationalAgent, ConversationalChatAgent)
 from langchain.base_language import BaseLanguageModel
 from langchain.callbacks.manager import Callbacks
 from langchain.chat_models import AzureChatOpenAI, ChatAnthropic, ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 from langchain.memory import ConversationBufferMemory
 from langchain.memory.chat_message_histories import (
-    ChatMessageHistory,
-    PostgresChatMessageHistory,
-    RedisChatMessageHistory,
-)
+    ChatMessageHistory, PostgresChatMessageHistory, RedisChatMessageHistory)
 from langchain.prompts.chat import MessagesPlaceholder
 from langchain.schema import BaseChatMessageHistory
 from langchain.tools import BaseTool, StructuredTool
 
 from codeinterpreterapi.agents import OpenAIFunctionsAgent
-from codeinterpreterapi.chains import (
-    aget_file_modifications,
-    aremove_download_link,
-    get_file_modifications,
-    remove_download_link,
-)
+from codeinterpreterapi.chains import (aget_file_modifications,
+                                       aremove_download_link,
+                                       get_file_modifications,
+                                       remove_download_link)
 from codeinterpreterapi.chat_history import CodeBoxChatMessageHistory
 from codeinterpreterapi.config import settings
-from codeinterpreterapi.parser import (
-    CodeAgentOutputParser,
-    CodeChatAgentOutputParser,
-)
-from codeinterpreterapi.schema import (
-    CodeInput,
-    CodeInterpreterResponse,
-    File,
-    SessionStatus,
-    UserRequest,
-)
+from codeinterpreterapi.parser import (CodeAgentOutputParser,
+                                       CodeChatAgentOutputParser)
+from codeinterpreterapi.schema import (CodeInput, CodeInterpreterResponse,
+                                       File, SessionStatus, UserRequest)
 
 
 def _handle_deprecated_kwargs(kwargs: dict) -> None:
