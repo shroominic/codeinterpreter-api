@@ -4,8 +4,7 @@ from typing import List
 
 from codeboxapi import CodeBox  # type: ignore
 from langchain.schema import BaseChatMessageHistory
-from langchain.schema.messages import (BaseMessage, messages_from_dict,
-                                       messages_to_dict)
+from langchain.schema.messages import BaseMessage, messages_from_dict, messages_to_dict
 
 
 # TODO: This is probably not efficient, but it works for now.

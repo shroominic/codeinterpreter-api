@@ -7,45 +7,52 @@ from uuid import UUID, uuid4
 
 from codeboxapi import CodeBox  # type: ignore
 from codeboxapi.schema import CodeBoxOutput  # type: ignore
-from langchain.agents import (AgentExecutor, BaseSingleActionAgent,
-                              ConversationalAgent, ConversationalChatAgent)
+from langchain.agents import (
+    AgentExecutor,
+    BaseSingleActionAgent,
+    ConversationalAgent,
+    ConversationalChatAgent,
+)
 from langchain.base_language import BaseLanguageModel
 from langchain.callbacks.manager import Callbacks
 from langchain.chat_models import AzureChatOpenAI, ChatAnthropic, ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 from langchain.memory import ConversationBufferMemory
 from langchain.memory.chat_message_histories import (
-    ChatMessageHistory, PostgresChatMessageHistory, RedisChatMessageHistory)
+    ChatMessageHistory,
+    PostgresChatMessageHistory,
+    RedisChatMessageHistory,
+)
 from langchain.prompts.chat import MessagesPlaceholder
 from langchain.schema import BaseChatMessageHistory
 from langchain.tools import BaseTool, StructuredTool
 
 from codeinterpreterapi.agents import OpenAIFunctionsAgent
-from codeinterpreterapi.chains import (aget_file_modifications,
-                                       aremove_download_link,
-                                       get_file_modifications,
-                                       remove_download_link)
+from codeinterpreterapi.chains import (
+    aget_file_modifications,
+    aremove_download_link,
+    get_file_modifications,
+    remove_download_link,
+)
 from codeinterpreterapi.chat_history import CodeBoxChatMessageHistory
 from codeinterpreterapi.config import settings
-from codeinterpreterapi.parser import (CodeAgentOutputParser,
-                                       CodeChatAgentOutputParser)
-from codeinterpreterapi.schema import (CodeInput, CodeInterpreterResponse,
-                                       File, SessionStatus, UserRequest)
+from codeinterpreterapi.parser import CodeAgentOutputParser, CodeChatAgentOutputParser
+from codeinterpreterapi.schema import (
+    CodeInput,
+    CodeInterpreterResponse,
+    File,
+    SessionStatus,
+    UserRequest,
+)
 
 
 def _handle_deprecated_kwargs(kwargs: dict) -> None:
     settings.MODEL = kwargs.get("model", settings.MODEL)
     settings.MAX_RETRY = kwargs.get("max_retry", settings.MAX_RETRY)
     settings.TEMPERATURE = kwargs.get("temperature", settings.TEMPERATURE)
-    settings.OPENAI_API_KEY = kwargs.get(
-        "openai_api_key", settings.OPENAI_API_KEY
-    )
-    settings.SYSTEM_MESSAGE = kwargs.get(
-        "system_message", settings.SYSTEM_MESSAGE
-    )
-    settings.MAX_ITERATIONS = kwargs.get(
-        "max_iterations", settings.MAX_ITERATIONS
-    )
+    settings.OPENAI_API_KEY = kwargs.get("openai_api_key", settings.OPENAI_API_KEY)
+    settings.SYSTEM_MESSAGE = kwargs.get("system_message", settings.SYSTEM_MESSAGE)
+    settings.MAX_ITERATIONS = kwargs.get("max_iterations", settings.MAX_ITERATIONS)
 
 
 class CodeInterpreterSession:
@@ -149,9 +156,7 @@ class CodeInterpreterSession:
                 anthropic_api_key=settings.ANTHROPIC_API_KEY,
             )
         else:
-            raise ValueError(
-                "Please set the API key for the LLM you want to use."
-            )
+            raise ValueError("Please set the API key for the LLM you want to use.")
 
     def _choose_agent(self) -> BaseSingleActionAgent:
         return (
@@ -232,9 +237,7 @@ class CodeInterpreterSession:
             filename = f"image-{uuid4()}.png"
             file_buffer = BytesIO(base64.b64decode(output.content))
             file_buffer.name = filename
-            self.output_files.append(
-                File(name=filename, content=file_buffer.read())
-            )
+            self.output_files.append(File(name=filename, content=file_buffer.read()))
             return f"Image {filename} got send to the user."
 
         elif output.type == "error":
@@ -282,9 +285,7 @@ class CodeInterpreterSession:
             filename = f"image-{uuid4()}.png"
             file_buffer = BytesIO(base64.b64decode(output.content))
             file_buffer.name = filename
-            self.output_files.append(
-                File(name=filename, content=file_buffer.read())
-            )
+            self.output_files.append(File(name=filename, content=file_buffer.read()))
             return f"Image {filename} got send to the user."
 
         elif output.type == "error":
@@ -324,7 +325,9 @@ class CodeInterpreterSession:
         if not request.files:
             return
         if not request.content:
-            request.content = "I uploaded, just text me back and confirm that you got the file(s)."
+            request.content = (
+                "I uploaded, just text me back and confirm that you got the file(s)."
+            )
         request.content += "\n**The user uploaded the following files: **\n"
         for file in request.files:
             self.input_files.append(file)
@@ -338,7 +341,9 @@ class CodeInterpreterSession:
         if not request.files:
             return
         if not request.content:
-            request.content = "I uploaded, just text me back and confirm that you got the file(s)."
+            request.content = (
+                "I uploaded, just text me back and confirm that you got the file(s)."
+            )
         request.content += "\n**The user uploaded the following files: **\n"
         for file in request.files:
             self.input_files.append(file)
@@ -351,9 +356,7 @@ class CodeInterpreterSession:
         for file in self.output_files:
             if str(file.name) in final_response:
                 # rm ![Any](file.name) from the response
-                final_response = re.sub(
-                    r"\n\n!\[.*\]\(.*\)", "", final_response
-                )
+                final_response = re.sub(r"\n\n!\[.*\]\(.*\)", "", final_response)
 
         if self.output_files and re.search(r"\n\[.*\]\(.*\)", final_response):
             try:
@@ -371,22 +374,16 @@ class CodeInterpreterSession:
             content=final_response, files=output_files, code_log=code_log
         )
 
-    async def _aoutput_handler(
-        self, final_response: str
-    ) -> CodeInterpreterResponse:
+    async def _aoutput_handler(self, final_response: str) -> CodeInterpreterResponse:
         """Embed images in the response"""
         for file in self.output_files:
             if str(file.name) in final_response:
                 # rm ![Any](file.name) from the response
-                final_response = re.sub(
-                    r"\n\n!\[.*\]\(.*\)", "", final_response
-                )
+                final_response = re.sub(r"\n\n!\[.*\]\(.*\)", "", final_response)
 
         if self.output_files and re.search(r"\n\[.*\]\(.*\)", final_response):
             try:
-                final_response = await aremove_download_link(
-                    final_response, self.llm
-                )
+                final_response = await aremove_download_link(final_response, self.llm)
             except Exception as e:
                 if self.verbose:
                     print("Error while removing download links:", e)
@@ -451,9 +448,7 @@ class CodeInterpreterSession:
         try:
             await self._ainput_handler(user_request)
             assert self.agent_executor, "Session not initialized."
-            response = await self.agent_executor.arun(
-                input=user_request.content
-            )
+            response = await self.agent_executor.arun(input=user_request.content)
             return await self._aoutput_handler(response)
         except Exception as e:
             if self.verbose:
