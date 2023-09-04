@@ -48,33 +48,20 @@ export DEPLOYMENT_NAME=your_deployment_name
 Remember to replace the placeholders with your actual API keys and other required information.
 
 ```python
-from codeinterpreterapi import CodeInterpreterSession
+from codeinterpreterapi import CodeInterpreterSession, settings
 
+# set api key (or automatically loads from env vars)
+settings.OPENAI_API_KEY = "sk-***************"
 
-async def main():
-    # create a session
-    session = CodeInterpreterSession()
-    await session.astart()
-
+# create a session
+with CodeInterpreterSession() as session:
     # generate a response based on user input
-    response = await session.generate_response(
-        "Plot the bitcoin chart of 2023 YTD"
+    response = session.generate_response(
+        "Plot the bitcoin chart of year 2023"
     )
 
-    # output the response (text + image)
-    print("AI: ", response.content)
-    for file in response.files:
-        file.show_image()
-
-    # terminate the session
-    await session.astop()
-
-
-if __name__ == "__main__":
-    import asyncio
-    # run the async function
-    asyncio.run(main())
-
+    # output the response
+    response.show()
 ```
 
 ![Bitcoin YTD](https://github.com/shroominic/codeinterpreter-api/blob/main/examples/assets/bitcoin_chart.png?raw=true)
