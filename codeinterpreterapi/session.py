@@ -14,7 +14,7 @@ from langchain.agents import (
     ConversationalChatAgent,
 )
 from langchain.base_language import BaseLanguageModel
-from langchain.callbacks.manager import Callbacks
+from langchain.callbacks.base import Callbacks
 from langchain.chat_models import AzureChatOpenAI, ChatAnthropic, ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 from langchain.memory import ConversationBufferMemory
@@ -110,10 +110,12 @@ class CodeInterpreterSession:
                 "be really long, so you can use the `;` character to split lines. "
                 "Variables are preserved between runs. "
                 + (
-                    f"You can use all default python packages specifically also these: {settings.CUSTOM_PACKAGES}"
-                )
-                if settings.CUSTOM_PACKAGES
-                else "",  # TODO: or include this in the system message
+                    (
+                        f"You can use all default python packages specifically also these: {settings.CUSTOM_PACKAGES}"
+                    )
+                    if settings.CUSTOM_PACKAGES
+                    else ""
+                ),  # TODO: or include this in the system message
                 func=self._run_handler,
                 coroutine=self._arun_handler,
                 args_schema=CodeInput,  # type: ignore
