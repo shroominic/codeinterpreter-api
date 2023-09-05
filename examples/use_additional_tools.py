@@ -14,8 +14,8 @@ from codeinterpreterapi import CodeInterpreterSession
 
 
 class ExampleKnowledgeBaseTool(BaseTool):
-    name = "salary_database"
-    description = "Use to get salary data of company employees"
+    name: str = "salary_database"
+    description: str = "Use to get salary data of company employees"
 
     def _run(self, *args, **kwargs):
         raise NotImplementedError()
@@ -32,8 +32,10 @@ class ExampleKnowledgeBaseTool(BaseTool):
 
 
 async def main():
-    async with CodeInterpreterSession(tools=[ExampleKnowledgeBaseTool()]) as session:
-        response = await session.generate_response(
+    async with CodeInterpreterSession(
+        additional_tools=[ExampleKnowledgeBaseTool()]
+    ) as session:
+        response = await session.agenerate_response(
             "Plot chart of company employee salaries"
         )
 

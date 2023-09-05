@@ -30,12 +30,14 @@ For deployments, you can use `pip install codeinterpreterapi` instead which does
 To configure OpenAI and Azure OpenAI, ensure that you set the appropriate environment variables (or use a .env file):
 
 For OpenAI, set the OPENAI_API_KEY environment variable:
-```
+
+```bash
 export OPENAI_API_KEY=your_openai_api_key
 ```
 
 For Azure OpenAI, set the following environment variables:
-```
+
+```bash
 export OPENAI_API_TYPE=azure
 export OPENAI_API_VERSION=your_api_version
 export OPENAI_API_BASE=your_api_base
@@ -46,33 +48,20 @@ export DEPLOYMENT_NAME=your_deployment_name
 Remember to replace the placeholders with your actual API keys and other required information.
 
 ```python
-from codeinterpreterapi import CodeInterpreterSession
+from codeinterpreterapi import CodeInterpreterSession, settings
 
+# set api key (or automatically loads from env vars)
+settings.OPENAI_API_KEY = "sk-***************"
 
-async def main():
-    # create a session
-    session = CodeInterpreterSession()
-    await session.astart()
-
+# create a session
+with CodeInterpreterSession() as session:
     # generate a response based on user input
-    response = await session.generate_response(
-        "Plot the bitcoin chart of 2023 YTD"
+    response = session.generate_response(
+        "Plot the bitcoin chart of year 2023"
     )
 
-    # output the response (text + image)
-    print("AI: ", response.content)
-    for file in response.files:
-        file.show_image()
-
-    # terminate the session
-    await session.astop()
-
-
-if __name__ == "__main__":
-    import asyncio
-    # run the async function
-    asyncio.run(main())
-
+    # output the response
+    response.show()
 ```
 
 ![Bitcoin YTD](https://github.com/shroominic/codeinterpreter-api/blob/main/examples/assets/bitcoin_chart.png?raw=true)
@@ -136,7 +125,7 @@ Thanks!
 To start the web application created with streamlit:
 
 ```bash
-streamlit run frontend/app.py
+streamlit run frontend/app.py --browser.gatherUsageStats=False
 ```
 
 ## License
@@ -155,6 +144,7 @@ Thanks, this helps a lot! ❤️
 
 ## Star History
 
+<!-- markdownlint-disable MD033 -->
 <a href="https://star-history.com/#shroominic/codeinterpreter-api&Date">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=shroominic/codeinterpreter-api&type=Date&theme=dark" />

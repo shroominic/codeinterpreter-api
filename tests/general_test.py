@@ -25,14 +25,14 @@ def run_sync(session: CodeInterpreterSession) -> bool:
 
         assert (
             "3.1"
-            in session.generate_response_sync(
+            in session.generate_response(
                 "Compute pi using Monte Carlo simulation in Python and show me the result."
             ).content
         )
 
         assert (
             ".xlsx"
-            in session.generate_response_sync(
+            in session.generate_response(
                 "Convert this csv file to excel.",
                 files=[File.from_path("examples/assets/iris.csv")],
             )

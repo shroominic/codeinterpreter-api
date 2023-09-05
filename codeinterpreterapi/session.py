@@ -2,7 +2,6 @@ import base64
 import re
 import traceback
 from io import BytesIO
-from os import getenv
 from typing import Optional
 from uuid import UUID, uuid4
 
@@ -14,6 +13,8 @@ from langchain.agents import (
     ConversationalAgent,
     ConversationalChatAgent,
 )
+from langchain.base_language import BaseLanguageModel
+from langchain.callbacks.base import Callbacks
 from langchain.chat_models import AzureChatOpenAI, ChatAnthropic, ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 from langchain.memory import ConversationBufferMemory
@@ -23,7 +24,7 @@ from langchain.memory.chat_message_histories import (
     RedisChatMessageHistory,
 )
 from langchain.prompts.chat import MessagesPlaceholder
-from langchain.schema import BaseChatMessageHistory, BaseLanguageModel, SystemMessage
+from langchain.schema import BaseChatMessageHistory
 from langchain.tools import BaseTool, StructuredTool
 
 from codeinterpreterapi.agents import OpenAIFunctionsAgent
@@ -36,7 +37,6 @@ from codeinterpreterapi.chains import (
 from codeinterpreterapi.chat_history import CodeBoxChatMessageHistory
 from codeinterpreterapi.config import settings
 from codeinterpreterapi.parser import CodeAgentOutputParser, CodeChatAgentOutputParser
-from codeinterpreterapi.prompts import code_interpreter_system_message
 from codeinterpreterapi.schema import (
     CodeInput,
     CodeInterpreterResponse,
@@ -46,21 +46,29 @@ from codeinterpreterapi.schema import (
 )
 
 
+def _handle_deprecated_kwargs(kwargs: dict) -> None:
+    settings.MODEL = kwargs.get("model", settings.MODEL)
+    settings.MAX_RETRY = kwargs.get("max_retry", settings.MAX_RETRY)
+    settings.TEMPERATURE = kwargs.get("temperature", settings.TEMPERATURE)
+    settings.OPENAI_API_KEY = kwargs.get("openai_api_key", settings.OPENAI_API_KEY)
+    settings.SYSTEM_MESSAGE = kwargs.get("system_message", settings.SYSTEM_MESSAGE)
+    settings.MAX_ITERATIONS = kwargs.get("max_iterations", settings.MAX_ITERATIONS)
+
+
 class CodeInterpreterSession:
     def __init__(
         self,
         llm: Optional[BaseLanguageModel] = None,
-        system_message: SystemMessage = code_interpreter_system_message,
-        max_iterations: int = 9,
         additional_tools: list[BaseTool] = [],
+        callbacks: Callbacks = None,
         **kwargs,
     ) -> None:
-        self.codebox = CodeBox()
-        self.verbose = kwargs.get("verbose", settings.VERBOSE)
+        _handle_deprecated_kwargs(kwargs)
+        self.codebox = CodeBox(requirements=settings.CUSTOM_PACKAGES)
+        self.verbose = kwargs.get("verbose", settings.DEBUG)
         self.tools: list[BaseTool] = self._tools(additional_tools)
-        self.llm: BaseLanguageModel = llm or self._choose_llm(**kwargs)
-        self.max_iterations = max_iterations
-        self.system_message = system_message
+        self.llm: BaseLanguageModel = llm or self._choose_llm()
+        self.callbacks = callbacks
         self.agent_executor: Optional[AgentExecutor] = None
         self.input_files: list[File] = []
         self.output_files: list[File] = []
@@ -80,11 +88,17 @@ class CodeInterpreterSession:
     def start(self) -> SessionStatus:
         status = SessionStatus.from_codebox_status(self.codebox.start())
         self.agent_executor = self._agent_executor()
+        self.codebox.run(
+            f"!pip install -q {' '.join(settings.CUSTOM_PACKAGES)}",
+        )
         return status
 
     async def astart(self) -> SessionStatus:
         status = SessionStatus.from_codebox_status(await self.codebox.astart())
         self.agent_executor = self._agent_executor()
+        await self.codebox.arun(
+            f"!pip install -q {' '.join(settings.CUSTOM_PACKAGES)}",
+        )
         return status
 
     def _tools(self, additional_tools: list[BaseTool]) -> list[BaseTool]:
@@ -94,65 +108,64 @@ class CodeInterpreterSession:
                 description="Input a string of code to a ipython interpreter. "
                 "Write the entire code in a single string. This string can "
                 "be really long, so you can use the `;` character to split lines. "
-                "Variables are preserved between runs. ",
+                "Variables are preserved between runs. "
+                + (
+                    (
+                        f"You can use all default python packages specifically also these: {settings.CUSTOM_PACKAGES}"
+                    )
+                    if settings.CUSTOM_PACKAGES
+                    else ""
+                ),  # TODO: or include this in the system message
                 func=self._run_handler,
                 coroutine=self._arun_handler,
-                args_schema=CodeInput,
+                args_schema=CodeInput,  # type: ignore
             ),
         ]
 
-    def _choose_llm(
-        self, model: str = "gpt-4", openai_api_key: Optional[str] = None, **kwargs
-    ) -> BaseChatModel:
-        if "gpt" in model:
-            openai_api_key = (
-                openai_api_key
-                or settings.OPENAI_API_KEY
-                or getenv("OPENAI_API_KEY", None)
+    def _choose_llm(self) -> BaseChatModel:
+        if (
+            settings.AZURE_API_KEY
+            and settings.AZURE_API_BASE
+            and settings.AZURE_API_VERSION
+            and settings.AZURE_DEPLOYMENT_NAME
+        ):
+            self.log("Using Azure Chat OpenAI")
+            return AzureChatOpenAI(
+                temperature=0.03,
+                openai_api_base=settings.AZURE_API_BASE,
+                openai_api_version=settings.AZURE_API_VERSION,
+                deployment_name=settings.AZURE_DEPLOYMENT_NAME,
+                openai_api_key=settings.AZURE_API_KEY,
+                max_retries=settings.MAX_RETRY,
+                request_timeout=settings.REQUEST_TIMEOUT,
+            )  # type: ignore
+        elif settings.OPENAI_API_KEY:
+            self.log("Using Chat OpenAI")
+            return ChatOpenAI(
+                model=settings.MODEL,
+                openai_api_key=settings.OPENAI_API_KEY,
+                request_timeout=settings.REQUEST_TIMEOUT,
+                temperature=settings.TEMPERATURE,
+                max_retries=settings.MAX_RETRY,
+            )  # type: ignore
+        elif settings.ANTHROPIC_API_KEY:
+            if "claude" not in settings.MODEL:
+                print("Please set the claude model in the settings.")
+            self.log("Using Chat Anthropic")
+            return ChatAnthropic(
+                model_name=settings.MODEL,
+                temperature=settings.TEMPERATURE,
+                anthropic_api_key=settings.ANTHROPIC_API_KEY,
             )
-            if openai_api_key is None:
-                raise ValueError(
-                    "OpenAI API key missing. Set OPENAI_API_KEY env variable "
-                    "or pass `openai_api_key` to session."
-                )
-            openai_api_version = getenv("OPENAI_API_VERSION")
-            openai_api_base = getenv("OPENAI_API_BASE")
-            deployment_name = getenv("DEPLOYMENT_NAME")
-            openapi_type = getenv("OPENAI_API_TYPE")
-            if (
-                openapi_type == "azure"
-                and openai_api_version
-                and openai_api_base
-                and deployment_name
-            ):
-                return AzureChatOpenAI(
-                    temperature=0.03,
-                    openai_api_base=openai_api_base,
-                    openai_api_version=openai_api_version,
-                    deployment_name=deployment_name,
-                    openai_api_key=openai_api_key,
-                    max_retries=3,
-                    request_timeout=60 * 3,
-                )  # type: ignore
-            else:
-                return ChatOpenAI(
-                    temperature=0.03,
-                    model=model,
-                    openai_api_key=openai_api_key,
-                    max_retries=3,
-                    request_timeout=60 * 3,
-                )  # type: ignore
-        elif "claude" in model:
-            return ChatAnthropic(model=model)
         else:
-            raise ValueError(f"Unknown model: {model} (expected gpt or claude model)")
+            raise ValueError("Please set the API key for the LLM you want to use.")
 
     def _choose_agent(self) -> BaseSingleActionAgent:
         return (
             OpenAIFunctionsAgent.from_llm_and_tools(
                 llm=self.llm,
                 tools=self.tools,
-                system_message=self.system_message,
+                system_message=settings.SYSTEM_MESSAGE,
                 extra_prompt_messages=[
                     MessagesPlaceholder(variable_name="chat_history")
                 ],
@@ -161,14 +174,14 @@ class CodeInterpreterSession:
             else ConversationalChatAgent.from_llm_and_tools(
                 llm=self.llm,
                 tools=self.tools,
-                system_message=code_interpreter_system_message.content,
-                output_parser=CodeChatAgentOutputParser(),
+                system_message=settings.SYSTEM_MESSAGE.content,
+                output_parser=CodeChatAgentOutputParser(self.llm),
             )
             if isinstance(self.llm, BaseChatModel)
             else ConversationalAgent.from_llm_and_tools(
                 llm=self.llm,
                 tools=self.tools,
-                prefix=code_interpreter_system_message.content,
+                prefix=settings.SYSTEM_MESSAGE.content,
                 output_parser=CodeAgentOutputParser(),
             )
         )
@@ -193,7 +206,7 @@ class CodeInterpreterSession:
     def _agent_executor(self) -> AgentExecutor:
         return AgentExecutor.from_agent_and_tools(
             agent=self._choose_agent(),
-            max_iterations=self.max_iterations,
+            max_iterations=settings.MAX_ITERATIONS,
             tools=self.tools,
             verbose=self.verbose,
             memory=ConversationBufferMemory(
@@ -201,6 +214,7 @@ class CodeInterpreterSession:
                 return_messages=True,
                 chat_memory=self._history_backend(),
             ),
+            callbacks=self.callbacks,
         )
 
     def show_code(self, code: str) -> None:
@@ -212,7 +226,7 @@ class CodeInterpreterSession:
         if self.verbose:
             print(code)
 
-    def _run_handler(self, code: str):
+    def _run_handler(self, code: str) -> str:
         """Run code in container and send the output to the user"""
         self.show_code(code)
         output: CodeBoxOutput = self.codebox.run(code)
@@ -231,7 +245,8 @@ class CodeInterpreterSession:
         elif output.type == "error":
             if "ModuleNotFoundError" in output.content:
                 if package := re.search(
-                    r"ModuleNotFoundError: No module named '(.*)'", output.content
+                    r"ModuleNotFoundError: No module named '(.*)'",
+                    output.content,
                 ):
                     self.codebox.install(package.group(1))
                     return (
@@ -239,7 +254,7 @@ class CodeInterpreterSession:
                         "got installed now. Please try again."
                     )
             else:
-                # TODO: preanalyze error to optimize next code generation
+                # TODO: pre-analyze error to optimize next code generation
                 pass
             if self.verbose:
                 print("Error:", output.content)
@@ -259,7 +274,7 @@ class CodeInterpreterSession:
 
         return output.content
 
-    async def _arun_handler(self, code: str):
+    async def _arun_handler(self, code: str) -> str:
         """Run code in container and send the output to the user"""
         await self.ashow_code(code)
         output: CodeBoxOutput = await self.codebox.arun(code)
@@ -278,7 +293,8 @@ class CodeInterpreterSession:
         elif output.type == "error":
             if "ModuleNotFoundError" in output.content:
                 if package := re.search(
-                    r"ModuleNotFoundError: No module named '(.*)'", output.content
+                    r"ModuleNotFoundError: No module named '(.*)'",
+                    output.content,
                 ):
                     await self.codebox.ainstall(package.group(1))
                     return (
@@ -286,7 +302,7 @@ class CodeInterpreterSession:
                         "got installed now. Please try again."
                     )
             else:
-                # TODO: preanalyze error to optimize next code generation
+                # TODO: pre-analyze error to optimize next code generation
                 pass
             if self.verbose:
                 print("Error:", output.content)
@@ -321,7 +337,7 @@ class CodeInterpreterSession:
             self.codebox.upload(file.name, file.content)
         request.content += "**File(s) are now available in the cwd. **\n"
 
-    async def _ainput_handler(self, request: UserRequest):
+    async def _ainput_handler(self, request: UserRequest) -> None:
         # TODO: variables as context to the agent
         # TODO: current files as context to the agent
         if not request.files:
@@ -387,7 +403,17 @@ class CodeInterpreterSession:
         self,
         user_msg: str,
         files: list[File] = [],
-        detailed_error: bool = False,
+    ) -> CodeInterpreterResponse:
+        print("DEPRECATION WARNING: Use generate_response for sync generation.\n")
+        return self.generate_response(
+            user_msg=user_msg,
+            files=files,
+        )
+
+    def generate_response(
+        self,
+        user_msg: str,
+        files: list[File] = [],
     ) -> CodeInterpreterResponse:
         """Generate a Code Interpreter response based on the user's input."""
         user_request = UserRequest(content=user_msg, files=files)
@@ -399,7 +425,7 @@ class CodeInterpreterSession:
         except Exception as e:
             if self.verbose:
                 traceback.print_exc()
-            if detailed_error:
+            if settings.DETAILED_ERROR:
                 return CodeInterpreterResponse(
                     content="Error in CodeInterpreterSession: "
                     f"{e.__class__.__name__}  - {e}"
@@ -410,28 +436,10 @@ class CodeInterpreterSession:
                     "Please try again or restart the session."
                 )
 
-    async def generate_response(
-        self,
-        user_msg: str,
-        files: list[File] = [],
-        detailed_error: bool = False,
-    ) -> CodeInterpreterResponse:
-        print(
-            "DEPRECATION WARNING: Use agenerate_response for async generation.\n"
-            "This function will be converted to sync in the future.\n"
-            "You can use generate_response_sync for now.",
-        )
-        return await self.agenerate_response(
-            user_msg=user_msg,
-            files=files,
-            detailed_error=detailed_error,
-        )
-
     async def agenerate_response(
         self,
         user_msg: str,
         files: list[File] = [],
-        detailed_error: bool = False,
     ) -> CodeInterpreterResponse:
         """Generate a Code Interpreter response based on the user's input."""
         user_request = UserRequest(content=user_msg, files=files)
@@ -443,7 +451,7 @@ class CodeInterpreterSession:
         except Exception as e:
             if self.verbose:
                 traceback.print_exc()
-            if detailed_error:
+            if settings.DETAILED_ERROR:
                 return CodeInterpreterResponse(
                     content="Error in CodeInterpreterSession: "
                     f"{e.__class__.__name__}  - {e}"
@@ -459,6 +467,10 @@ class CodeInterpreterSession:
 
     async def ais_running(self) -> bool:
         return await self.codebox.astatus() == "running"
+
+    def log(self, msg: str) -> None:
+        if self.verbose:
+            print(msg)
 
     def stop(self) -> SessionStatus:
         return SessionStatus.from_codebox_status(self.codebox.stop())
