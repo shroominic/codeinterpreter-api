@@ -54,6 +54,7 @@ ENV/
 env.bak/
 venv.bak/
 .codebox
+.context
 
 # mkdocs documentation
 /site
