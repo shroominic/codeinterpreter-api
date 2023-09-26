@@ -4,7 +4,7 @@ import sys
 import streamlit as st
 
 from codeinterpreterapi import File
-from frontend.utils import get_images
+from utils import get_images
 
 # Page configuration
 st.set_page_config(layout="wide")
