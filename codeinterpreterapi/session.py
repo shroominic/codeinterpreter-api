@@ -139,7 +139,7 @@ class CodeInterpreterSession:
                 max_retries=settings.MAX_RETRY,
                 request_timeout=settings.REQUEST_TIMEOUT,
             )  # type: ignore
-        elif settings.OPENAI_API_KEY:
+        if settings.OPENAI_API_KEY:
             self.log("Using Chat OpenAI")
             return ChatOpenAI(
                 model=settings.MODEL,
@@ -148,7 +148,7 @@ class CodeInterpreterSession:
                 temperature=settings.TEMPERATURE,
                 max_retries=settings.MAX_RETRY,
             )  # type: ignore
-        elif settings.ANTHROPIC_API_KEY:
+        if settings.ANTHROPIC_API_KEY:
             if "claude" not in settings.MODEL:
                 print("Please set the claude model in the settings.")
             self.log("Using Chat Anthropic")
@@ -157,8 +157,7 @@ class CodeInterpreterSession:
                 temperature=settings.TEMPERATURE,
                 anthropic_api_key=settings.ANTHROPIC_API_KEY,
             )
-        else:
-            raise ValueError("Please set the API key for the LLM you want to use.")
+        raise ValueError("Please set the API key for the LLM you want to use.")
 
     def _choose_agent(self) -> BaseSingleActionAgent:
         return (

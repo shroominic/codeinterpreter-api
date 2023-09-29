@@ -1,7 +1,7 @@
 from typing import Optional
 
 from dotenv import load_dotenv
-from langchain.pydantic_v1 import BaseSettings
+from langchain.pydantic_v1 import BaseSettings, SecretStr
 from langchain.schema import SystemMessage
 
 from codeinterpreterapi.prompts import code_interpreter_system_message
@@ -23,7 +23,7 @@ class CodeInterpreterAPISettings(BaseSettings):
     AZURE_API_BASE: Optional[str] = None
     AZURE_API_VERSION: Optional[str] = None
     AZURE_DEPLOYMENT_NAME: Optional[str] = None
-    ANTHROPIC_API_KEY: Optional[str] = None
+    ANTHROPIC_API_KEY: Optional[SecretStr] = None
 
     # LLM Settings
     MODEL: str = "gpt-3.5-turbo"
