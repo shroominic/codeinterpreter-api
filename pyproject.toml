@@ -19,7 +19,7 @@ pydantic-settings = "^2"
 mkdocs-material = ">=9.2.7"
 streamlit = { version = "^1", optional = true }
 jupyter-kernel-gateway = { version = "^2", optional = true }
-Pillow = { version = "^9", optional = true }
+Pillow = { version = ">=9,<11", optional = true }
 
 [tool.poetry.extras]
 all = ["jupyter-kernel-gateway", "streamlit", "Pillow"]
