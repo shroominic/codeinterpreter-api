@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "codeinterpreterapi"
-version = "0.0.13"
+version = "0.0.14"
 authors = ["Shroominic <contact@shroominic.com>"]
 license = "MIT"
 description = "CodeInterpreterAPI is an (unofficial) open source python interface for the ChatGPT CodeInterpreter."
@@ -10,7 +10,7 @@ repository = "https://github.com/shroominic/codeinterpreter-api"
 
 [tool.poetry.dependencies]
 python = ">=3.9.7,<4.0"
-langchain = ">=0.0.300"
+langchain = ">=0.0.312"
 codeboxapi = ">=0.0.19"
 openai = "*"
 python-dotenv = "*"
