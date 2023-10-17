@@ -108,6 +108,7 @@ class CodeInterpreterSession:
                 description="Input a string of code to a ipython interpreter. "
                 "Write the entire code in a single string. This string can "
                 "be really long, so you can use the `;` character to split lines. "
+                "Start your code on the same line as the opening quote. "
                 "Variables are preserved between runs. "
                 + (
                     (
