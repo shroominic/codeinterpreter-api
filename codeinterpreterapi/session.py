@@ -109,6 +109,8 @@ class CodeInterpreterSession:
                 "Write the entire code in a single string. This string can "
                 "be really long, so you can use the `;` character to split lines. "
                 "Start your code on the same line as the opening quote. "
+                "Do not start your code with a line break. "
+                "For example, do 'import numpy', not '\\nimport numpy'."
                 "Variables are preserved between runs. "
                 + (
                     (
