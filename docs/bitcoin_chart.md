@@ -1,4 +1,5 @@
 # Bitcoin Chart
+
 This example creates a CodeInterpreterSession and generates a response to plot the bitcoin chart for year 2023:
 
 ```python

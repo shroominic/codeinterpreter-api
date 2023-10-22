@@ -1,4 +1,27 @@
-site_name: CodeInterpreterAPI - Docs
+site_name: CodeInterpreterAPI - Documentation
+site_author: Shroominic
+site_url: https://shroominic.github.io/codeinterpreter-api/
+repo_name: shroominic/codeinterpreter-api
+repo_url: https://github.com/shroominic/codeinterpreter-api/
+
+nav:
+  - 'Getting Started':
+    - 'Welcome': 'index.md'
+    - 'Installation': 'installation.md'
+    - 'Usage': 'usage.md'
+  - 'Code Interpreter':
+    - 'Overview': 'concepts_overview.md'
+    - 'Session': 'code_interpreter_session.md'
+    - 'CodeBox': 'codebox.md'
+    - 'File': 'file.md'
+    - 'Request': 'user_request.md'
+    - 'Response': 'code_interpreter_response.md'
+  - 'Deployment': 'deploy.md'
+  - 'Examples':
+    - 'Bitcoin Chart': 'bitcoin_chart.md'
+    - 'Iris Dataset': 'iris_dataset.md'
+    - 'Streamlit Webapp': 'streamlit_webapp.md'
+
 theme:
   name: material
   palette:

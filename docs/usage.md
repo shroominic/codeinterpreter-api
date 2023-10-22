@@ -1,4 +1,5 @@
 # Usage
+
 To create a session and generate a response:
 
 ```python

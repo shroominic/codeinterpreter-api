@@ -1,4 +1,5 @@
 # UserRequest
+
 The UserRequest class represents the user input to the agent.
 
 It contains:
