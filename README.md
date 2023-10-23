@@ -1,6 +1,12 @@
-# Code Interpreter API
+# 👾 Code Interpreter API
 
-A LangChain implementation of the ChatGPT Code Interpreter.
+[![Version](https://badge.fury.io/py/codeinterpreterapi.svg)](https://badge.fury.io/py/codeinterpreterapi)
+[![code-check](https://github.com/shroominic/codeinterpreter-api/actions/workflows/code-check.yml/badge.svg)](https://github.com/shroominic/codeinterpreter-api/actions/workflows/code-check.yml)
+![Downloads](https://img.shields.io/pypi/dm/codeinterpreterapi)
+![License](https://img.shields.io/pypi/l/codeinterpreterapi)
+![PyVersion](https://img.shields.io/pypi/pyversions/codeinterpreterapi)
+
+A [LangChain](https://github.com/langchain-ai/langchain) implementation of the ChatGPT Code Interpreter.
 Using CodeBoxes as backend for sandboxed python code execution.
 [CodeBox](https://github.com/shroominic/codebox-api/tree/main) is the simplest cloud infrastructure for your LLM Apps.
 You can run everything local except the LLM using your own OpenAI API Key.
@@ -12,7 +18,11 @@ You can run everything local except the LLM using your own OpenAI API Key.
 - Input `text + files` -> Receive `text + files`
 - Conversation Memory: respond based on previous inputs
 - Run everything local except the OpenAI API (OpenOrca or others maybe soon)
-- Use CodeBox API for easy scaling in production (coming soon)
+- Use CodeBox API for easy scaling in production
+
+## Docs
+
+Checkout the [documentation](https://shroominic.github.io/codeinterpreter-api/) for more information.
 
 ## Installation
 
@@ -32,34 +42,19 @@ To configure OpenAI and Azure OpenAI, ensure that you set the appropriate enviro
 For OpenAI, set the OPENAI_API_KEY environment variable:
 
 ```bash
-export OPENAI_API_KEY=your_openai_api_key
+export OPENAI_API_KEY=sk-**********
 ```
-
-For Azure OpenAI, set the following environment variables:
-
-```bash
-export OPENAI_API_TYPE=azure
-export OPENAI_API_VERSION=your_api_version
-export OPENAI_API_BASE=your_api_base
-export OPENAI_API_KEY=your_azure_openai_api_key
-export DEPLOYMENT_NAME=your_deployment_name
-```
-
-Remember to replace the placeholders with your actual API keys and other required information.
 
 ```python
 from codeinterpreterapi import CodeInterpreterSession, settings
 
-# set api key (or automatically loads from env vars)
-settings.OPENAI_API_KEY = "sk-***************"
 
-# create a session
+# create a session and close it automatically
 with CodeInterpreterSession() as session:
     # generate a response based on user input
     response = session.generate_response(
         "Plot the bitcoin chart of year 2023"
     )
-
     # output the response
     response.show()
 ```
@@ -72,13 +67,14 @@ Bitcoin YTD Chart Output
 ```python
 from codeinterpreterapi import CodeInterpreterSession, File
 
-
+# this example uses async but normal sync like above works too
 async def main():
     # context manager for auto start/stop of the session
     async with CodeInterpreterSession() as session:
         # define the user request
         user_request = "Analyze this dataset and plot something interesting about it."
         files = [
+            # attach files to the request
             File.from_path("examples/assets/iris.csv"),
         ]
 
@@ -90,6 +86,7 @@ async def main():
         # output to the user
         print("AI: ", response.content)
         for file in response.files:
+            # iterate over the files (display if image)
             file.show_image()
 
 
@@ -101,9 +98,6 @@ if __name__ == "__main__":
 
 ![Iris Dataset Analysis](https://github.com/shroominic/codeinterpreter-api/blob/main/examples/assets/iris_analysis.png?raw=true)
 Iris Dataset Analysis Output
-
-## Docs
-Check out the [documentation](https://codeinterpreter.hello-cluster.com/)
 
 ## Production
 
@@ -121,6 +115,13 @@ Just open an issue or pull request and I will review it.
 Please also submit any bugs you find as an issue with a minimal code example or screenshot.
 This helps me a lot in improving the code.
 
+Before submitting a pull request, please run the pre-commit hooks to ensure that the code is formatted correctly.
+
+```bash
+pre-commit install
+pre-commit run --all-files
+```
+
 Thanks!
 
 ## Streamlit WebApp
@@ -131,27 +132,12 @@ To start the web application created with streamlit:
 streamlit run frontend/app.py --browser.gatherUsageStats=False
 ```
 
-## License
-
-[MIT](https://choosealicense.com/licenses/mit/)
-
 ## Contact
 
 You can contact me at [contact@shroominic.com](mailto:contact@shroominic.com).
-But I prefer to use [Twitter](https://twitter.com/shroominic) or [Discord](https://discord.gg/QYzBtq37) DMs.
+But I prefer to use [Twitter](https://twitter.com/shroominic) or [Discord](https://discord.gg/Vaq25XJvvW) DMs.
 
 ## Support this project
 
 If you would like to help this project with a donation, you can [click here](https://ko-fi.com/shroominic).
 Thanks, this helps a lot! ❤️
-
-## Star History
-
-<!-- markdownlint-disable MD033 -->
-<a href="https://star-history.com/#shroominic/codeinterpreter-api&Date">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=shroominic/codeinterpreter-api&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=shroominic/codeinterpreter-api&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=shroominic/codeinterpreter-api&type=Date" />
-  </picture>
-</a>
