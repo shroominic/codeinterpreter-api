@@ -9,6 +9,7 @@ nav:
     - 'Welcome': 'index.md'
     - 'Installation': 'installation.md'
     - 'Usage': 'usage.md'
+    - 'Settings': 'settings.md'
   - 'Code Interpreter':
     - 'Overview': 'concepts_overview.md'
     - 'Session': 'code_interpreter_session.md'
