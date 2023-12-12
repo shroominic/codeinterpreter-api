@@ -37,7 +37,6 @@ from codeinterpreterapi.chains import (
 )
 from codeinterpreterapi.chat_history import CodeBoxChatMessageHistory
 from codeinterpreterapi.config import settings
-from codeinterpreterapi.parser import CodeAgentOutputParser, CodeChatAgentOutputParser
 from codeinterpreterapi.schema import (
     CodeInput,
     CodeInterpreterResponse,
@@ -178,14 +177,12 @@ class CodeInterpreterSession:
                 llm=self.llm,
                 tools=self.tools,
                 system_message=settings.SYSTEM_MESSAGE.content.__str__(),
-                output_parser=CodeChatAgentOutputParser(self.llm),
             )
             if isinstance(self.llm, BaseChatModel)
             else ConversationalAgent.from_llm_and_tools(
                 llm=self.llm,
                 tools=self.tools,
                 prefix=settings.SYSTEM_MESSAGE.content.__str__(),
-                output_parser=CodeAgentOutputParser(),
             )
         )
 
