@@ -17,10 +17,10 @@ class ExampleKnowledgeBaseTool(BaseTool):
     name: str = "salary_database"
     description: str = "Use to get salary data of company employees"
 
-    def _run(self, *args, **kwargs):
+    def _run(self, *args: Any, **kwargs: Any) -> Any:
         raise NotImplementedError()
 
-    async def _arun(self, *args, **kwargs: Any) -> Any:
+    async def _arun(self, *args: Any, **kwargs: Any) -> Any:
         f = io.StringIO()
         writer = csv.writer(f)
         writer.writerow(["month", "employee", "salary"])
@@ -31,7 +31,7 @@ class ExampleKnowledgeBaseTool(BaseTool):
         return f.getvalue()
 
 
-async def main():
+async def main() -> None:
     async with CodeInterpreterSession(
         additional_tools=[ExampleKnowledgeBaseTool()]
     ) as session:

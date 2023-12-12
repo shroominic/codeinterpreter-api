@@ -1,7 +1,7 @@
 from codeinterpreterapi import CodeInterpreterSession
 
 
-async def main():
+async def main() -> None:
     async with CodeInterpreterSession() as session:
         response = await session.agenerate_response(
             "Plot a sin wave and show it to me."

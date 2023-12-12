@@ -16,7 +16,7 @@ def create_temp_folder() -> str:
     return temp_folder
 
 
-async def get_images(prompt: str, files: Optional[list] = None):
+async def get_images(prompt: str, files: Optional[list] = None) -> list:
     if files is None:
         files = []
     with st.chat_message("user"):  # type: ignore
@@ -53,3 +53,4 @@ async def get_images(prompt: str, files: Optional[list] = None):
                             f,
                             file_name="archive.zip",
                         )
+    return response.files

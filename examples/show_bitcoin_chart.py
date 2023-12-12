@@ -3,7 +3,7 @@ from datetime import datetime
 from codeinterpreterapi import CodeInterpreterSession
 
 
-def main():
+def main() -> None:
     with CodeInterpreterSession(local=True) as session:
         currentdate = datetime.now().strftime("%Y-%m-%d")
 

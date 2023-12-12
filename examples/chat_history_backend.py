@@ -6,7 +6,7 @@ os.environ["REDIS_HOST"] = "redis://localhost:6379"
 from codeinterpreterapi import CodeInterpreterSession  # noqa: E402
 
 
-def main():
+def main() -> None:
     session_id = None
 
     session = CodeInterpreterSession()

@@ -1,7 +1,7 @@
 from codeinterpreterapi import CodeInterpreterSession, File
 
 
-async def main():
+async def main() -> None:
     # context manager for start/stop of the session
     async with CodeInterpreterSession() as session:
         # define the user request
