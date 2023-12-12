@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import Union
+from typing import Union, Any
 
 from langchain.agents import AgentOutputParser
 from langchain.chat_models.base import BaseChatModel
@@ -38,7 +38,7 @@ class CodeAgentOutputParser(AgentOutputParser):
 
 
 class CodeChatAgentOutputParser(AgentOutputParser):
-    def __init__(self, llm: BaseChatModel, **kwargs):
+    def __init__(self, llm: BaseChatModel, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.llm = llm
 

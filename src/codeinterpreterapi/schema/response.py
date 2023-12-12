@@ -6,10 +6,10 @@ from .file import File
 class UserRequest(HumanMessage):
     files: list[File] = []
 
-    def __str__(self):
-        return self.content
+    def __str__(self) -> str:
+        return str(self.content)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"UserRequest(content={self.content}, files={self.files})"
 
 
@@ -24,14 +24,14 @@ class CodeInterpreterResponse(AIMessage):
     files: list[File] = []
     code_log: list[tuple[str, str]] = []
 
-    def show(self):
+    def show(self) -> None:
         print("AI: ", self.content)
         for file in self.files:
             print("File: ", file.name)
             file.show_image()
 
-    def __str__(self):
-        return self.content
+    def __str__(self) -> str:
+        return str(self.content)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"CodeInterpreterResponse(content={self.content}, files={self.files})"

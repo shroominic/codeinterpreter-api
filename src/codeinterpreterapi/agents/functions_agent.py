@@ -95,10 +95,10 @@ class OpenAIFunctionsAgentOutputParser(AgentOutputParser):
             )
 
         return AgentFinish(
-            return_values={"output": message.content}, log=message.content
+            return_values={"output": message.content}, log=message.content  # type: ignore
         )
 
-    def parse_result(self, result: List[Generation]) -> Union[AgentAction, AgentFinish]:
+    def parse_result(self, result: List[Generation]) -> Union[AgentAction, AgentFinish]:  # type: ignore
         if not isinstance(result[0], ChatGeneration):
             raise ValueError("This output parser only works on ChatGeneration output")
         message = result[0].message

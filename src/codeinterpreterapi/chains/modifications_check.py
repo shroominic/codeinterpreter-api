@@ -49,7 +49,7 @@ async def aget_file_modifications(
     return result["modifications"]
 
 
-async def test():
+async def test() -> None:
     llm = ChatAnthropic(model="claude-2")  # type: ignore
 
     code = """

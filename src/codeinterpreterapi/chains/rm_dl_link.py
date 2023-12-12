@@ -17,6 +17,7 @@ def remove_download_link(
     if not isinstance(message, AIMessage):
         raise OutputParserException("Expected an AIMessage")
 
+    assert isinstance(message.content, str), "TODO: add image support"
     return message.content
 
 
@@ -32,10 +33,11 @@ async def aremove_download_link(
     if not isinstance(message, AIMessage):
         raise OutputParserException("Expected an AIMessage")
 
+    assert isinstance(message.content, str), "TODO: add image support"
     return message.content
 
 
-def test():
+def test() -> None:
     llm = ChatOpenAI(model="gpt-3.5-turbo-0613")  # type: ignore
 
     example = (

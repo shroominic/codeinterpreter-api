@@ -6,19 +6,19 @@ def extract_python_code(
     text: str,
     llm: BaseLanguageModel,
     retry: int = 2,
-):
-    pass  # TODO
+) -> str:
+    return "TODO"
 
 
 async def aextract_python_code(
     text: str,
     llm: BaseLanguageModel,
     retry: int = 2,
-):
-    pass  # TODO
+) -> str:
+    return "TODO"
 
 
-async def test():
+async def test() -> None:
     llm = ChatAnthropic(model="claude-1.3")  # type: ignore
 
     code = """

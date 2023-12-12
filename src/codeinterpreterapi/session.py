@@ -2,7 +2,8 @@ import base64
 import re
 import traceback
 from io import BytesIO
-from typing import Optional
+from typing import Optional, Any, Type
+from types import TracebackType
 from uuid import UUID, uuid4
 
 from codeboxapi import CodeBox  # type: ignore
@@ -61,7 +62,7 @@ class CodeInterpreterSession:
         llm: Optional[BaseLanguageModel] = None,
         additional_tools: list[BaseTool] = [],
         callbacks: Callbacks = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         _handle_deprecated_kwargs(kwargs)
         self.codebox = CodeBox(requirements=settings.CUSTOM_PACKAGES)
@@ -75,7 +76,7 @@ class CodeInterpreterSession:
         self.code_log: list[tuple[str, str]] = []
 
     @classmethod
-    def from_id(cls, session_id: UUID, **kwargs) -> "CodeInterpreterSession":
+    def from_id(cls, session_id: UUID, **kwargs: Any) -> "CodeInterpreterSession":
         session = cls(**kwargs)
         session.codebox = CodeBox.from_id(session_id)
         session.agent_executor = session._agent_executor()
@@ -135,19 +136,19 @@ class CodeInterpreterSession:
             self.log("Using Azure Chat OpenAI")
             return AzureChatOpenAI(
                 temperature=0.03,
-                openai_api_base=settings.AZURE_API_BASE,
-                openai_api_version=settings.AZURE_API_VERSION,
-                deployment_name=settings.AZURE_DEPLOYMENT_NAME,
-                openai_api_key=settings.AZURE_API_KEY,
+                base_url=settings.AZURE_API_BASE,
+                api_version=settings.AZURE_API_VERSION,
+                azure_deployment=settings.AZURE_DEPLOYMENT_NAME,
+                api_key=settings.AZURE_API_KEY,
                 max_retries=settings.MAX_RETRY,
-                request_timeout=settings.REQUEST_TIMEOUT,
+                timeout=settings.REQUEST_TIMEOUT,
             )  # type: ignore
         if settings.OPENAI_API_KEY:
             self.log("Using Chat OpenAI")
             return ChatOpenAI(
                 model=settings.MODEL,
-                openai_api_key=settings.OPENAI_API_KEY,
-                request_timeout=settings.REQUEST_TIMEOUT,
+                api_key=settings.OPENAI_API_KEY,
+                timeout=settings.REQUEST_TIMEOUT,
                 temperature=settings.TEMPERATURE,
                 max_retries=settings.MAX_RETRY,
             )  # type: ignore
@@ -176,14 +177,14 @@ class CodeInterpreterSession:
             else ConversationalChatAgent.from_llm_and_tools(
                 llm=self.llm,
                 tools=self.tools,
-                system_message=settings.SYSTEM_MESSAGE.content,
+                system_message=settings.SYSTEM_MESSAGE.content.__str__(),
                 output_parser=CodeChatAgentOutputParser(self.llm),
             )
             if isinstance(self.llm, BaseChatModel)
             else ConversationalAgent.from_llm_and_tools(
                 llm=self.llm,
                 tools=self.tools,
-                prefix=settings.SYSTEM_MESSAGE.content,
+                prefix=settings.SYSTEM_MESSAGE.content.__str__(),
                 output_parser=CodeAgentOutputParser(),
             )
         )
@@ -332,6 +333,7 @@ class CodeInterpreterSession:
             request.content = (
                 "I uploaded, just text me back and confirm that you got the file(s)."
             )
+        assert isinstance(request.content, str), "TODO: implement image support"
         request.content += "\n**The user uploaded the following files: **\n"
         for file in request.files:
             self.input_files.append(file)
@@ -348,6 +350,7 @@ class CodeInterpreterSession:
             request.content = (
                 "I uploaded, just text me back and confirm that you got the file(s)."
             )
+        assert isinstance(request.content, str), "TODO: implement image support"
         request.content += "\n**The user uploaded the following files: **\n"
         for file in request.files:
             self.input_files.append(file)
@@ -484,12 +487,22 @@ class CodeInterpreterSession:
         self.start()
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback) -> None:
+    def __exit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
         self.stop()
 
     async def __aenter__(self) -> "CodeInterpreterSession":
         await self.astart()
         return self
 
-    async def __aexit__(self, exc_type, exc_value, traceback) -> None:
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
         await self.astop()

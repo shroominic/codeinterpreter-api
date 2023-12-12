@@ -6,5 +6,5 @@ class SessionStatus(CodeBoxStatus):
     def from_codebox_status(cls, cbs: CodeBoxStatus) -> "SessionStatus":
         return cls(status=cbs.status)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<SessionStatus status={self.status}>"

@@ -1,5 +1,6 @@
 import asyncio
 
+from typing import Any
 from langchain.pydantic_v1 import BaseModel
 
 
@@ -8,7 +9,7 @@ class File(BaseModel):
     content: bytes
 
     @classmethod
-    def from_path(cls, path: str):
+    def from_path(cls, path: str) -> "File":
         if not path.startswith("/"):
             path = f"./{path}"
         with open(path, "rb") as f:
@@ -16,34 +17,34 @@ class File(BaseModel):
             return cls(name=path, content=f.read())
 
     @classmethod
-    async def afrom_path(cls, path: str):
+    async def afrom_path(cls, path: str) -> "File":
         return await asyncio.to_thread(cls.from_path, path)
 
     @classmethod
-    def from_url(cls, url: str):
+    def from_url(cls, url: str) -> "File":
         import requests  # type: ignore
 
         r = requests.get(url)
         return cls(name=url.split("/")[-1], content=r.content)
 
     @classmethod
-    async def afrom_url(cls, url: str):
-        import aiohttp
+    async def afrom_url(cls, url: str) -> "File":
+        import aiohttp  # type: ignore
 
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as r:
                 return cls(name=url.split("/")[-1], content=await r.read())
 
-    def save(self, path: str):
+    def save(self, path: str) -> None:
         if not path.startswith("/"):
             path = f"./{path}"
         with open(path, "wb") as f:
             f.write(self.content)
 
-    async def asave(self, path: str):
+    async def asave(self, path: str) -> None:
         await asyncio.to_thread(self.save, path)
 
-    def get_image(self):
+    def get_image(self) -> Any:
         try:
             from PIL import Image  # type: ignore
         except ImportError:
@@ -65,7 +66,7 @@ class File(BaseModel):
 
         return img
 
-    def show_image(self):
+    def show_image(self) -> None:
         img = self.get_image()
         # Display the image
         try:
@@ -75,14 +76,14 @@ class File(BaseModel):
             if shell == "ZMQInteractiveShell" or shell == "Shell":
                 from IPython.display import display  # type: ignore
 
-                display(img)
+                display(img)  # type: ignore
             else:
                 img.show()
         except NameError:
             img.show()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"File(name={self.name})"
