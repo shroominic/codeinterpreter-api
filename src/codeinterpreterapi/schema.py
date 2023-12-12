@@ -1,7 +1,9 @@
 import asyncio
 
 from typing import Any
+from langchain.schema import AIMessage, HumanMessage
 from langchain.pydantic_v1 import BaseModel
+from codeboxapi.schema import CodeBoxStatus
 
 
 class File(BaseModel):
@@ -87,3 +89,54 @@ class File(BaseModel):
 
     def __repr__(self) -> str:
         return f"File(name={self.name})"
+
+
+class CodeInput(BaseModel):
+    code: str
+
+
+class FileInput(BaseModel):
+    filename: str
+
+
+class UserRequest(HumanMessage):
+    files: list[File] = []
+
+    def __str__(self) -> str:
+        return str(self.content)
+
+    def __repr__(self) -> str:
+        return f"UserRequest(content={self.content}, files={self.files})"
+
+
+class CodeInterpreterResponse(AIMessage):
+    """
+    Response from the code interpreter agent.
+
+    files: list of files to be sent to the user (File )
+    code_log: list[tuple[str, str]] = []
+    """
+
+    files: list[File] = []
+    code_log: list[tuple[str, str]] = []
+
+    def show(self) -> None:
+        print("AI: ", self.content)
+        for file in self.files:
+            print("File: ", file.name)
+            file.show_image()
+
+    def __str__(self) -> str:
+        return str(self.content)
+
+    def __repr__(self) -> str:
+        return f"CodeInterpreterResponse(content={self.content}, files={self.files})"
+
+
+class SessionStatus(CodeBoxStatus):
+    @classmethod
+    def from_codebox_status(cls, cbs: CodeBoxStatus) -> "SessionStatus":
+        return cls(status=cbs.status)
+
+    def __repr__(self) -> str:
+        return f"<SessionStatus status={self.status}>"
