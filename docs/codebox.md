@@ -1,4 +1,5 @@
 # CodeBox
+
 The CodeBox class provides the isolated secure environment for executing python code. It is used by the CodeInterpreterSession internally.
 
 It provides methods like:

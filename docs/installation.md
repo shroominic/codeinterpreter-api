@@ -1,14 +1,6 @@
 # Installation
-## Install Dependencies
 
-To install, it's recommended to create a virtual environment (using `venv` in the example below):
-
-```bash
-python3 -m venv codeinterpreterenv
-source codeinterpreterenv/bin/activate
-```
-
-Then install the package:
+Install the package:
 
 ```bash
 pip install "codeinterpreterapi[all]"
@@ -18,18 +10,18 @@ Everything for local experiments are installed with the all extra. For deploymen
 
 ## Set Up Environment Variables
 
-
 You will also need to configure API keys for the AI model you want to use, either OpenAI, Anthropic, or Azure.
 
 For OpenAI, create a `.env` file with:
 
 ```bash
-OPENAI_API_KEY=sk-...
+OPENAI_API_KEY=sk-**********
 ```
-or export as an environment variable in your terminal:
+
+or export as an environment variable in your terminal before running your code:
 
 ```bash
-export OPENAI_API_KEY=your_openai_api_key
+export OPENAI_API_KEY=sk-**********
 ```
 
 For Azure, use:

@@ -1,4 +1,5 @@
 # Using the Streamlit Webapp
+
 The streamlit webapp allows interacting with the API through a GUI:
 
 ```bash

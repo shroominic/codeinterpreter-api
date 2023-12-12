@@ -1,4 +1,5 @@
 # CodeInterpreterSession
+
 The CodeInterpreterSession is the main class that manages a conversational session between the user and AI agent. It handles starting, stopping and checking status of the secure isolated code execution environment.
 
 Key responsibilities:
@@ -16,7 +17,6 @@ It provides methods like:
 - `start() / stop()`: Start and stop the session
 - `log()`: Log messages
 - `show_code` - Callback to print code before running.
-
 
 The response generation happens through a pipeline:
 

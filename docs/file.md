@@ -1,4 +1,5 @@
-# File
+# File Object
+
 The File class is used to represent files that are uploaded or downloaded during the session.
 
 It stores the filename and binary content of the file.
