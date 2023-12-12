@@ -27,8 +27,8 @@ from langchain.memory.chat_message_histories import (
 from langchain.prompts.chat import MessagesPlaceholder
 from langchain.schema import BaseChatMessageHistory
 from langchain.tools import BaseTool, StructuredTool
+from langchain.agents.openai_functions_agent.base import OpenAIFunctionsAgent
 
-from codeinterpreterapi.agents import OpenAIFunctionsAgent
 from codeinterpreterapi.chains import (
     aget_file_modifications,
     aremove_download_link,
