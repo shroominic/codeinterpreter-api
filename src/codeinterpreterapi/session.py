@@ -2,8 +2,8 @@ import base64
 import re
 import traceback
 from io import BytesIO
-from typing import Optional, Any, Type
 from types import TracebackType
+from typing import Any, Optional, Type
 from uuid import UUID, uuid4
 
 from codeboxapi import CodeBox  # type: ignore
@@ -14,6 +14,7 @@ from langchain.agents import (
     ConversationalAgent,
     ConversationalChatAgent,
 )
+from langchain.agents.openai_functions_agent.base import OpenAIFunctionsAgent
 from langchain.base_language import BaseLanguageModel
 from langchain.callbacks.base import Callbacks
 from langchain.chat_models import AzureChatOpenAI, ChatAnthropic, ChatOpenAI
@@ -27,7 +28,6 @@ from langchain.memory.chat_message_histories import (
 from langchain.prompts.chat import MessagesPlaceholder
 from langchain.schema import BaseChatMessageHistory
 from langchain.tools import BaseTool, StructuredTool
-from langchain.agents.openai_functions_agent.base import OpenAIFunctionsAgent
 
 from codeinterpreterapi.chains import (
     aget_file_modifications,
