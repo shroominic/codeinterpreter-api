@@ -40,6 +40,15 @@ def run_sync(session: CodeInterpreterSession) -> bool:
             .name
         )
 
+        assert (
+            ".png"
+            in session.generate_response(
+                "Plot the current stock price of Tesla.",
+            )
+            .files[0]
+            .name
+        )
+
     finally:
         assert session.stop() == "stopped"
 
@@ -65,6 +74,17 @@ async def run_async(session: CodeInterpreterSession) -> bool:
                 await session.agenerate_response(
                     "Convert this csv file to excel.",
                     files=[File.from_path("examples/assets/iris.csv")],
+                )
+            )
+            .files[0]
+            .name
+        )
+
+        assert (
+            ".jpeg"
+            in (
+                await session.agenerate_response(
+                    "Plot the current stock price of Tesla.",
                 )
             )
             .files[0]
