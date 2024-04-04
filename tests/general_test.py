@@ -26,7 +26,8 @@ def run_sync(session: CodeInterpreterSession) -> bool:
         assert (
             "3.1"
             in session.generate_response(
-                "Compute pi using Monte Carlo simulation in Python and show me the result."
+                "Compute pi using Monte Carlo simulation in "
+                "Python and show me the result."
             ).content
         )
 
@@ -63,7 +64,8 @@ async def run_async(session: CodeInterpreterSession) -> bool:
             "3.1"
             in (
                 await session.agenerate_response(
-                    "Compute pi using Monte Carlo simulation in Python and show me the result."
+                    "Compute pi using Monte Carlo simulation in "
+                    "Python and show me the result."
                 )
             ).content
         )
@@ -81,7 +83,7 @@ async def run_async(session: CodeInterpreterSession) -> bool:
         )
 
         assert (
-            ".jpeg"
+            ".png"
             in (
                 await session.agenerate_response(
                     "Plot the current stock price of Tesla.",
