@@ -1,7 +1,6 @@
 # 👾 Code Interpreter API
 
 [![Version](https://badge.fury.io/py/codeinterpreterapi.svg)](https://badge.fury.io/py/codeinterpreterapi)
-[![code-check](https://github.com/shroominic/codeinterpreter-api/actions/workflows/code-check.yml/badge.svg)](https://github.com/shroominic/codeinterpreter-api/actions/workflows/code-check.yml)
 ![Downloads](https://img.shields.io/pypi/dm/codeinterpreterapi)
 ![License](https://img.shields.io/pypi/l/codeinterpreterapi)
 ![PyVersion](https://img.shields.io/pypi/pyversions/codeinterpreterapi)
