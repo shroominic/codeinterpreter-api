@@ -2,8 +2,8 @@ import asyncio
 from typing import Any
 
 from codeboxapi.schema import CodeBoxStatus
-from langchain.pydantic_v1 import BaseModel
-from langchain.schema import AIMessage, HumanMessage
+from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.pydantic_v1 import BaseModel
 
 
 class File(BaseModel):

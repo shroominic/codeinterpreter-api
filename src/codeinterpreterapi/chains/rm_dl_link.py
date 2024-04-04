@@ -1,6 +1,7 @@
-from langchain.base_language import BaseLanguageModel
-from langchain.chat_models.openai import ChatOpenAI
-from langchain.schema import AIMessage, OutputParserException
+from langchain_core.exceptions import OutputParserException
+from langchain_core.language_models import BaseLanguageModel
+from langchain_core.messages import AIMessage
+from langchain_openai import ChatOpenAI
 
 from codeinterpreterapi.prompts import remove_dl_link_prompt
 
@@ -12,7 +13,7 @@ def remove_download_link(
     messages = remove_dl_link_prompt.format_prompt(
         input_response=input_response
     ).to_messages()
-    message = llm.predict_messages(messages)
+    message = llm.invoke(messages)
 
     if not isinstance(message, AIMessage):
         raise OutputParserException("Expected an AIMessage")
@@ -28,7 +29,7 @@ async def aremove_download_link(
     messages = remove_dl_link_prompt.format_prompt(
         input_response=input_response
     ).to_messages()
-    message = await llm.apredict_messages(messages)
+    message = await llm.ainvoke(messages)
 
     if not isinstance(message, AIMessage):
         raise OutputParserException("Expected an AIMessage")

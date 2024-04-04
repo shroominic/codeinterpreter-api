@@ -1,4 +1,4 @@
-from langchain.schema import SystemMessage
+from langchain_core.messages import SystemMessage
 
 system_message = SystemMessage(
     content="""

@@ -3,15 +3,12 @@ import json
 from json import JSONDecodeError
 from typing import List, Union
 
+from langchain.agents.agent import AgentOutputParser
+from langchain.agents.openai_functions_agent import base
 from langchain_core.agents import AgentAction, AgentActionMessageLog, AgentFinish
 from langchain_core.exceptions import OutputParserException
-from langchain_core.messages import (
-    AIMessage,
-    BaseMessage,
-)
+from langchain_core.messages import AIMessage, BaseMessage
 from langchain_core.outputs import ChatGeneration, Generation
-
-from langchain.agents.agent import AgentOutputParser
 
 
 class OpenAIFunctionsAgentOutputParser(AgentOutputParser):
@@ -102,8 +99,5 @@ class OpenAIFunctionsAgentOutputParser(AgentOutputParser):
         raise ValueError("Can only parse messages")
 
 
-def patch() -> None:
-    """Patch the parser."""
-    from langchain.agents import openai_functions_agent
-
-    openai_functions_agent.OpenAIFunctionsAgentOutputParser = OpenAIFunctionsAgentOutputParser  # type: ignore
+# patch
+base.OpenAIFunctionsAgentOutputParser = OpenAIFunctionsAgentOutputParser  # type: ignore

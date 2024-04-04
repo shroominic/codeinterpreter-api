@@ -1,5 +1,4 @@
-from langchain.base_language import BaseLanguageModel
-from langchain.chat_models.anthropic import ChatAnthropic
+from langchain_core.language_models import BaseLanguageModel
 
 
 def extract_python_code(
@@ -19,7 +18,9 @@ async def aextract_python_code(
 
 
 async def test() -> None:
-    llm = ChatAnthropic(model="claude-1.3")  # type: ignore
+    from langchain_openai import ChatOpenAI
+
+    llm = ChatOpenAI()
 
     code = """
         import matplotlib.pyplot as plt

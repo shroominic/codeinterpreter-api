@@ -1,13 +1,9 @@
 from typing import Optional
 
-from dotenv import load_dotenv
-from langchain.pydantic_v1 import BaseSettings, SecretStr
-from langchain.schema import SystemMessage
+from langchain_core.messages import SystemMessage
+from langchain_core.pydantic_v1 import BaseSettings, SecretStr
 
 from codeinterpreterapi.prompts import code_interpreter_system_message
-
-# .env file
-load_dotenv(dotenv_path="./.env")
 
 
 class CodeInterpreterAPISettings(BaseSettings):
@@ -18,8 +14,8 @@ class CodeInterpreterAPISettings(BaseSettings):
     DEBUG: bool = False
 
     # Models
-    OPENAI_API_KEY: Optional[str] = None
-    AZURE_API_KEY: Optional[str] = None
+    OPENAI_API_KEY: Optional[SecretStr] = None
+    AZURE_OPENAI_API_KEY: Optional[SecretStr] = None
     AZURE_API_BASE: Optional[str] = None
     AZURE_API_VERSION: Optional[str] = None
     AZURE_DEPLOYMENT_NAME: Optional[str] = None
@@ -45,6 +41,10 @@ class CodeInterpreterAPISettings(BaseSettings):
 
     # deprecated
     VERBOSE: bool = DEBUG
+
+    class Config:
+        env_file = "./.env"
+        extra = "ignore"
 
 
 settings = CodeInterpreterAPISettings()

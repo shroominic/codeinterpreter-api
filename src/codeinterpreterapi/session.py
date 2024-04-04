@@ -15,19 +15,19 @@ from langchain.agents import (
     ConversationalChatAgent,
 )
 from langchain.agents.openai_functions_agent.base import OpenAIFunctionsAgent
-from langchain.base_language import BaseLanguageModel
 from langchain.callbacks.base import Callbacks
-from langchain.chat_models import AzureChatOpenAI, ChatAnthropic, ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
-from langchain.memory import ConversationBufferMemory
-from langchain.memory.chat_message_histories import (
-    ChatMessageHistory,
+from langchain.memory.buffer import ConversationBufferMemory
+from langchain_community.chat_message_histories.in_memory import ChatMessageHistory
+from langchain_community.chat_message_histories.postgres import (
     PostgresChatMessageHistory,
-    RedisChatMessageHistory,
 )
-from langchain.prompts.chat import MessagesPlaceholder
-from langchain.schema import BaseChatMessageHistory
-from langchain.tools import BaseTool, StructuredTool
+from langchain_community.chat_message_histories.redis import RedisChatMessageHistory
+from langchain_core.chat_history import BaseChatMessageHistory
+from langchain_core.language_models import BaseLanguageModel
+from langchain_core.prompts.chat import MessagesPlaceholder
+from langchain_core.tools import BaseTool, StructuredTool
+from langchain_openai import AzureChatOpenAI, ChatOpenAI
 
 from codeinterpreterapi.chains import (
     aget_file_modifications,
@@ -114,7 +114,8 @@ class CodeInterpreterSession:
                 "Variables are preserved between runs. "
                 + (
                     (
-                        f"You can use all default python packages specifically also these: {settings.CUSTOM_PACKAGES}"
+                        "You can use all default python packages "
+                        f"specifically also these: {settings.CUSTOM_PACKAGES}"
                     )
                     if settings.CUSTOM_PACKAGES
                     else ""
@@ -127,7 +128,7 @@ class CodeInterpreterSession:
 
     def _choose_llm(self) -> BaseChatModel:
         if (
-            settings.AZURE_API_KEY
+            settings.AZURE_OPENAI_API_KEY
             and settings.AZURE_API_BASE
             and settings.AZURE_API_VERSION
             and settings.AZURE_DEPLOYMENT_NAME
@@ -138,12 +139,13 @@ class CodeInterpreterSession:
                 base_url=settings.AZURE_API_BASE,
                 api_version=settings.AZURE_API_VERSION,
                 azure_deployment=settings.AZURE_DEPLOYMENT_NAME,
-                api_key=settings.AZURE_API_KEY,
+                api_key=settings.AZURE_OPENAI_API_KEY,
                 max_retries=settings.MAX_RETRY,
                 timeout=settings.REQUEST_TIMEOUT,
             )  # type: ignore
         if settings.OPENAI_API_KEY:
-            self.log("Using Chat OpenAI")
+            from langchain_openai import ChatOpenAI
+
             return ChatOpenAI(
                 model=settings.MODEL,
                 api_key=settings.OPENAI_API_KEY,
@@ -152,6 +154,8 @@ class CodeInterpreterSession:
                 max_retries=settings.MAX_RETRY,
             )  # type: ignore
         if settings.ANTHROPIC_API_KEY:
+            from langchain_anthropic import ChatAnthropic  # type: ignore
+
             if "claude" not in settings.MODEL:
                 print("Please set the claude model in the settings.")
             self.log("Using Chat Anthropic")
@@ -172,7 +176,7 @@ class CodeInterpreterSession:
                     MessagesPlaceholder(variable_name="chat_history")
                 ],
             )
-            if isinstance(self.llm, ChatOpenAI)
+            if isinstance(self.llm, ChatOpenAI) or isinstance(self.llm, AzureChatOpenAI)
             else ConversationalChatAgent.from_llm_and_tools(
                 llm=self.llm,
                 tools=self.tools,

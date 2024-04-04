@@ -1,4 +1,4 @@
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 
 determine_modifications_prompt = PromptTemplate(
     input_variables=["code"],

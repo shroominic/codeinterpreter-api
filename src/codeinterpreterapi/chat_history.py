@@ -2,12 +2,11 @@ import asyncio
 import json
 from typing import List
 
-from codeboxapi import CodeBox  # type: ignore
-from langchain.schema import BaseChatMessageHistory
-from langchain.schema.messages import BaseMessage, messages_from_dict, messages_to_dict
+from codeboxapi import CodeBox
+from langchain_core.chat_history import BaseChatMessageHistory
+from langchain_core.messages import BaseMessage, messages_from_dict, messages_to_dict
 
 
-# TODO: This is probably not efficient, but it works for now.
 class CodeBoxChatMessageHistory(BaseChatMessageHistory):
     """
     Chat message history that stores history inside the codebox.

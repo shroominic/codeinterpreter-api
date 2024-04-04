@@ -1,8 +1,7 @@
 import json
 from typing import List, Optional
 
-from langchain.base_language import BaseLanguageModel
-from langchain.chat_models.anthropic import ChatAnthropic
+from langchain_core.language_models import BaseLanguageModel
 
 from codeinterpreterapi.prompts import determine_modifications_prompt
 
@@ -10,17 +9,17 @@ from codeinterpreterapi.prompts import determine_modifications_prompt
 def get_file_modifications(
     code: str,
     llm: BaseLanguageModel,
-    retry: int = 2,
+    retry: int = 4,
 ) -> Optional[List[str]]:
     if retry < 1:
         return None
 
     prompt = determine_modifications_prompt.format(code=code)
 
-    result = llm.predict(prompt, stop="```")
+    result = llm.invoke(prompt)
 
     try:
-        result = json.loads(result)
+        result = json.loads(result.content)
     except json.JSONDecodeError:
         result = ""
     if not result or not isinstance(result, dict) or "modifications" not in result:
@@ -31,17 +30,17 @@ def get_file_modifications(
 async def aget_file_modifications(
     code: str,
     llm: BaseLanguageModel,
-    retry: int = 2,
+    retry: int = 4,
 ) -> Optional[List[str]]:
     if retry < 1:
         return None
 
     prompt = determine_modifications_prompt.format(code=code)
 
-    result = await llm.apredict(prompt, stop="```")
+    result = await llm.ainvoke(prompt)
 
     try:
-        result = json.loads(result)
+        result = json.loads(result.content)
     except json.JSONDecodeError:
         result = ""
     if not result or not isinstance(result, dict) or "modifications" not in result:
@@ -50,7 +49,9 @@ async def aget_file_modifications(
 
 
 async def test() -> None:
-    llm = ChatAnthropic(model="claude-2")  # type: ignore
+    from langchain_openai import ChatOpenAI
+
+    llm = ChatOpenAI()
 
     code = """
         import matplotlib.pyplot as plt
