@@ -1,4 +1,4 @@
-import asyncio
+from asyncio import run as _await
 
 from codeinterpreterapi.chains import (
     aget_file_modifications,
@@ -38,9 +38,9 @@ def test_remove_download_link() -> None:
     )
 
 
-async def test_remove_download_link_async() -> None:
+def test_remove_download_link_async() -> None:
     assert (
-        await aremove_download_link(remove_download_link_example, llm=llm)
+        _await(aremove_download_link(remove_download_link_example, llm=llm))
     ).strip() == "I have created the plot to your dataset."
 
 
@@ -49,13 +49,13 @@ def test_get_file_modifications() -> None:
     assert get_file_modifications(code_no_mod, llm=llm) == []
 
 
-async def test_get_file_modifications_async() -> None:
-    assert await aget_file_modifications(code_with_mod, llm=llm) == ["plot.png"]
-    assert await aget_file_modifications(code_no_mod, llm=llm) == []
+def test_get_file_modifications_async() -> None:
+    assert _await(aget_file_modifications(code_with_mod, llm=llm)) == ["plot.png"]
+    assert _await(aget_file_modifications(code_no_mod, llm=llm)) == []
 
 
 if __name__ == "__main__":
     test_remove_download_link()
-    asyncio.run(test_remove_download_link_async())
+    test_remove_download_link_async()
     test_get_file_modifications()
-    asyncio.run(test_get_file_modifications_async())
+    test_get_file_modifications_async()
