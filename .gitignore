@@ -63,3 +63,6 @@ venv.bak/
 .mypy_cache
 .dmypy.json
 dmypy.json
+
+.DS_Store
+foodb_2020_04_07_json
