@@ -115,23 +115,6 @@ Just open an issue or pull request and I will review it.
 Please also submit any bugs you find as an issue with a minimal code example or screenshot.
 This helps me a lot in improving the code.
 
-Before submitting a pull request, please run the pre-commit hooks to ensure that the code is formatted correctly.
-
-```bash
-pre-commit install
-pre-commit run --all-files
-```
-
-Thanks!
-
-## Streamlit WebApp
-
-To start the web application created with streamlit:
-
-```bash
-streamlit run frontend/app.py --browser.gatherUsageStats=False
-```
-
 ## Contact
 
 You can contact me at [contact@shroominic.com](mailto:contact@shroominic.com).
