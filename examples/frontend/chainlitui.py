@@ -1,5 +1,4 @@
 import chainlit as cl  # type: ignore
-
 from codeinterpreterapi import CodeInterpreterSession
 from codeinterpreterapi import File as CIFile
 
