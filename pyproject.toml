@@ -1,16 +1,17 @@
 [project]
 name = "codeinterpreterapi"
-version = "0.1.16"
+version = "0.1.17"
 description = "CodeInterpreterAPI is an (unofficial) open source python interface for the ChatGPT CodeInterpreter."
 authors = [{ name = "Shroominic", email = "contact@shroominic.com" }]
 dependencies = [
     "langchain-openai>=0.1.1",
     "codeboxapi>=0.1.19",
     "langchain>=0.1.14",
+    "pyzmq==25.1.2",
 ]
 license = { file = "LICENSE" }
 readme = "README.md"
-requires-python = ">= 3.9.7, <3.12"
+requires-python = ">= 3.9.7, <3.13"
 keywords = [
     "codeinterpreter",
     "chatgpt",

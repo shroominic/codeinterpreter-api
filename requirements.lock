@@ -8,7 +8,7 @@
 #   with-sources: false
 
 -e file:.
-aiohttp==3.9.1
+aiohttp==3.9.3
     # via codeboxapi
     # via langchain
     # via langchain-community
@@ -16,12 +16,12 @@ aiosignal==1.3.1
     # via aiohttp
 annotated-types==0.6.0
     # via pydantic
-anyio==4.1.0
+anyio==4.3.0
     # via httpx
     # via openai
-attrs==23.1.0
+attrs==23.2.0
     # via aiohttp
-certifi==2023.11.17
+certifi==2024.2.2
     # via httpcore
     # via httpx
     # via requests
@@ -32,16 +32,16 @@ codeboxapi==0.1.19
 dataclasses-json==0.6.4
     # via langchain
     # via langchain-community
-distro==1.8.0
+distro==1.9.0
     # via openai
-frozenlist==1.4.0
+frozenlist==1.4.1
     # via aiohttp
     # via aiosignal
 h11==0.14.0
     # via httpcore
-httpcore==1.0.2
+httpcore==1.0.5
     # via httpx
-httpx==0.25.2
+httpx==0.27.0
     # via openai
 idna==3.6
     # via anyio
@@ -53,26 +53,26 @@ jsonpatch==1.33
     # via langchain-core
 jsonpointer==2.4
     # via jsonpatch
-langchain==0.1.14
+langchain==0.1.15
     # via codeinterpreterapi
-langchain-community==0.0.31
+langchain-community==0.0.32
     # via langchain
-langchain-core==0.1.40
+langchain-core==0.1.41
     # via langchain
     # via langchain-community
     # via langchain-openai
     # via langchain-text-splitters
-langchain-openai==0.1.1
+langchain-openai==0.1.2
     # via codeinterpreterapi
 langchain-text-splitters==0.0.1
     # via langchain
-langsmith==0.1.40
+langsmith==0.1.43
     # via langchain
     # via langchain-community
     # via langchain-core
 marshmallow==3.21.1
     # via dataclasses-json
-multidict==6.0.4
+multidict==6.0.5
     # via aiohttp
     # via yarl
 mypy-extensions==1.0.0
@@ -80,30 +80,32 @@ mypy-extensions==1.0.0
 numpy==1.26.4
     # via langchain
     # via langchain-community
-openai==1.16.1
+openai==1.16.2
     # via langchain-openai
 orjson==3.10.0
     # via langsmith
 packaging==23.2
     # via langchain-core
     # via marshmallow
-pydantic==2.5.2
+pydantic==2.6.4
     # via codeboxapi
     # via langchain
     # via langchain-core
     # via langsmith
     # via openai
     # via pydantic-settings
-pydantic-core==2.14.5
+pydantic-core==2.16.3
     # via pydantic
-pydantic-settings==2.1.0
+pydantic-settings==2.2.1
     # via codeboxapi
-python-dotenv==1.0.0
+python-dotenv==1.0.1
     # via pydantic-settings
 pyyaml==6.0.1
     # via langchain
     # via langchain-community
     # via langchain-core
+pyzmq==25.1.2
+    # via codeinterpreterapi
 regex==2023.12.25
     # via tiktoken
 requests==2.31.0
@@ -112,7 +114,7 @@ requests==2.31.0
     # via langchain-community
     # via langsmith
     # via tiktoken
-sniffio==1.3.0
+sniffio==1.3.1
     # via anyio
     # via httpx
     # via openai
@@ -125,9 +127,9 @@ tenacity==8.2.3
     # via langchain-core
 tiktoken==0.6.0
     # via langchain-openai
-tqdm==4.66.1
+tqdm==4.66.2
     # via openai
-typing-extensions==4.9.0
+typing-extensions==4.11.0
     # via openai
     # via pydantic
     # via pydantic-core
@@ -135,7 +137,7 @@ typing-extensions==4.9.0
     # via typing-inspect
 typing-inspect==0.9.0
     # via dataclasses-json
-urllib3==2.1.0
+urllib3==2.2.1
     # via requests
 websockets==12.0
     # via codeboxapi
