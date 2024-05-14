@@ -8,20 +8,13 @@ from uuid import UUID, uuid4
 
 from codeboxapi import CodeBox  # type: ignore
 from codeboxapi.schema import CodeBoxOutput  # type: ignore
-from langchain.agents import (
-    AgentExecutor,
-    BaseSingleActionAgent,
-    ConversationalAgent,
-    ConversationalChatAgent,
-)
+from langchain.agents import AgentExecutor, BaseSingleActionAgent, ConversationalAgent, ConversationalChatAgent
 from langchain.agents.openai_functions_agent.base import OpenAIFunctionsAgent
 from langchain.callbacks.base import Callbacks
 from langchain.chat_models.base import BaseChatModel
 from langchain.memory.buffer import ConversationBufferMemory
 from langchain_community.chat_message_histories.in_memory import ChatMessageHistory
-from langchain_community.chat_message_histories.postgres import (
-    PostgresChatMessageHistory,
-)
+from langchain_community.chat_message_histories.postgres import PostgresChatMessageHistory
 from langchain_community.chat_message_histories.redis import RedisChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.language_models import BaseLanguageModel
@@ -37,13 +30,7 @@ from codeinterpreterapi.chains import (
 )
 from codeinterpreterapi.chat_history import CodeBoxChatMessageHistory
 from codeinterpreterapi.config import settings
-from codeinterpreterapi.schema import (
-    CodeInput,
-    CodeInterpreterResponse,
-    File,
-    SessionStatus,
-    UserRequest,
-)
+from codeinterpreterapi.schema import CodeInput, CodeInterpreterResponse, File, SessionStatus, UserRequest
 
 
 def _handle_deprecated_kwargs(kwargs: dict) -> None:

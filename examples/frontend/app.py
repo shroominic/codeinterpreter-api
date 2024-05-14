@@ -2,8 +2,9 @@ import asyncio
 import sys
 
 import streamlit as st
-from codeinterpreterapi import File
 from utils import get_images  # type: ignore
+
+from codeinterpreterapi import File
 
 # Page configuration
 st.set_page_config(layout="wide")

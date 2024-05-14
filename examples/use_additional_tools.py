@@ -8,8 +8,9 @@ import csv
 import io
 from typing import Any
 
-from codeinterpreterapi import CodeInterpreterSession
 from langchain_core.tools import BaseTool
+
+from codeinterpreterapi import CodeInterpreterSession
 
 
 class ExampleKnowledgeBaseTool(BaseTool):
