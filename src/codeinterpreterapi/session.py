@@ -8,13 +8,20 @@ from uuid import UUID, uuid4
 
 from codeboxapi import CodeBox  # type: ignore
 from codeboxapi.schema import CodeBoxOutput  # type: ignore
-from langchain.agents import AgentExecutor, BaseSingleActionAgent, ConversationalAgent, ConversationalChatAgent
+from langchain.agents import (
+    AgentExecutor,
+    BaseSingleActionAgent,
+    ConversationalAgent,
+    ConversationalChatAgent,
+)
 from langchain.agents.openai_functions_agent.base import OpenAIFunctionsAgent
 from langchain.callbacks.base import Callbacks
 from langchain.chat_models.base import BaseChatModel
 from langchain.memory.buffer import ConversationBufferMemory
 from langchain_community.chat_message_histories.in_memory import ChatMessageHistory
-from langchain_community.chat_message_histories.postgres import PostgresChatMessageHistory
+from langchain_community.chat_message_histories.postgres import (
+    PostgresChatMessageHistory,
+)
 from langchain_community.chat_message_histories.redis import RedisChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.language_models import BaseLanguageModel
@@ -30,7 +37,13 @@ from codeinterpreterapi.chains import (
 )
 from codeinterpreterapi.chat_history import CodeBoxChatMessageHistory
 from codeinterpreterapi.config import settings
-from codeinterpreterapi.schema import CodeInput, CodeInterpreterResponse, File, SessionStatus, UserRequest
+from codeinterpreterapi.schema import (
+    CodeInput,
+    CodeInterpreterResponse,
+    File,
+    SessionStatus,
+    UserRequest,
+)
 
 
 def _handle_deprecated_kwargs(kwargs: dict) -> None:
@@ -164,16 +177,18 @@ class CodeInterpreterSession:
                 ],
             )
             if isinstance(self.llm, ChatOpenAI) or isinstance(self.llm, AzureChatOpenAI)
-            else ConversationalChatAgent.from_llm_and_tools(
-                llm=self.llm,
-                tools=self.tools,
-                system_message=settings.SYSTEM_MESSAGE.content.__str__(),
-            )
-            if isinstance(self.llm, BaseChatModel)
-            else ConversationalAgent.from_llm_and_tools(
-                llm=self.llm,
-                tools=self.tools,
-                prefix=settings.SYSTEM_MESSAGE.content.__str__(),
+            else (
+                ConversationalChatAgent.from_llm_and_tools(
+                    llm=self.llm,
+                    tools=self.tools,
+                    system_message=settings.SYSTEM_MESSAGE.content.__str__(),
+                )
+                if isinstance(self.llm, BaseChatModel)
+                else ConversationalAgent.from_llm_and_tools(
+                    llm=self.llm,
+                    tools=self.tools,
+                    prefix=settings.SYSTEM_MESSAGE.content.__str__(),
+                )
             )
         )
 
@@ -181,17 +196,21 @@ class CodeInterpreterSession:
         return (
             CodeBoxChatMessageHistory(codebox=self.codebox)
             if settings.HISTORY_BACKEND == "codebox"
-            else RedisChatMessageHistory(
-                session_id=str(self.session_id),
-                url=settings.REDIS_URL,
+            else (
+                RedisChatMessageHistory(
+                    session_id=str(self.session_id),
+                    url=settings.REDIS_URL,
+                )
+                if settings.HISTORY_BACKEND == "redis"
+                else (
+                    PostgresChatMessageHistory(
+                        session_id=str(self.session_id),
+                        connection_string=settings.POSTGRES_URL,
+                    )
+                    if settings.HISTORY_BACKEND == "postgres"
+                    else ChatMessageHistory()
+                )
             )
-            if settings.HISTORY_BACKEND == "redis"
-            else PostgresChatMessageHistory(
-                session_id=str(self.session_id),
-                connection_string=settings.POSTGRES_URL,
-            )
-            if settings.HISTORY_BACKEND == "postgres"
-            else ChatMessageHistory()
         )
 
     def _agent_executor(self) -> AgentExecutor:
