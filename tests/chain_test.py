@@ -1,12 +1,13 @@
 from asyncio import run as _await
 
+from langchain_openai import ChatOpenAI
+
 from codeinterpreterapi.chains import (
     aget_file_modifications,
     aremove_download_link,
     get_file_modifications,
     remove_download_link,
 )
-from langchain_openai import ChatOpenAI
 
 llm = ChatOpenAI(model="gpt-3.5-turbo")
 
