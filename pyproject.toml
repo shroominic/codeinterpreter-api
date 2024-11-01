@@ -1,11 +1,11 @@
 [project]
 name = "codeinterpreterapi"
-version = "0.1.17"
+version = "0.1.18"
 description = "CodeInterpreterAPI is an (unofficial) open source python interface for the ChatGPT CodeInterpreter."
 authors = [{ name = "Shroominic", email = "contact@shroominic.com" }]
 dependencies = [
     "langchain-openai>=0.1.1",
-    "codeboxapi>=0.1.19",
+    "codeboxapi==0.1.19",
     "langchain>=0.1.14",
     "pyzmq==25.1.2",
 ]

@@ -6,6 +6,8 @@
 #   features: []
 #   all-features: false
 #   with-sources: false
+#   generate-hashes: false
+#   universal: false
 
 -e file:.
 aiohttp==3.9.3
@@ -19,6 +21,9 @@ annotated-types==0.6.0
 anyio==4.3.0
     # via httpx
     # via openai
+async-timeout==4.0.3
+    # via aiohttp
+    # via langchain
 attrs==23.2.0
     # via aiohttp
 certifi==2024.2.2
@@ -34,6 +39,8 @@ dataclasses-json==0.6.4
     # via langchain-community
 distro==1.9.0
     # via openai
+exceptiongroup==1.2.2
+    # via anyio
 frozenlist==1.4.1
     # via aiohttp
     # via aiosignal
@@ -130,6 +137,7 @@ tiktoken==0.6.0
 tqdm==4.66.2
     # via openai
 typing-extensions==4.11.0
+    # via anyio
     # via openai
     # via pydantic
     # via pydantic-core
