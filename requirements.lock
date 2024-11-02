@@ -10,76 +10,82 @@
 #   universal: false
 
 -e file:.
-aiohttp==3.9.3
+aiohappyeyeballs==2.4.3
+    # via aiohttp
+aiohttp==3.10.10
     # via codeboxapi
     # via langchain
     # via langchain-community
 aiosignal==1.3.1
     # via aiohttp
-annotated-types==0.6.0
+annotated-types==0.7.0
     # via pydantic
-anyio==4.3.0
+anyio==4.6.2.post1
     # via httpx
     # via openai
 async-timeout==4.0.3
     # via aiohttp
     # via langchain
-attrs==23.2.0
+attrs==24.2.0
     # via aiohttp
-certifi==2024.2.2
+certifi==2024.8.30
     # via httpcore
     # via httpx
     # via requests
-charset-normalizer==3.3.2
+charset-normalizer==3.4.0
     # via requests
 codeboxapi==0.1.19
     # via codeinterpreterapi
-dataclasses-json==0.6.4
-    # via langchain
+dataclasses-json==0.6.7
     # via langchain-community
 distro==1.9.0
     # via openai
 exceptiongroup==1.2.2
     # via anyio
-frozenlist==1.4.1
+frozenlist==1.5.0
     # via aiohttp
     # via aiosignal
 h11==0.14.0
     # via httpcore
-httpcore==1.0.5
+httpcore==1.0.6
     # via httpx
-httpx==0.27.0
+httpx==0.27.2
+    # via langsmith
     # via openai
-idna==3.6
+httpx-sse==0.4.0
+    # via langchain-community
+idna==3.10
     # via anyio
     # via httpx
     # via requests
     # via yarl
+jiter==0.7.0
+    # via openai
 jsonpatch==1.33
-    # via langchain
     # via langchain-core
-jsonpointer==2.4
+jsonpointer==3.0.0
     # via jsonpatch
-langchain==0.1.15
+langchain==0.3.7
     # via codeinterpreterapi
-langchain-community==0.0.32
-    # via langchain
-langchain-core==0.1.41
+    # via langchain-community
+langchain-community==0.3.5
+    # via codeinterpreterapi
+langchain-core==0.3.15
     # via langchain
     # via langchain-community
     # via langchain-openai
     # via langchain-text-splitters
-langchain-openai==0.1.2
+langchain-openai==0.2.5
     # via codeinterpreterapi
-langchain-text-splitters==0.0.1
+langchain-text-splitters==0.3.2
     # via langchain
-langsmith==0.1.43
+langsmith==0.1.139
     # via langchain
     # via langchain-community
     # via langchain-core
-marshmallow==3.21.1
+marshmallow==3.23.1
     # via dataclasses-json
-multidict==6.0.5
+multidict==6.1.0
     # via aiohttp
     # via yarl
 mypy-extensions==1.0.0
@@ -87,57 +93,65 @@ mypy-extensions==1.0.0
 numpy==1.26.4
     # via langchain
     # via langchain-community
-openai==1.16.2
+openai==1.53.0
     # via langchain-openai
-orjson==3.10.0
+orjson==3.10.11
     # via langsmith
-packaging==23.2
+packaging==24.1
     # via langchain-core
     # via marshmallow
-pydantic==2.6.4
+propcache==0.2.0
+    # via yarl
+pydantic==2.9.2
     # via codeboxapi
     # via langchain
     # via langchain-core
     # via langsmith
     # via openai
     # via pydantic-settings
-pydantic-core==2.16.3
+pydantic-core==2.23.4
     # via pydantic
-pydantic-settings==2.2.1
+pydantic-settings==2.6.1
     # via codeboxapi
+    # via langchain-community
 python-dotenv==1.0.1
     # via pydantic-settings
-pyyaml==6.0.1
+pyyaml==6.0.2
     # via langchain
     # via langchain-community
     # via langchain-core
 pyzmq==25.1.2
     # via codeinterpreterapi
-regex==2023.12.25
+regex==2024.9.11
     # via tiktoken
-requests==2.31.0
+requests==2.32.3
     # via codeboxapi
     # via langchain
     # via langchain-community
     # via langsmith
+    # via requests-toolbelt
     # via tiktoken
+requests-toolbelt==1.0.0
+    # via langsmith
 sniffio==1.3.1
     # via anyio
     # via httpx
     # via openai
-sqlalchemy==2.0.29
+sqlalchemy==2.0.35
     # via langchain
     # via langchain-community
-tenacity==8.2.3
+tenacity==9.0.0
     # via langchain
     # via langchain-community
     # via langchain-core
-tiktoken==0.6.0
+tiktoken==0.8.0
     # via langchain-openai
-tqdm==4.66.2
+tqdm==4.66.6
     # via openai
-typing-extensions==4.11.0
+typing-extensions==4.12.2
     # via anyio
+    # via langchain-core
+    # via multidict
     # via openai
     # via pydantic
     # via pydantic-core
@@ -145,9 +159,9 @@ typing-extensions==4.11.0
     # via typing-inspect
 typing-inspect==0.9.0
     # via dataclasses-json
-urllib3==2.2.1
+urllib3==2.2.3
     # via requests
-websockets==12.0
+websockets==13.1
     # via codeboxapi
-yarl==1.9.4
+yarl==1.17.1
     # via aiohttp

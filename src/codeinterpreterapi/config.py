@@ -1,7 +1,7 @@
 from typing import Optional
 
 from langchain_core.messages import SystemMessage
-from langchain_core.pydantic_v1 import BaseSettings, SecretStr
+from langchain_core.pydantic_v1 import BaseSettings
 
 from codeinterpreterapi.prompts import code_interpreter_system_message
 
@@ -14,12 +14,12 @@ class CodeInterpreterAPISettings(BaseSettings):
     DEBUG: bool = False
 
     # Models
-    OPENAI_API_KEY: Optional[SecretStr] = None
-    AZURE_OPENAI_API_KEY: Optional[SecretStr] = None
+    OPENAI_API_KEY: Optional[str] = None
+    AZURE_OPENAI_API_KEY: Optional[str] = None
     AZURE_API_BASE: Optional[str] = None
     AZURE_API_VERSION: Optional[str] = None
     AZURE_DEPLOYMENT_NAME: Optional[str] = None
-    ANTHROPIC_API_KEY: Optional[SecretStr] = None
+    ANTHROPIC_API_KEY: Optional[str] = None
 
     # LLM Settings
     MODEL: str = "gpt-3.5-turbo"
