@@ -139,7 +139,7 @@ class CodeInterpreterSession:
                 base_url=settings.AZURE_API_BASE,
                 api_version=settings.AZURE_API_VERSION,
                 azure_deployment=settings.AZURE_DEPLOYMENT_NAME,
-                api_key=settings.AZURE_OPENAI_API_KEY,
+                api_key=settings.AZURE_OPENAI_API_KEY,  # type: ignore
                 max_retries=settings.MAX_RETRY,
                 timeout=settings.REQUEST_TIMEOUT,
             )  # type: ignore
@@ -148,7 +148,7 @@ class CodeInterpreterSession:
 
             return ChatOpenAI(
                 model=settings.MODEL,
-                api_key=settings.OPENAI_API_KEY,
+                api_key=settings.OPENAI_API_KEY,  # type: ignore
                 timeout=settings.REQUEST_TIMEOUT,
                 temperature=settings.TEMPERATURE,
                 max_retries=settings.MAX_RETRY,
@@ -192,7 +192,7 @@ class CodeInterpreterSession:
 
     def _history_backend(self) -> BaseChatMessageHistory:
         return (
-            CodeBoxChatMessageHistory(codebox=self.codebox)
+            CodeBoxChatMessageHistory(codebox=self.codebox)  # type: ignore
             if settings.HISTORY_BACKEND == "codebox"
             else RedisChatMessageHistory(
                 session_id=str(self.session_id),
@@ -263,7 +263,7 @@ class CodeInterpreterSession:
             if self.verbose:
                 print("Error:", output.content)
 
-        elif modifications := get_file_modifications(code, self.llm):
+        elif modifications := get_file_modifications(code, self.llm):  # type: ignore
             for filename in modifications:
                 if filename in [file.name for file in self.input_files]:
                     continue
@@ -426,8 +426,8 @@ class CodeInterpreterSession:
         try:
             self._input_handler(user_request)
             assert self.agent_executor, "Session not initialized."
-            response = self.agent_executor.run(input=user_request.content)
-            return self._output_handler(response)
+            response = self.agent_executor.invoke({"input": user_request.content})
+            return self._output_handler(response["output"])
         except Exception as e:
             if self.verbose:
                 traceback.print_exc()
@@ -452,8 +452,10 @@ class CodeInterpreterSession:
         try:
             await self._ainput_handler(user_request)
             assert self.agent_executor, "Session not initialized."
-            response = await self.agent_executor.arun(input=user_request.content)
-            return await self._aoutput_handler(response)
+            response = await self.agent_executor.ainvoke(
+                {"input": user_request.content}
+            )
+            return await self._aoutput_handler(response["output"])
         except Exception as e:
             if self.verbose:
                 traceback.print_exc()
