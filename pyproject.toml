@@ -1,13 +1,12 @@
 [project]
 name = "codeinterpreterapi"
-version = "0.1.19"
+version = "0.1.20"
 description = "CodeInterpreterAPI is an (unofficial) open source python interface for the ChatGPT CodeInterpreter."
 authors = [{ name = "Shroominic", email = "contact@shroominic.com" }]
 dependencies = [
-    "langchain-openai>=0.1.1",
-    "langchain-community>=0.2",
+    "langchain>=0.1, <0.2",
+    "langchain_openai",
     "codeboxapi==0.1.19",
-    "langchain>=0.1.14",
     "pyzmq==25.1.2",
 ]
 license = { file = "LICENSE" }

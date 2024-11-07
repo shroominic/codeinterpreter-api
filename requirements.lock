@@ -37,6 +37,7 @@ charset-normalizer==3.4.0
 codeboxapi==0.1.19
     # via codeinterpreterapi
 dataclasses-json==0.6.7
+    # via langchain
     # via langchain-community
 distro==1.9.0
     # via openai
@@ -52,8 +53,6 @@ httpcore==1.0.6
 httpx==0.27.2
     # via langsmith
     # via openai
-httpx-sse==0.4.0
-    # via langchain-community
 idna==3.10
     # via anyio
     # via httpx
@@ -65,19 +64,18 @@ jsonpatch==1.33
     # via langchain-core
 jsonpointer==3.0.0
     # via jsonpatch
-langchain==0.3.7
+langchain==0.1.20
     # via codeinterpreterapi
-    # via langchain-community
-langchain-community==0.3.5
-    # via codeinterpreterapi
-langchain-core==0.3.15
+langchain-community==0.0.38
+    # via langchain
+langchain-core==0.1.53
     # via langchain
     # via langchain-community
     # via langchain-openai
     # via langchain-text-splitters
-langchain-openai==0.2.5
+langchain-openai==0.1.7
     # via codeinterpreterapi
-langchain-text-splitters==0.3.2
+langchain-text-splitters==0.0.2
     # via langchain
 langsmith==0.1.139
     # via langchain
@@ -93,11 +91,11 @@ mypy-extensions==1.0.0
 numpy==1.26.4
     # via langchain
     # via langchain-community
-openai==1.53.0
+openai==1.54.3
     # via langchain-openai
 orjson==3.10.11
     # via langsmith
-packaging==24.1
+packaging==23.2
     # via langchain-core
     # via marshmallow
 propcache==0.2.0
@@ -113,7 +111,6 @@ pydantic-core==2.23.4
     # via pydantic
 pydantic-settings==2.6.1
     # via codeboxapi
-    # via langchain-community
 python-dotenv==1.0.1
     # via pydantic-settings
 pyyaml==6.0.2
@@ -122,7 +119,7 @@ pyyaml==6.0.2
     # via langchain-core
 pyzmq==25.1.2
     # via codeinterpreterapi
-regex==2024.9.11
+regex==2024.11.6
     # via tiktoken
 requests==2.32.3
     # via codeboxapi
@@ -140,17 +137,16 @@ sniffio==1.3.1
 sqlalchemy==2.0.35
     # via langchain
     # via langchain-community
-tenacity==9.0.0
+tenacity==8.5.0
     # via langchain
     # via langchain-community
     # via langchain-core
 tiktoken==0.8.0
     # via langchain-openai
-tqdm==4.66.6
+tqdm==4.67.0
     # via openai
 typing-extensions==4.12.2
     # via anyio
-    # via langchain-core
     # via multidict
     # via openai
     # via pydantic
