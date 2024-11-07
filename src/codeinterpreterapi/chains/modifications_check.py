@@ -19,6 +19,11 @@ def get_file_modifications(
     result = llm.invoke(prompt)
 
     try:
+        if isinstance(result.content, str):
+            if result.content.endswith("```"):
+                result.content = result.content[:-3]
+            if result.content.startswith("```"):
+                result.content = result.content[3:]
         result = json.loads(result.content)
     except json.JSONDecodeError:
         result = ""
@@ -40,6 +45,11 @@ async def aget_file_modifications(
     result = await llm.ainvoke(prompt)
 
     try:
+        if isinstance(result.content, str):
+            if result.content.endswith("```"):
+                result.content = result.content[:-3]
+            if result.content.startswith("```"):
+                result.content = result.content[3:]
         result = json.loads(result.content)
     except json.JSONDecodeError:
         result = ""
