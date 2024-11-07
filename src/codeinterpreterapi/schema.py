@@ -64,7 +64,7 @@ class File(BaseModel):
 
         # Convert image to RGB if it's not
         if img.mode not in ("RGB", "L"):  # L is for grayscale images
-            img = img.convert("RGB")
+            img = img.convert("RGB")  # type: ignore
 
         return img
 
