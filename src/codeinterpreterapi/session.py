@@ -177,16 +177,18 @@ class CodeInterpreterSession:
                 ],
             )
             if isinstance(self.llm, ChatOpenAI) or isinstance(self.llm, AzureChatOpenAI)
-            else ConversationalChatAgent.from_llm_and_tools(
-                llm=self.llm,
-                tools=self.tools,
-                system_message=settings.SYSTEM_MESSAGE.content.__str__(),
-            )
-            if isinstance(self.llm, BaseChatModel)
-            else ConversationalAgent.from_llm_and_tools(
-                llm=self.llm,
-                tools=self.tools,
-                prefix=settings.SYSTEM_MESSAGE.content.__str__(),
+            else (
+                ConversationalChatAgent.from_llm_and_tools(
+                    llm=self.llm,
+                    tools=self.tools,
+                    system_message=settings.SYSTEM_MESSAGE.content.__str__(),
+                )
+                if isinstance(self.llm, BaseChatModel)
+                else ConversationalAgent.from_llm_and_tools(
+                    llm=self.llm,
+                    tools=self.tools,
+                    prefix=settings.SYSTEM_MESSAGE.content.__str__(),
+                )
             )
         )
 
@@ -194,17 +196,21 @@ class CodeInterpreterSession:
         return (
             CodeBoxChatMessageHistory(codebox=self.codebox)  # type: ignore
             if settings.HISTORY_BACKEND == "codebox"
-            else RedisChatMessageHistory(
-                session_id=str(self.session_id),
-                url=settings.REDIS_URL,
+            else (
+                RedisChatMessageHistory(
+                    session_id=str(self.session_id),
+                    url=settings.REDIS_URL,
+                )
+                if settings.HISTORY_BACKEND == "redis"
+                else (
+                    PostgresChatMessageHistory(
+                        session_id=str(self.session_id),
+                        connection_string=settings.POSTGRES_URL,
+                    )
+                    if settings.HISTORY_BACKEND == "postgres"
+                    else ChatMessageHistory()
+                )
             )
-            if settings.HISTORY_BACKEND == "redis"
-            else PostgresChatMessageHistory(
-                session_id=str(self.session_id),
-                connection_string=settings.POSTGRES_URL,
-            )
-            if settings.HISTORY_BACKEND == "postgres"
-            else ChatMessageHistory()
         )
 
     def _agent_executor(self) -> AgentExecutor:
